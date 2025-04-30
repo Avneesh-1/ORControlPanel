@@ -8,14 +8,22 @@
         <StackPanel>
             <!-- Timer Display Panel -->
             <Border CornerRadius="10"
-                    Height="70"
+                    Height="90"
                     Background="{DynamicResource TimerBackgroundBrush}">
-                <TextBlock Text="{Binding ElapsedTime}"
-                         FontSize="48"
-                         FontFamily="Consolas"
-                         Foreground="#00BFFF"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"/>
+                <StackPanel>
+                    <TextBlock Text="OPERATION TIMING"
+                             FontSize="14"
+                             FontWeight="Bold"
+                             Foreground="#00BFFF"
+                             HorizontalAlignment="Center"
+                             Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding ElapsedTime}"
+                             FontSize="48"
+                             FontFamily="Consolas"
+                             Foreground="#00BFFF"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
             </Border>
 
             <!-- Control Buttons -->
@@ -55,8 +63,8 @@
 
     <UserControl.Resources>
         <LinearGradientBrush x:Key="TimerBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-            <GradientStop Offset="0" Color="#0080FF"/>
-            <GradientStop Offset="1" Color="#0055AA"/>
+            <GradientStop Offset="0" Color="#1E90FF"/>
+            <GradientStop Offset="1" Color="#0000CD"/>
         </LinearGradientBrush>
     </UserControl.Resources>
     

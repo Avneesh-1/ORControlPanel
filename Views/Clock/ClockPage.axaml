@@ -11,14 +11,22 @@
         <StackPanel>
             <!-- Clock Display Panel -->
             <Border CornerRadius="10"
-                    Height="70"
+                    Height="90"
                     Background="{DynamicResource ClockBackgroundBrush}">
-                <TextBlock Text="{Binding CurrentTime}"
-                         FontSize="48"
-                         FontFamily="Consolas"
-                         Foreground="#000000"
-                         HorizontalAlignment="Center"
-                         VerticalAlignment="Center"/>
+                <StackPanel>
+                    <TextBlock Text="TIME"
+                             FontSize="14"
+                             FontWeight="Bold"
+                             Foreground="#000000"
+                             HorizontalAlignment="Center"
+                             Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding CurrentTime}"
+                             FontSize="48"
+                             FontFamily="Consolas"
+                             Foreground="#000000"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
             </Border>
 
             <!-- Date Display -->

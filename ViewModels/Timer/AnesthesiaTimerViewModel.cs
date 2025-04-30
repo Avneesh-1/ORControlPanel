@@ -35,7 +35,7 @@ namespace ORControlPanelNew.ViewModels.Timer
 
         public AnesthesiaTimerViewModel()
         {
-            _initialTime = TimeSpan.FromMinutes(60); // Default 60 minutes
+            _initialTime = TimeSpan.Zero; // Default to 0 minutes
             _remainingTime = _initialTime;
             _timer = new System.Timers.Timer(1000);
             _timer.Elapsed += Timer_Elapsed;
