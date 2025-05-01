@@ -1,0 +1,14 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="using:ORControlPanelNew.Converters"
+             x:Class="ORControlPanelNew.App">
+    <Application.Styles>
+        <FluentTheme/>
+        <StyleInclude Source="/Styles/Styles.axaml"/>
+    </Application.Styles>
+
+    <Application.Resources>
+        <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+        <converters:BoolToTextConverter x:Key="BoolToTextConverter"/>
+    </Application.Resources>
+</Application>
