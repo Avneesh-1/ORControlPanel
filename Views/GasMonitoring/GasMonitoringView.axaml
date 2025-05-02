@@ -1,0 +1,92 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ORControlPanelNew.ViewModels.GasMonitoring"
+             xmlns:models="using:ORControlPanelNew.Models.GasMonitoring"
+             xmlns:converters="using:ORControlPanelNew.Converters"
+             x:Class="ORControlPanelNew.Views.GasMonitoring.GasMonitoringView"
+             x:DataType="vm:GasMonitoringViewModel">
+
+    <UserControl.Resources>
+        <converters:GasStatusColorConverter x:Key="GasStatusColorConverter"/>
+    </UserControl.Resources>
+
+    <Design.DataContext>
+        <vm:GasMonitoringViewModel />
+    </Design.DataContext>
+
+    <Border Background="#2D2D2D" CornerRadius="5" Padding="10">
+        <Grid RowDefinitions="Auto,Auto,*">
+            <TextBlock Text="GAS STATUS" 
+                     Foreground="White" 
+                     FontSize="14" 
+                     HorizontalAlignment="Center"
+                     Margin="0,0,0,5"/>
+
+            <!-- Legend -->
+            <StackPanel Grid.Row="1" 
+                      Orientation="Horizontal" 
+                      HorizontalAlignment="Center"
+                      Margin="0,0,0,10"
+                      Spacing="15">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Rectangle Width="12" Height="6" Fill="Yellow"/>
+                    <TextBlock Text="Low" Foreground="White" FontSize="10"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Rectangle Width="12" Height="6" Fill="LimeGreen"/>
+                    <TextBlock Text="Normal" Foreground="White" FontSize="10"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <Rectangle Width="12" Height="6" Fill="Red"/>
+                    <TextBlock Text="High" Foreground="White" FontSize="10"/>
+                </StackPanel>
+            </StackPanel>
+
+            <ItemsControl Grid.Row="2" 
+                         ItemsSource="{Binding Gases}"
+                         VerticalAlignment="Stretch">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Spacing="10" 
+                                  Margin="5"
+                                  VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:GasStatus">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <TextBlock Text="{Binding Name}" 
+                                     Foreground="White" 
+                                     FontSize="12"
+                                     VerticalAlignment="Center"
+                                     Margin="0,0,10,0"/>
+                            
+                            <StackPanel Grid.Column="1" 
+                                      Orientation="Horizontal" 
+                                      Spacing="4">
+                                <!-- Low Indicator (Yellow) -->
+                                <Rectangle Width="30"
+                                         Height="6"
+                                         Fill="Yellow"
+                                         Opacity="{Binding IsLow}"/>
+                                
+                                <!-- Normal Indicator (Green) -->
+                                <Rectangle Width="30"
+                                         Height="6"
+                                         Fill="LimeGreen"
+                                         Opacity="{Binding IsNormal}"/>
+                                
+                                <!-- High Indicator (Red) -->
+                                <Rectangle Width="30"
+                                         Height="6"
+                                         Fill="Red"
+                                         Opacity="{Binding IsHigh}"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Border>
+</UserControl> 

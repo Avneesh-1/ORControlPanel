@@ -12,6 +12,7 @@ namespace ORControlPanelNew.Views
             {
                 Console.WriteLine("Initializing MainWindow...");
                 InitializeComponent();
+                DataContext = new MainWindowViewModel();
                 Console.WriteLine("MainWindow initialized successfully");
             }
             catch (Exception ex)
