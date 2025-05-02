@@ -16,6 +16,7 @@ namespace ORControlPanelNew
             try
             {
                 Console.WriteLine("Starting application...");
+                DevicePort.InitializeDatabase();
                 var app = BuildAvaloniaApp()
                     .StartWithClassicDesktopLifetime(args);
                 

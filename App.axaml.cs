@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using ORControlPanelNew.ViewModels;
 using ORControlPanelNew.Views;
 using System;
+using System.IO.Ports;
 
 namespace ORControlPanelNew
 {
