@@ -5,11 +5,18 @@
         xmlns:views="using:ORControlPanelNew.Views.Timer"
         xmlns:clock="using:ORControlPanelNew.Views.Clock"
         xmlns:lighting="using:ORControlPanelNew.Views.Lighting"
+        xmlns:gas="using:ORControlPanelNew.Views.GasMonitoring"
+        xmlns:vm="using:ORControlPanelNew.ViewModels"
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="ORControlPanelNew.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
         Title="OR Control Panel"
         Background="Black"
         WindowState="Maximized">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
     
     <Grid>
         <Grid.RowDefinitions>
@@ -22,9 +29,9 @@
                 Background="#1a1a1a"
                 BorderBrush="#333333"
                 BorderThickness="0,0,0,1"
-                Padding="20">
+                Padding="10">
             <TextBlock Text="OPERATION ROOM CONTROL PANEL"
-                     FontSize="42"
+                     FontSize="24"
                      FontWeight="Bold"
                      FontFamily="Segoe UI"
                      Foreground="#00ff00"
@@ -32,28 +39,62 @@
                      VerticalAlignment="Center">
                 <TextBlock.Effect>
                     <DropShadowEffect
-                        BlurRadius="4"
+                        BlurRadius="3"
                         Opacity="0.5"/>
                 </TextBlock.Effect>
             </TextBlock>
         </Border>
 
-        <Grid Grid.Row="1">
-            <Grid ColumnDefinitions="Auto,*,Auto,*,Auto">
-                <!-- Left Timer (Blue) -->
-                <views:TimerPage Grid.Column="0" Margin="20,10,0,0"/>
-                
-                <!-- Middle Timer (Anesthesia - Orange) -->
-                <views:AnesthesiaTimerPage Grid.Column="2" Margin="0,10,0,0"/>
-                
-                <!-- Right Clock (Green) -->
-                <clock:ClockPage Grid.Column="4" Margin="0,10,20,0"/>
-            </Grid>
-            <StackPanel Orientation="Horizontal">
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Side - Lighting Controls -->
+            <StackPanel Grid.Column="0" 
+                      Orientation="Vertical" 
+                      Spacing="10"
+                      VerticalAlignment="Top">
                 <lighting:GeneralLightingControl/>
                 <lighting:LaminarLightControl/>
                 <lighting:OTLightsControl/>
             </StackPanel>
+
+            <!-- Left Timer (Blue) -->
+            <Grid Grid.Column="1">
+                <views:TimerPage/>
+            </Grid>
+
+            <!-- Middle Timer (Anesthesia - Orange) -->
+            <Grid Grid.Column="2">
+                <views:AnesthesiaTimerPage/>
+            </Grid>
+
+            <!-- Right Section (Clock and Gas Monitoring) -->
+            <Grid Grid.Column="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Clock -->
+                <clock:ClockPage Grid.Row="0"/>
+
+                <!-- Spacer for Set Time button area -->
+                <Border Grid.Row="1" Height="150"/>
+
+                <!-- Gas Monitoring -->
+                <gas:GasMonitoringView Grid.Row="2" 
+                                      DataContext="{Binding GasMonitoring}"
+                                      MaxWidth="400"
+                                      Margin="0,20,0,0"
+                                      VerticalAlignment="Top"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
