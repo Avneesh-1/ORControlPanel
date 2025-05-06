@@ -1,48 +1,56 @@
-using System;
-using ReactiveUI;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace ORControlPanelNew.Models.GasMonitoring
 {
-    public enum GasLevel
-    {
-        Low,
-        Normal,
-        High
-    }
-
-    public class GasStatus : ReactiveObject
+    public class GasStatus : INotifyPropertyChanged
     {
         private string _name;
-        private GasLevel _level;
-        private bool _isActive;
+        private string _pressure;
+        private bool _isAlert;
 
         public string Name
         {
             get => _name;
-            set => this.RaiseAndSetIfChanged(ref _name, value);
+            set
+            {
+                _name = value;
+                OnPropertyChanged();
+            }
         }
 
-        public GasLevel Level
+        public string Pressure
         {
-            get => _level;
-            set => this.RaiseAndSetIfChanged(ref _level, value);
+            get => _pressure;
+            set
+            {
+                _pressure = value;
+                OnPropertyChanged();
+            }
         }
 
-        public bool IsActive
+        public bool IsAlert
         {
-            get => _isActive;
-            set => this.RaiseAndSetIfChanged(ref _isActive, value);
+            get => _isAlert;
+            set
+            {
+                _isAlert = value;
+                OnPropertyChanged();
+            }
         }
-
-        public double IsLow => Level == GasLevel.Low ? 1.0 : 0.2;
-        public double IsNormal => Level == GasLevel.Normal ? 1.0 : 0.2;
-        public double IsHigh => Level == GasLevel.High ? 1.0 : 0.2;
 
         public GasStatus(string name)
         {
             Name = name;
-            Level = GasLevel.Normal;
-            IsActive = true;
+            Pressure = "0.0";
+            IsAlert = false;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using Microsoft.Data.Sqlite;
+using ORControlPanelNew.Models.GasMonitoring;
 
 namespace ORControlPanelNew
 {
@@ -16,17 +17,18 @@ namespace ORControlPanelNew
         {
             try
             {
-                string settingsPath = "settings.txt";
+                string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt");
                 if (!File.Exists(settingsPath))
                 {
-                    Console.WriteLine($"Error: {settingsPath} not found.");
+                    Log($"Error: {settingsPath} not found.");
                     return false;
                 }
 
                 var cs = File.ReadLines(settingsPath).FirstOrDefault();
+                Log($"Connection string: {cs}");
                 if (string.IsNullOrEmpty(cs))
                 {
-                    Console.WriteLine("Error: Database connection string not found in settings.txt");
+                    Log("Error: Database connection string not found in settings.txt");
                     return false;
                 }
 
@@ -35,19 +37,19 @@ namespace ORControlPanelNew
                     connection.Open();
                     using (var command = new SqliteCommand(
                         @"CREATE TABLE IF NOT EXISTS tbl_OT (
-                    FieldName TEXT PRIMARY KEY,
-                    Value TEXT
-                )", connection))
+                                 FieldName TEXT PRIMARY KEY,
+                                 Value TEXT
+                             )", connection))
                     {
                         command.ExecuteNonQuery();
                     }
-                    Console.WriteLine("Database initialized successfully.");
+                    Log("Database initialized successfully.");
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database initialization failed: {ex.Message}");
+                Log($"Database initialization failed: {ex.Message}");
                 return false;
             }
         }
@@ -59,15 +61,15 @@ namespace ORControlPanelNew
                 string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt");
                 if (!File.Exists(settingsPath))
                 {
-                    Console.WriteLine($"Error: {settingsPath} not found.");
+                    Log($"Error: {settingsPath} not found.");
                     return;
                 }
 
                 var cs = File.ReadLines(settingsPath).FirstOrDefault();
-                Console.WriteLine($"Connection string: {cs}");
+                Log($"Connection string: {cs}");
                 if (string.IsNullOrEmpty(cs))
                 {
-                    Console.WriteLine("Error: Database connection string not found in settings.txt");
+                    Log("Error: Database connection string not found in settings.txt");
                     return;
                 }
 
@@ -79,17 +81,17 @@ namespace ORControlPanelNew
                         command.Parameters.AddWithValue("@Value", value);
                         command.Parameters.AddWithValue("@FieldName", fieldName);
                         int rowsAffected = command.ExecuteNonQuery();
-                        Console.WriteLine($"UPDATE affected {rowsAffected} rows for FieldName={fieldName}, Value={value}");
+                        Log($"UPDATE affected {rowsAffected} rows for FieldName={fieldName}, Value={value}");
                         if (rowsAffected == 0)
                         {
-                            Console.WriteLine($"No rows found for FieldName={fieldName}. Inserting new row.");
+                            Log($"No rows found for FieldName={fieldName}. Inserting new row.");
                             using (var insertCommand = new SqliteCommand(
                                 "INSERT INTO tbl_OT (FieldName, Value) VALUES (@FieldName, @Value)", connection))
                             {
                                 insertCommand.Parameters.AddWithValue("@FieldName", fieldName);
                                 insertCommand.Parameters.AddWithValue("@Value", value);
                                 insertCommand.ExecuteNonQuery();
-                                Console.WriteLine($"Inserted new row: FieldName={fieldName}, Value={value}");
+                                Log($"Inserted new row: FieldName={fieldName}, Value={value}");
                             }
                         }
                     }
@@ -97,8 +99,8 @@ namespace ORControlPanelNew
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Database update failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
-                throw new Exception($"Database update failed: {ex.Message}", ex); // Keep for debugging
+                Log($"Database update failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
+                throw new Exception($"Database update failed: {ex.Message}", ex);
             }
         }
 
@@ -154,21 +156,60 @@ namespace ORControlPanelNew
             }
         }
 
+        private static void Log(string message)
+        {
+            Debug.WriteLine(message);
+        }
+
         internal class SerialPortInterface
         {
             private static SerialPort _myCOMPort = new SerialPort();
+            public static event Action<string> OnDataReceived;
 
-            public static void Initialize(string portName, int baudRate = 9600)
+            public static bool Initialize(string portName, int baudRate = 9600)
             {
                 try
                 {
+                    var availablePorts = SerialPort.GetPortNames();
+                    Log($"Available ports: {string.Join(", ", availablePorts)}");
+                    if (!availablePorts.Contains(portName))
+                    {
+                        Log($"Warning: Port {portName} not found.");
+                        return false;
+                    }
+
+                    if (_myCOMPort.IsOpen)
+                    {
+                        _myCOMPort.Close();
+                        Log("Previous serial port closed.");
+                    }
+
                     _myCOMPort.PortName = portName;
                     _myCOMPort.BaudRate = baudRate;
+                    _myCOMPort.DataReceived += (s, e) =>
+                    {
+                        try
+                        {
+                            string data = _myCOMPort.ReadLine();
+                            Log($"Serial data received: {data}");
+                            DataProcessor.ProcessData(data);
+                            OnDataReceived?.Invoke(data);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log($"Serial read failed: {ex.Message}");
+                        }
+                    };
+
+                    _myCOMPort.Open();
+                    Log($"Serial port {portName} opened.");
                     DevicePort.CurrentPort = portName;
+                    return true;
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Serial port initialization failed: {ex.Message}", ex);
+                    Log($"Serial port initialization failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
+                    return false;
                 }
             }
 
@@ -177,48 +218,48 @@ namespace ORControlPanelNew
                 try
                 {
                     var availablePorts = SerialPort.GetPortNames();
-                    Debug.WriteLine("Available ports: " + string.Join(", ", availablePorts));
+                    Log($"Available ports: {string.Join(", ", availablePorts)}");
 
                     if (_myCOMPort == null)
-                        throw new Exception("Serial port is not initialized.");
+                    {
+                        Log("Error: Serial port is not initialized.");
+                        return;
+                    }
+
+                    if (!availablePorts.Contains(_myCOMPort.PortName))
+                    {
+                        Log($"Error: Port {_myCOMPort.PortName} not available.");
+                        return;
+                    }
 
                     if (!_myCOMPort.IsOpen)
                     {
+                        Log($"Opening port {_myCOMPort.PortName}...");
                         _myCOMPort.Open();
-                        Debug.WriteLine("Port opened successfully.");
                     }
 
                     _myCOMPort.Write(data + Environment.NewLine);
-                    Debug.WriteLine($"Data written to port: {data}");
-                }
-                catch (FileNotFoundException fnfEx)
-                {
-                    Debug.WriteLine($"FileNotFoundException: {fnfEx.Message}");
-                    throw new Exception("Serial port file not found", fnfEx);
-                }
-                catch (UnauthorizedAccessException uaEx)
-                {
-                    Debug.WriteLine($"UnauthorizedAccessException: {uaEx.Message}");
-                    throw new Exception("Access to the serial port is denied", uaEx);
+                    Log($"Data written to port: {data}");
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Exception: {ex.Message}");
-                    throw new Exception($"Serial port write failed: {ex.Message}", ex);
+                    Log($"Serial port write failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
                 }
             }
-
 
             public static void Close()
             {
                 try
                 {
-                    if (_myCOMPort.IsOpen)
+                    if (_myCOMPort != null && _myCOMPort.IsOpen)
+                    {
                         _myCOMPort.Close();
+                        Log("Serial port closed.");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Serial port close failed: {ex.Message}", ex);
+                    Log($"Serial port close failed: {ex.Message}");
                 }
             }
         }
@@ -232,6 +273,339 @@ namespace ORControlPanelNew
             public static string Air4 { get; set; } = "0";
             public static string Vacuum { get; set; } = "0";
             public static string DiffPress { get; set; } = "0";
+            public static string Temperature { get; set; } = "0";
+            public static string TemperatureSetValue { get; set; } = "0";
+            public static string Humidity { get; set; } = "0";
+            public static string Voltage { get; set; } = "0";
+            public static string Current { get; set; } = "0";
+        }
+
+        internal class DataProcessor
+        {
+            public static event Action<string, string> OnGasPressureUpdated; // (GasName, Pressure)
+            public static event Action<string, bool> OnGasAlertUpdated; // (GasName, IsAlert)
+            public static event Action<bool> OnGeneralGasAlertUpdated;
+            public static event Action<bool> OnCallReceivedUpdated;
+            public static event Action<string> OnTemperatureUpdated;
+            public static event Action<string> OnHumidityUpdated;
+            public static event Action<string, string, bool> OnTransformerUpdated;
+            public static event Action<bool> OnFireStatusUpdated;
+            public static event Action<bool> OnHepaStatusUpdated;
+            public static event Action<bool> OnUpsStatusUpdated;
+
+            public static void ProcessData(string inData)
+            {
+                string[] allData = inData.Split('#');
+                foreach (string s in allData)
+                {
+                    if (string.IsNullOrWhiteSpace(s))
+                        continue;
+
+                    Log($"{DateTime.Now}: Processing data: {s}");
+
+                    if (s.StartsWith("CALN"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool isActive = parts[1] == "1";
+                            Log($"CALN: Invoking OnCallReceivedUpdated with isActive={isActive}");
+                            OnCallReceivedUpdated?.Invoke(isActive);
+                        }
+                    }
+
+                    if (s.StartsWith("GASR"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool isAlert = parts[1] == "1";
+                            if (isAlert)
+                            {
+                                Log($"GASR: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
+                                OnGeneralGasAlertUpdated?.Invoke(true);
+                            }
+                        }
+                    }
+
+                    if (s.StartsWith("GASW"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool isAlert = parts[1] == "0";
+                            if (isAlert)
+                            {
+                                Log($"GASW: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
+                                OnGeneralGasAlertUpdated?.Invoke(false);
+                            }
+                        }
+                    }
+
+                    // Gas Alert Handling
+                    if (s.StartsWith("ALGA"))
+                    {
+                        Log($"ALGA: Invoking OnGasAlertUpdated for O₂ with isAlert=true");
+                        OnGasAlertUpdated?.Invoke("O₂", true);
+                    }
+                    if (s.StartsWith("BLGA"))
+                    {
+                        Log($"BLGA: Invoking OnGasAlertUpdated for O₂ with isAlert=false");
+                        OnGasAlertUpdated?.Invoke("O₂", false);
+                    }
+
+                    if (s.StartsWith("ALGB"))
+                    {
+                        Log($"ALGB: Invoking OnGasAlertUpdated for N₂O with isAlert=true");
+                        OnGasAlertUpdated?.Invoke("N₂O", true);
+                    }
+                    if (s.StartsWith("BLGB"))
+                    {
+                        Log($"BLGB: Invoking OnGasAlertUpdated for N₂O with isAlert=false");
+                        OnGasAlertUpdated?.Invoke("N₂O", false);
+                    }
+
+                    if (s.StartsWith("ALGC"))
+                    {
+                        Log($"ALGC: Invoking OnGasAlertUpdated for CO₂ with isAlert=true");
+                        OnGasAlertUpdated?.Invoke("CO₂", true);
+                    }
+                    if (s.StartsWith("BLGC"))
+                    {
+                        Log($"BLGC: Invoking OnGasAlertUpdated for CO₂ with isAlert=false");
+                        OnGasAlertUpdated?.Invoke("CO₂", false);
+                    }
+
+                    if (s.StartsWith("ALGD"))
+                    {
+                        Log($"ALGD: Invoking OnGasAlertUpdated for AIR 4 with isAlert=true");
+                        OnGasAlertUpdated?.Invoke("AIR 4", true);
+                    }
+                    if (s.StartsWith("BLGD"))
+                    {
+                        Log($"BLGD: Invoking OnGasAlertUpdated for AIR 4 with isAlert=false");
+                        OnGasAlertUpdated?.Invoke("AIR 4", false);
+                    }
+
+                    if (s.StartsWith("ALGE"))
+                    {
+                        Log($"ALGE: Invoking OnGasAlertUpdated for AIR 7 with isAlert=true");
+                        OnGasAlertUpdated?.Invoke("AIR 7", true);
+                    }
+                    if (s.StartsWith("BLGE"))
+                    {
+                        Log($"BLGE: Invoking OnGasAlertUpdated for AIR 7 with isAlert=false");
+                        OnGasAlertUpdated?.Invoke("AIR 7", false);
+                    }
+
+                    if (s.StartsWith("ALGF"))
+                    {
+                        Log($"ALGF: Invoking OnGasAlertUpdated for VAC with isAlert=true");
+                        OnGasAlertUpdated?.Invoke("VAC", true);
+                    }
+                    if (s.StartsWith("BLGF"))
+                    {
+                        Log($"BLGF: Invoking OnGasAlertUpdated for VAC with isAlert=false");
+                        OnGasAlertUpdated?.Invoke("VAC", false);
+                    }
+
+                    // Gas Pressure Updates
+                    if (s.StartsWith("RDGA"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string pressureStr = parts[1];
+                            GasPressure.Oxygen = pressureStr;
+                            Log($"RDGA: Invoking OnGasPressureUpdated for O₂ with pressure={pressureStr}");
+                            OnGasPressureUpdated?.Invoke("O₂", pressureStr);
+                        }
+                        else
+                        {
+                            Log($"RDGA: Failed to parse pressure from {s}");
+                        }
+                    }
+                    if (s.StartsWith("RDGB"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string pressureStr = parts[1];
+                            GasPressure.Nitrogen = pressureStr;
+                            Log($"RDGB: Invoking OnGasPressureUpdated for N₂O with pressure={pressureStr}");
+                            OnGasPressureUpdated?.Invoke("N₂O", pressureStr);
+                        }
+                        else
+                        {
+                            Log($"RDGB: Failed to parse pressure from {s}");
+                        }
+                    }
+                    if (s.StartsWith("RDGC"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string pressureStr = parts[1];
+                            GasPressure.CO2 = pressureStr;
+                            Log($"RDGC: Invoking OnGasPressureUpdated for CO₂ with pressure={pressureStr}");
+                            OnGasPressureUpdated?.Invoke("CO₂", pressureStr);
+                        }
+                        else
+                        {
+                            Log($"RDGC: Failed to parse pressure from {s}");
+                        }
+                    }
+                    if (s.StartsWith("RDGD"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string pressureStr = parts[1];
+                            GasPressure.Air4 = pressureStr;
+                            Log($"RDGD: Invoking OnGasPressureUpdated for AIR 4 with pressure={pressureStr}");
+                            OnGasPressureUpdated?.Invoke("AIR 4", pressureStr);
+                        }
+                        else
+                        {
+                            Log($"RDGD: Failed to parse pressure from {s}");
+                        }
+                    }
+                    if (s.StartsWith("RDGE"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string pressureStr = parts[1];
+                            GasPressure.Air7 = pressureStr;
+                            Log($"RDGE: Invoking OnGasPressureUpdated for AIR 7 with pressure={pressureStr}");
+                            OnGasPressureUpdated?.Invoke("AIR 7", pressureStr);
+                        }
+                        else
+                        {
+                            Log($"RDGE: Failed to parse pressure from {s}");
+                        }
+                    }
+                    if (s.StartsWith("RDGF"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string pressureStr = parts[1];
+                            GasPressure.Vacuum = pressureStr;
+                            Log($"RDGF: Invoking OnGasPressureUpdated for VAC with pressure={pressureStr}");
+                            OnGasPressureUpdated?.Invoke("VAC", pressureStr);
+                        }
+                        else
+                        {
+                            Log($"RDGF: Failed to parse pressure from {s}");
+                        }
+                    }
+
+                    if (s.StartsWith("ARDP"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            GasPressure.DiffPress = parts[1];
+                            Log($"ARDP: Updated DiffPress to {parts[1]}");
+                        }
+                    }
+
+                    if (s.StartsWith("TEMP"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string temp = parts[1];
+                            GasPressure.Temperature = temp;
+                            Log($"TEMP: Invoking OnTemperatureUpdated with temp={temp}");
+                            OnTemperatureUpdated?.Invoke(temp);
+                        }
+                    }
+
+                    if (s.StartsWith("HUMD"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            string humidity = parts[1];
+                            GasPressure.Humidity = humidity;
+                            Log($"HUMD: Invoking OnHumidityUpdated with humidity={humidity}");
+                            OnHumidityUpdated?.Invoke(humidity);
+                        }
+                    }
+
+                    if (s.StartsWith("ITID"))
+                    {
+                        string[] ts = s.Substring(4).Split('$');
+                        string voltage = "0";
+                        string current = "0";
+                        bool isError = false;
+                        foreach (var s1 in ts)
+                        {
+                            if (s1.StartsWith("V"))
+                            {
+                                voltage = s1.Substring(1);
+                                GasPressure.Voltage = voltage;
+                            }
+                            if (s1.StartsWith("C"))
+                            {
+                                current = s1.Substring(1);
+                                GasPressure.Current = current;
+                            }
+                            if (s1.StartsWith("ST"))
+                            {
+                                isError = s1.Substring(2).Contains("1");
+                            }
+                        }
+                        Log($"ITID: Invoking OnTransformerUpdated with voltage={voltage}, current={current}, isError={isError}");
+                        OnTransformerUpdated?.Invoke(voltage, current, isError);
+                    }
+
+                    if (s.StartsWith("FRAM"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1 && float.TryParse(parts[1], out float val))
+                        {
+                            bool isActive = val >= 10;
+                            Log($"FRAM: Invoking OnFireStatusUpdated with isActive={isActive}");
+                            OnFireStatusUpdated?.Invoke(isActive);
+                        }
+                        else
+                        {
+                            Log($"FRAM: Invoking OnFireStatusUpdated with default isActive=false");
+                            OnFireStatusUpdated?.Invoke(false);
+                        }
+                    }
+
+                    if (s.StartsWith("HFST"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1 && float.TryParse(parts[1], out float val))
+                        {
+                            bool isBad = val >= 10;
+                            Log($"HFST: Invoking OnHepaStatusUpdated with isBad={isBad}");
+                            OnHepaStatusUpdated?.Invoke(isBad);
+                        }
+                        else
+                        {
+                            Log($"HFST: Invoking OnHepaStatusUpdated with default isBad=false");
+                            OnHepaStatusUpdated?.Invoke(false);
+                        }
+                    }
+
+                    if (s.StartsWith("UPSS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool isOn = parts[1] == "1";
+                            Log($"UPSS: Invoking OnUpsStatusUpdated with isOn={isOn}");
+                            OnUpsStatusUpdated?.Invoke(isOn);
+                        }
+                    }
+                }
+            }
         }
     }
 }
