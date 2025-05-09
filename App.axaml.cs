@@ -1,10 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ORControlPanelNew.ViewModels;
 using ORControlPanelNew.Views;
 using System;
-using System.IO.Ports;
 
 namespace ORControlPanelNew
 {
@@ -32,10 +30,7 @@ namespace ORControlPanelNew
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
                     Console.WriteLine("Creating main window...");
-                    var mainWindow = new MainWindow();
-                    var viewModel = new MainWindowViewModel();
-                    mainWindow.DataContext = viewModel;
-                    desktop.MainWindow = mainWindow;
+                    desktop.MainWindow = new MainWindow();
                     Console.WriteLine("Main window created and set");
                 }
                 else

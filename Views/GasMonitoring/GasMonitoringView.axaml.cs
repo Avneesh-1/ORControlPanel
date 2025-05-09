@@ -12,15 +12,13 @@ namespace ORControlPanelNew.Views.GasMonitoring
         public GasMonitoringView()
         {
             InitializeComponent();
-            _viewModel = new GasMonitoringViewModel();
-            DataContext = _viewModel;
+            // Access the DataContext instead of creating a new instance
+            _viewModel = DataContext as GasMonitoringViewModel;
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
         }
-
-     
     }
 }

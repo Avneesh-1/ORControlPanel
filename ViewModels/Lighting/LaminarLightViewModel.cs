@@ -4,6 +4,8 @@ using System;
 using ORControlPanelNew.Views.Lighting;
 using System.Diagnostics;
 using System.Reactive.Linq;
+using System.Data;
+using System.Linq;
 namespace ORControlPanelNew.ViewModels.Lighting
 {
     public class LaminarLightViewModel : ReactiveObject
@@ -27,7 +29,61 @@ namespace ORControlPanelNew.ViewModels.Lighting
         public ICommand OpenDialogCommand { get; }
 
         public LaminarLightViewModel()
+
         {
+            try
+            {
+              
+                string paramList = "'Laminar Light'";
+                DataTable dt = DevicePort.ReadValueFromDb(paramList);
+
+                // Process the DataTable to set initial values
+                foreach (DataRow row in dt.Rows)
+                {
+                    string fieldName = row["FieldName"].ToString();
+                    string valueStr = row["Value"].ToString();
+
+                    if (double.TryParse(valueStr, out double value))
+                    {
+                        if (fieldName == "Laminar Light")
+                        {
+                            LightIntensity = value;
+                            IsLightOn = value > 0; // Light is on if intensity > 0
+                            Debug.WriteLine($"Fetched LightIntensity from DB: {LightIntensity}, IsLight1On: {IsLightOn}");
+                        }
+                     
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"Failed to parse value for {fieldName}: {valueStr}");
+                    }
+                }
+
+                // If no data was found for a light, use default values
+                if (dt.Rows.Cast<DataRow>().All(row => row["FieldName"].ToString() != "Laminar Light"))
+                {
+                    Debug.WriteLine("No data found for Laminar Lights  in DB, using defaults");
+                    LightIntensity = 0;
+                    IsLightOn = false;
+                }
+              
+
+                // Optionally sync the hardware with the fetched values
+                if (IsLightOn && LightIntensity > 0)
+                {
+                    DevicePort.SerialPortInterface.Write("LITI" + (int)LightIntensity);
+                }
+              
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching initial lighting data from DB: {ex.Message}");
+                // Fallback to default values
+                LightIntensity = 0;
+               
+                IsLightOn = false;
+            
+            }
             ToggleLightCommand = ReactiveCommand.Create(ToggleLaminarLight);
 
             OpenDialogCommand = ReactiveCommand.Create(() =>

@@ -2,6 +2,7 @@
 using ORControlPanelNew.ViewModels.GasMonitoring;
 using ORControlPanelNew.ViewModels.Temperature;
 using ORControlPanelNew.ViewModels.Ups;
+using ORControlPanelNew.Services;
 
 namespace ORControlPanelNew.ViewModels
 {
@@ -10,13 +11,12 @@ namespace ORControlPanelNew.ViewModels
         public GasMonitoringViewModel GasMonitoring { get; }
         public TemperatureViewModel TemperatureMonitoring { get; }
         public UpsStatusViewModel UpsStatus { get; }
-        
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(IAlertService alertService)
         {
-            GasMonitoring = new GasMonitoringViewModel();
+            GasMonitoring = new GasMonitoringViewModel(alertService);
             TemperatureMonitoring = new TemperatureViewModel();
-            UpsStatus = new UpsStatusViewModel();
+            UpsStatus = new UpsStatusViewModel(alertService);
         }
     }
 }

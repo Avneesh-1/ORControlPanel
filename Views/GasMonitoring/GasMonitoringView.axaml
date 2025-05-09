@@ -122,9 +122,9 @@
 			</ScrollViewer>
 
 			<!-- Humidity -->
-		
+
 			<!-- Transformer Status -->
-		
+
 
 			<!-- Fire, HEPA Status -->
 			<Grid Grid.Row="4" ColumnDefinitions="*,*" Margin="5">
@@ -137,7 +137,7 @@
                                Text="{Binding FireStatus}"
                                Foreground="{Binding FireStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"/>
 				</StackPanel>
-			
+
 			</Grid>
 		</Grid>
 	</Border>

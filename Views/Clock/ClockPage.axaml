@@ -7,41 +7,42 @@
              x:Class="ORControlPanelNew.Views.Clock.ClockPage"
              x:DataType="vm:ClockViewModel">
 
-    <Grid Margin="20,10,0,0" HorizontalAlignment="Left" Width="300">
-        <StackPanel>
-            <!-- Clock Display Panel -->
-            <Border CornerRadius="10"
+	<Grid Margin="0" HorizontalAlignment="Stretch">
+		<StackPanel>
+			<!-- Clock Display Panel -->
+			<Border CornerRadius="10"
                     Height="90"
-                    Background="{DynamicResource ClockBackgroundBrush}">
-                <StackPanel>
-                    <TextBlock Text="TIME"
+                    Background="{DynamicResource ClockBackgroundBrush}"
+                    HorizontalAlignment="Stretch">
+				<StackPanel>
+					<TextBlock Text="TIME"
                              FontSize="14"
                              FontWeight="Bold"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
                              Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding CurrentTime}"
+					<TextBlock Text="{Binding CurrentTime}"
                              FontSize="48"
                              FontFamily="Consolas"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"/>
-                </StackPanel>
-            </Border>
+				</StackPanel>
+			</Border>
 
-            <!-- Date Display -->
-            <TextBlock Text="{Binding CurrentDate}"
+			<!-- Date Display -->
+			<TextBlock Text="{Binding CurrentDate}"
                      Foreground="White"
                      FontSize="14"
                      HorizontalAlignment="Right"
                      Margin="0,5,0,0"/>
-        </StackPanel>
-    </Grid>
+		</StackPanel>
+	</Grid>
 
-    <UserControl.Resources>
-        <LinearGradientBrush x:Key="ClockBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-            <GradientStop Offset="0" Color="#90EE90"/>
-            <GradientStop Offset="1" Color="#32CD32"/>
-        </LinearGradientBrush>
-    </UserControl.Resources>
+	<UserControl.Resources>
+		<LinearGradientBrush x:Key="ClockBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+			<GradientStop Offset="0" Color="#90EE90"/>
+			<GradientStop Offset="1" Color="#32CD32"/>
+		</LinearGradientBrush>
+	</UserControl.Resources>
 </UserControl>

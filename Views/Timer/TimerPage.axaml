@@ -3,69 +3,70 @@
              xmlns:vm="using:ORControlPanelNew.ViewModels.Timer"
              x:Class="ORControlPanelNew.Views.Timer.TimerPage"
              x:DataType="vm:TimerPageViewModel">
-    
-    <Grid Margin="20,10,0,0" HorizontalAlignment="Left">
-        <StackPanel>
-            <!-- Timer Display Panel -->
-            <Border CornerRadius="10"
+
+	<Grid Margin="0" HorizontalAlignment="Stretch">
+		<StackPanel>
+			<!-- Timer Display Panel -->
+			<Border CornerRadius="10"
                     Height="90"
-                    Background="{DynamicResource TimerBackgroundBrush}">
-                <StackPanel>
-                    <TextBlock Text="OPERATION TIMING"
+                    Background="{DynamicResource TimerBackgroundBrush}"
+                    HorizontalAlignment="Stretch">
+				<StackPanel>
+					<TextBlock Text="OPERATION TIMING"
                              FontSize="14"
                              FontWeight="Bold"
                              Foreground="#00BFFF"
                              HorizontalAlignment="Center"
                              Margin="0,5,0,0"/>
-                    <TextBlock Text="{Binding ElapsedTime}"
+					<TextBlock Text="{Binding ElapsedTime}"
                              FontSize="48"
                              FontFamily="Consolas"
                              Foreground="#00BFFF"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"/>
-                </StackPanel>
-            </Border>
+				</StackPanel>
+			</Border>
 
-            <!-- Control Buttons -->
-            <StackPanel Orientation="Horizontal" 
-                      HorizontalAlignment="Center" 
+			<!-- Control Buttons -->
+			<StackPanel Orientation="Horizontal"
+                      HorizontalAlignment="Center"
                       Spacing="10"
                       Margin="0,10,0,0">
-                <Button Content="START"
+				<Button Content="START"
                         Command="{Binding StartCommand}"
                         Classes="timerButton"/>
-                <Button Content="PAUSE"
+				<Button Content="PAUSE"
                         Command="{Binding StopCommand}"
                         Classes="timerButton"/>
-                <Button Content="RESET"
+				<Button Content="RESET"
                         Command="{Binding ResetCommand}"
                         Classes="timerButton"/>
-            </StackPanel>
-        </StackPanel>
-    </Grid>
+			</StackPanel>
+		</StackPanel>
+	</Grid>
 
-    <UserControl.Styles>
-        <Style Selector="Button.timerButton">
-            <Setter Property="Background" Value="#404040"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Width" Value="80"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="CornerRadius" Value="15"/>
-            <Setter Property="FontSize" Value="12"/>
-        </Style>
-        <Style Selector="Button.timerButton:pointerover">
-            <Setter Property="Background" Value="#505050"/>
-        </Style>
-        <Style Selector="Button.timerButton:pressed">
-            <Setter Property="Background" Value="#303030"/>
-        </Style>
-    </UserControl.Styles>
+	<UserControl.Styles>
+		<Style Selector="Button.timerButton">
+			<Setter Property="Background" Value="#404040"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Width" Value="80"/>
+			<Setter Property="Height" Value="30"/>
+			<Setter Property="CornerRadius" Value="15"/>
+			<Setter Property="FontSize" Value="12"/>
+		</Style>
+		<Style Selector="Button.timerButton:pointerover">
+			<Setter Property="Background" Value="#505050"/>
+		</Style>
+		<Style Selector="Button.timerButton:pressed">
+			<Setter Property="Background" Value="#303030"/>
+		</Style>
+	</UserControl.Styles>
 
-    <UserControl.Resources>
-        <LinearGradientBrush x:Key="TimerBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-            <GradientStop Offset="0" Color="#1E90FF"/>
-            <GradientStop Offset="1" Color="#0000CD"/>
-        </LinearGradientBrush>
-    </UserControl.Resources>
-    
+	<UserControl.Resources>
+		<LinearGradientBrush x:Key="TimerBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+			<GradientStop Offset="0" Color="#1E90FF"/>
+			<GradientStop Offset="1" Color="#0000CD"/>
+		</LinearGradientBrush>
+	</UserControl.Resources>
+
 </UserControl>

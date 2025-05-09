@@ -13,23 +13,33 @@ namespace ORControlPanelNew
     {
         public static string? CurrentPort { get; set; }
 
+          
+
         public static bool InitializeDatabase()
         {
             try
             {
                 string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt");
-                if (!File.Exists(settingsPath))
+                string cs = null;
+
+                if (File.Exists(settingsPath))
                 {
-                    Log($"Error: {settingsPath} not found.");
-                    return false;
+                    cs = File.ReadLines(settingsPath).FirstOrDefault();
+                    Log($"Loaded connection string from settings.txt: {cs}");
                 }
 
-                var cs = File.ReadLines(settingsPath).FirstOrDefault();
-                Log($"Connection string: {cs}");
-                if (string.IsNullOrEmpty(cs))
+                if (string.IsNullOrWhiteSpace(cs))
                 {
-                    Log("Error: Database connection string not found in settings.txt");
-                    return false;
+                    // Fallback to safe local path
+                    string fallbackDir = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "ORControlPanel");
+
+                    Directory.CreateDirectory(fallbackDir); // Ensure dir exists
+
+                    string fallbackDb = Path.Combine(fallbackDir, "mydata.db");
+                    cs = $"Data Source={fallbackDb}";
+                    Log($"Using fallback connection string: {cs}");
                 }
 
                 using (var connection = new SqliteConnection(cs))
@@ -37,12 +47,13 @@ namespace ORControlPanelNew
                     connection.Open();
                     using (var command = new SqliteCommand(
                         @"CREATE TABLE IF NOT EXISTS tbl_OT (
-                                 FieldName TEXT PRIMARY KEY,
-                                 Value TEXT
-                             )", connection))
+                    FieldName TEXT PRIMARY KEY,
+                    Value TEXT
+                )", connection))
                     {
                         command.ExecuteNonQuery();
                     }
+
                     Log("Database initialized successfully.");
                     return true;
                 }

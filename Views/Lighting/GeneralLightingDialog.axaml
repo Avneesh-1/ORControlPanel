@@ -10,49 +10,49 @@
         Width="400" Height="300"
         WindowStartupLocation="CenterOwner">
 
-    <Design.DataContext>
-        <vm:GeneralLightingViewModel/>
-    </Design.DataContext>
+	<Design.DataContext>
+		<vm:GeneralLightingViewModel/>
+	</Design.DataContext>
 
-    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="20">
-        <!-- Light 1 Section -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-            <TextBlock Text="LIGHT 1" FontSize="16" FontWeight="Bold"/>
-            <Button Grid.Column="1" 
+	<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="20">
+		<!-- Light 1 Section -->
+		<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+			<TextBlock Text="LIGHT 1" FontSize="16" FontWeight="Bold"/>
+			<Button Grid.Column="1"
                     Command="{Binding ToggleLight1Command}"
                     Width="60"
                     Height="30"
                     CornerRadius="15"
                     Background="{Binding IsLight1On, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#00FF00,#FF0000'}">
-                <TextBlock Text="{Binding IsLight1On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
+				<TextBlock Text="{Binding IsLight1On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
                          Foreground="White"
                          FontWeight="Bold"/>
-            </Button>
-        </Grid>
-        <Slider Grid.Row="1" 
-                Minimum="0" 
-                Maximum="100" 
+			</Button>
+		</Grid>
+		<Slider Grid.Row="1"
+                Minimum="0"
+                Maximum="100"
                 Value="{Binding Light1Intensity}"
                 Margin="0,0,0,20"/>
 
-        <!-- Light 2 Section -->
-        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-            <TextBlock Text="LIGHT 2" FontSize="16" FontWeight="Bold"/>
-            <Button Grid.Column="1" 
+		<!-- Light 2 Section -->
+		<Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+			<TextBlock Text="LIGHT 2" FontSize="16" FontWeight="Bold"/>
+			<Button Grid.Column="1"
                     Command="{Binding ToggleLight2Command}"
                     Width="60"
                     Height="30"
                     CornerRadius="15"
                     Background="{Binding IsLight2On, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#00FF00,#FF0000'}">
-                <TextBlock Text="{Binding IsLight2On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
+				<TextBlock Text="{Binding IsLight2On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
                          Foreground="White"
                          FontWeight="Bold"/>
-            </Button>
-        </Grid>
-        <Slider Grid.Row="3" 
-                Minimum="0" 
-                Maximum="100" 
+			</Button>
+		</Grid>
+		<Slider Grid.Row="3"
+                Minimum="0"
+                Maximum="100"
                 Value="{Binding Light2Intensity}"
                 Margin="0,0,0,20"/>
-    </Grid>
-</Window> 
+	</Grid>
+</Window>

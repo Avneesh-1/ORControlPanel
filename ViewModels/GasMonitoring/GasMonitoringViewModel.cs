@@ -7,7 +7,7 @@ using System.Reactive;
 using ORControlPanelNew.Models.GasMonitoring;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-
+using ORControlPanelNew.Services;
 namespace ORControlPanelNew.ViewModels.GasMonitoring
 {
     public class GasMonitoringViewModel : ReactiveObject
@@ -19,6 +19,10 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             get => _gases;
             set => this.RaiseAndSetIfChanged(ref _gases, value);
         }
+        
+        private readonly Guid _instanceId = Guid.NewGuid();
+        private readonly IAlertService _alertService;
+
 
         [Reactive] public string GeneralGasPressureStatus { get; set; } = "Normal";
         [Reactive] public string Temperature { get; set; } = "0.0";
@@ -34,8 +38,10 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
         public ReactiveCommand<Unit, Unit> SimulateDataCommand { get; }
 
-        public GasMonitoringViewModel()
+        public GasMonitoringViewModel(IAlertService alertService)
+
         {
+            _alertService = alertService;
             try
             {
                 InitializeGases();
@@ -112,6 +118,10 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     {
                         FireStatus = isActive ? "ON" : "OFF";
                     });
+                    if (isActive)
+                    {
+                        _alertService.ShowAlert("Alert: Fire detected!");
+                    }
                 };
 
                 DevicePort.DataProcessor.OnHepaStatusUpdated += (isBad) =>

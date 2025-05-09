@@ -45,9 +45,10 @@
 		<!-- Style for Footer Items (Borders) -->
 		<Style Selector="Border.footerItem">
 			<Setter Property="Background" Value="#4A4A4A"/>
-			<Setter Property="Padding" Value="10,5"/>
-			<Setter Property="Margin" Value="5,0"/>
+			<Setter Property="Padding" Value="10,4"/>
+			<Setter Property="Margin" Value="3,0"/>
 			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="Width" Value="130"/>
 			<Setter Property="Transitions">
 				<Transitions>
 					<BrushTransition Property="Background" Duration="0:0:0.2"/>
@@ -76,14 +77,16 @@
 			<!-- Footer Menu -->
 		</Grid.RowDefinitions>
 
-		
+
 
 		<!-- Main Content Area -->
 		<Grid Grid.Row="1" Margin="0,20,20,20">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 
 			<!-- Left Timer (Blue) -->
@@ -95,17 +98,28 @@
 					<!-- Temperature -->
 				</Grid.RowDefinitions>
 
-				<views:TimerPage Grid.Row="0" HorizontalAlignment="Left"/>
-				<temp:TemperatureCard Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Left"/>
+				<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch"/>
+				<temp:TemperatureCard Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Stretch"/>
 			</Grid>
+
+			<!-- Vertical Divider 1 -->
+			<Border Grid.Column="1" Background="#2A2A2A" Width="4" Margin="0,0,0,0"/>
 
 			<!-- Middle Timer (Anesthesia - Orange) -->
-			<Grid Grid.Column="1">
-				<views:AnesthesiaTimerPage/>
+			<Grid Grid.Column="2">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<views:AnesthesiaTimerPage Grid.Row="0" HorizontalAlignment="Stretch"/>
+				<intercom:IntercomPanel Grid.Row="1" Margin="0,30,0,0"/>
 			</Grid>
 
+			<!-- Vertical Divider 2 -->
+			<Border Grid.Column="3" Background="#2A2A2A" Width="4" Margin="0,0,0,0"/>
+
 			<!-- Right Section (Clock and Gas Monitoring) -->
-			<Grid Grid.Column="2">
+			<Grid Grid.Column="4">
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
@@ -113,7 +127,7 @@
 				</Grid.RowDefinitions>
 
 				<!-- Clock -->
-				<clock:ClockPage Grid.Row="0"/>
+				<clock:ClockPage Grid.Row="0" HorizontalAlignment="Stretch"/>
 
 				<!-- Simulate Data Button -->
 				<StackPanel Grid.Row="1" Margin="0,40,0,0">
@@ -133,10 +147,13 @@
 			</Grid>
 		</Grid>
 
+		<!-- Horizontal Divider above Footer -->
+		<Border Grid.Row="2" Background="#2A2A2A" Height="4" VerticalAlignment="Top"/>
+
 		<!-- Footer Menu -->
-		<Border Grid.Row="2"
+		<Border Grid.Row="3"
                 Background="#1A1A1A"
-                Padding="10">
+                Padding="0">
 			<StackPanel Classes="footerMenu"
                         Orientation="Horizontal"
                         Spacing="10"
@@ -155,9 +172,6 @@
 				</Border>
 				<Border Classes="footerItem">
 					<music:MusicButton/>
-				</Border>
-				<Border Classes="footerItem">
-					<intercom:IntercomButton/>
 				</Border>
 			</StackPanel>
 		</Border>

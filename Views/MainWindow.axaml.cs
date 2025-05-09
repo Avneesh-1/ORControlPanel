@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using System;
 using ORControlPanelNew.ViewModels;
+using ORControlPanelNew.Services;
 
 namespace ORControlPanelNew.Views
 {
@@ -12,7 +13,11 @@ namespace ORControlPanelNew.Views
             {
                 Console.WriteLine("Initializing MainWindow...");
                 InitializeComponent();
-                DataContext = new MainWindowViewModel();
+                // Create AlertService with this window as the owner
+                var alertService = new AlertService(this);
+
+                // Set DataContext with the alert service
+                DataContext = new MainWindowViewModel(alertService);
                 Console.WriteLine("MainWindow initialized successfully");
             }
             catch (Exception ex)
