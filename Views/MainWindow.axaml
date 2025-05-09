@@ -76,8 +76,7 @@
 			<!-- Footer Menu -->
 		</Grid.RowDefinitions>
 
-		<!-- Title Bar with Gradient Background -->
-		<!-- (Unchanged, still empty) -->
+		
 
 		<!-- Main Content Area -->
 		<Grid Grid.Row="1" Margin="0,20,20,20">
@@ -88,10 +87,17 @@
 			</Grid.ColumnDefinitions>
 
 			<!-- Left Timer (Blue) -->
-			<StackPanel Grid.Column="0" Spacing="20">
-				<views:TimerPage/>
-				<temp:TemperatureCard HorizontalAlignment="Center"/>
-			</StackPanel>
+			<Grid Grid.Column="0">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<!-- Timer -->
+					<RowDefinition Height="Auto"/>
+					<!-- Temperature -->
+				</Grid.RowDefinitions>
+
+				<views:TimerPage Grid.Row="0" HorizontalAlignment="Left"/>
+				<temp:TemperatureCard Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Left"/>
+			</Grid>
 
 			<!-- Middle Timer (Anesthesia - Orange) -->
 			<Grid Grid.Column="1">

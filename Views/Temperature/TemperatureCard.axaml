@@ -7,7 +7,7 @@
              x:Class="ORControlPanelNew.Views.Temperature.TemperatureCard"
              x:DataType="vm:TemperatureViewModel">
 
-	<UniformGrid Columns="2" Rows="3" Margin="" HorizontalAlignment="Left" VerticalAlignment="Center">
+	<UniformGrid Columns="2" Rows="3" Margin="12" HorizontalAlignment="Center" VerticalAlignment="Center">
 		<!-- Temperature -->
 		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
 			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">

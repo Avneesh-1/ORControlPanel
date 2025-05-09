@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO.Ports;
 using System.Linq;
 using System.Reactive;
 using ORControlPanelNew.Models.GasMonitoring;
@@ -68,6 +69,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     Log($"Received OnGeneralGasAlertUpdated: isAlert={isAlert}");
                     Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                     {
+                      
                         GeneralGasPressureStatus = isAlert ? "Alert" : "Normal";
                     });
                 };
@@ -77,6 +79,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     Log($"Received OnTemperatureUpdated: temp={temp}");
                     Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                     {
+                        DevicePort.UpdateValueToDb(temp, "Temperature");
                         Temperature = temp;
                     });
                 };
@@ -86,6 +89,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     Log($"Received OnHumidityUpdated: humidity={humidity}");
                     Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
                     {
+                        DevicePort.UpdateValueToDb(humidity, "Humidity");
                         Humidity = humidity;
                     });
                 };
