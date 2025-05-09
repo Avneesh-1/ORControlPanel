@@ -43,7 +43,7 @@
 	</Design.DataContext>
 
 	<Border Background="#2D2D2D" CornerRadius="5" Padding="10">
-		<Grid RowDefinitions="Auto,Auto,*,Auto,Auto,Auto,Auto">
+		<Grid RowDefinitions="Auto,*,Auto,Auto,Auto">
 			<!-- Title -->
 			<TextBlock Grid.Row="0"
                        Text="GAS MONITORING STATUS"
@@ -52,136 +52,82 @@
                        HorizontalAlignment="Center"
                        Margin="0,0,0,5"/>
 
-			<!-- Simulate Data Button -->
-			<Button Grid.Row="1"
-                    Classes="actionButton"
-                    Content="Simulate Data"
-                    Command="{Binding SimulateDataCommand}"
-                    HorizontalAlignment="Center"
-                    Margin="0,5,0,10"/>
-
 			<!-- Gas List -->
-			<ItemsControl Grid.Row="2"
-                          ItemsSource="{Binding Gases}"
-                          VerticalAlignment="Stretch">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<StackPanel Spacing="10"
-                                    Margin="5"
-                                    VerticalAlignment="Top"/>
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
-
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="models:GasStatus">
-						<Border x:Name="GasContainer"
-                                CornerRadius="4"
-                                Padding="8"
-                                Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}">
-							<Border.Styles>
-								<Style Selector="Border[IsVisible=True]">
-									<Style Selector="^[Background=Red]">
-										<Setter Property="Transitions">
-											<Transitions>
-												<DoubleTransition Property="Opacity" Duration="0:0:0.5" Easing="LinearEasing"/>
-											</Transitions>
-										</Setter>
-										<Style.Animations>
-											<Animation IterationCount="INFINITE" PlaybackDirection="Alternate">
-												<KeyFrame Cue="0%">
-													<Setter Property="Opacity" Value="1"/>
-												</KeyFrame>
-												<KeyFrame Cue="100%">
-													<Setter Property="Opacity" Value="0.6"/>
-												</KeyFrame>
-											</Animation>
-										</Style.Animations>
+			<ScrollViewer Grid.Row="1">
+				<ItemsControl ItemsSource="{Binding Gases}"
+                              HorizontalAlignment="Stretch">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Spacing="10"
+                                        Margin="5"
+                                        VerticalAlignment="Top"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="models:GasStatus">
+							<Border x:Name="GasContainer"
+                                    CornerRadius="4"
+                                    Padding="8"
+                                    HorizontalAlignment="Stretch"
+                                    Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}">
+								<Border.Styles>
+									<Style Selector="Border[IsVisible=True]">
+										<Style Selector="^[Background=Red]">
+											<Setter Property="Transitions">
+												<Transitions>
+													<DoubleTransition Property="Opacity" Duration="0:0:0.5" Easing="LinearEasing"/>
+												</Transitions>
+											</Setter>
+											<Style.Animations>
+												<Animation IterationCount="INFINITE" PlaybackDirection="Alternate">
+													<KeyFrame Cue="0%">
+														<Setter Property="Opacity" Value="1"/>
+													</KeyFrame>
+													<KeyFrame Cue="100%">
+														<Setter Property="Opacity" Value="0.6"/>
+													</KeyFrame>
+												</Animation>
+											</Style.Animations>
+										</Style>
 									</Style>
-								</Style>
-							</Border.Styles>
-							<Grid ColumnDefinitions="Auto,Auto">
-								<!-- Gas Name -->
-								<TextBlock Grid.Column="0"
-                                           Text="{Binding Name}"
-                                           Foreground="Black"
-                                           FontSize="12"
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,10,0"/>
-								<!-- Pressure Display -->
-								<StackPanel Grid.Column="1"
-                                            Orientation="Horizontal"
-                                            Spacing="4"
-                                            VerticalAlignment="Center">
-									<TextBlock Text="{Binding Pressure}"
+								</Border.Styles>
+								<Grid ColumnDefinitions="Auto,*">
+									<!-- Gas Name -->
+									<TextBlock Grid.Column="0"
+                                               Text="{Binding Name}"
                                                Foreground="Black"
                                                FontSize="12"
-                                               VerticalAlignment="Center"/>
-									<TextBlock Text="bar"
-                                               Foreground="Black"
-                                               FontSize="12"
-                                               VerticalAlignment="Center"/>
-								</StackPanel>
-							</Grid>
-						</Border>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-
-			<!-- Temperature -->
-			<Grid Grid.Row="3" ColumnDefinitions="Auto,Auto" Margin="5">
-				<TextBlock Grid.Column="0"
-                           Classes="metricLabel"
-                           Text="Temperature:"/>
-				<StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="4">
-					<TextBlock Classes="metricValue"
-                               Text="{Binding Temperature}"/>
-					<TextBlock Classes="metricValue"
-                               Text="°C"/>
-				</StackPanel>
-			</Grid>
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+									<!-- Pressure Display -->
+									<StackPanel Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                Spacing="4"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Right">
+										<TextBlock Text="{Binding Pressure}"
+                                                   Foreground="Black"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"/>
+										<TextBlock Text="bar"
+                                                   Foreground="Black"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"/>
+									</StackPanel>
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</ScrollViewer>
 
 			<!-- Humidity -->
-			<Grid Grid.Row="4" ColumnDefinitions="Auto,Auto" Margin="5">
-				<TextBlock Grid.Column="0"
-                           Classes="metricLabel"
-                           Text="Humidity:"/>
-				<StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="4">
-					<TextBlock Classes="metricValue"
-                               Text="{Binding Humidity}"/>
-					<TextBlock Classes="metricValue"
-                               Text="%"/>
-				</StackPanel>
-			</Grid>
-
+		
 			<!-- Transformer Status -->
-			<Grid Grid.Row="5" ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="5">
-				<TextBlock Grid.Column="0"
-                           Classes="metricLabel"
-                           Text="Transformer:"/>
-				<TextBlock Grid.Column="1"
-                           Classes="metricValue"
-                           Text="{Binding Voltage}"/>
-				<TextBlock Grid.Column="2"
-                           Classes="metricValue"
-                           Text="V,"/>
-				<TextBlock Grid.Column="3"
-                           Classes="metricValue"
-                           Text="{Binding Current}"/>
-				<TextBlock Grid.Column="4"
-                           Classes="metricValue"
-                           Text="A,"/>
-				<TextBlock Grid.Column="5"
-                           Classes="metricValue"
-                           Text="{Binding TransformerStatus}"
-                           Foreground="{Binding TransformerStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ERROR:ErrorBrush|OK:OkBrush'}"/>
-			</Grid>
+		
 
-			<!-- Fire, HEPA, UPS Status -->
-			<Grid Grid.Row="6" ColumnDefinitions="Auto,Auto,Auto" Margin="5">
+			<!-- Fire, HEPA Status -->
+			<Grid Grid.Row="4" ColumnDefinitions="*,*" Margin="5">
 				<StackPanel Grid.Column="0"
                             Orientation="Horizontal"
                             Spacing="4">
@@ -191,24 +137,7 @@
                                Text="{Binding FireStatus}"
                                Foreground="{Binding FireStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"/>
 				</StackPanel>
-				<StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            Spacing="4">
-					<TextBlock Classes="metricLabel"
-                               Text="HEPA:"/>
-					<TextBlock Classes="metricValue"
-                               Text="{Binding HepaStatus}"
-                               Foreground="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"/>
-				</StackPanel>
-				<StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            Spacing="4">
-					<TextBlock Classes="metricLabel"
-                               Text="UPS:"/>
-					<TextBlock Classes="metricValue"
-                               Text="{Binding UpsStatus}"
-                               Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"/>
-				</StackPanel>
+			
 			</Grid>
 		</Grid>
 	</Border>

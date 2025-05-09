@@ -7,6 +7,11 @@
         xmlns:lighting="using:ORControlPanelNew.Views.Lighting"
         xmlns:gas="using:ORControlPanelNew.Views.GasMonitoring"
         xmlns:vm="using:ORControlPanelNew.ViewModels"
+        xmlns:patient="using:ORControlPanelNew.Views.PatientData"
+        xmlns:ups="using:ORControlPanelNew.Views.UpsStatus"
+        xmlns:temp="using:ORControlPanelNew.Views.Temperature"
+        xmlns:music="using:ORControlPanelNew.Views.Music"
+        xmlns:intercom="using:ORControlPanelNew.Views.Intercom"
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="ORControlPanelNew.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -14,87 +19,141 @@
         Background="Black"
         WindowState="Maximized">
 
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
-    
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+	<Window.Styles>
+		<Style Selector="Button.actionButton">
+			<Setter Property="Background" Value="#4A4A4A"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Padding" Value="10,5"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="FontSize" Value="13"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+		<Style Selector="Button.actionButton:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="#5A5A5A"/>
+		</Style>
+		<Style Selector="Button.actionButton:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="#3A3A3A"/>
+		</Style>
+		<!-- Style for Footer StackPanel -->
+		<Style Selector="StackPanel.footerMenu">
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+		</Style>
+		<!-- Style for Footer Items (Borders) -->
+		<Style Selector="Border.footerItem">
+			<Setter Property="Background" Value="#4A4A4A"/>
+			<Setter Property="Padding" Value="10,5"/>
+			<Setter Property="Margin" Value="5,0"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+		<Style Selector="Border.footerItem:pointerover">
+			<Setter Property="Background" Value="#5A5A5A"/>
+		</Style>
+		<Style Selector="Border.footerItem:pressed">
+			<Setter Property="Background" Value="#3A3A3A"/>
+		</Style>
+	</Window.Styles>
 
-        <!-- Title Bar with Gradient Background -->
-        <Border Grid.Row="0" 
-                Background="#1a1a1a"
-                BorderBrush="#333333"
-                BorderThickness="0,0,0,1"
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<!-- Title Bar -->
+			<RowDefinition Height="*"/>
+			<!-- Main Content -->
+			<RowDefinition Height="Auto"/>
+			<!-- Footer Menu -->
+		</Grid.RowDefinitions>
+
+		<!-- Title Bar with Gradient Background -->
+		<!-- (Unchanged, still empty) -->
+
+		<!-- Main Content Area -->
+		<Grid Grid.Row="1" Margin="0,20,20,20">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+
+			<!-- Left Timer (Blue) -->
+			<StackPanel Grid.Column="0" Spacing="20">
+				<views:TimerPage/>
+				<temp:TemperatureCard HorizontalAlignment="Center"/>
+			</StackPanel>
+
+			<!-- Middle Timer (Anesthesia - Orange) -->
+			<Grid Grid.Column="1">
+				<views:AnesthesiaTimerPage/>
+			</Grid>
+
+			<!-- Right Section (Clock and Gas Monitoring) -->
+			<Grid Grid.Column="2">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+
+				<!-- Clock -->
+				<clock:ClockPage Grid.Row="0"/>
+
+				<!-- Simulate Data Button -->
+				<StackPanel Grid.Row="1" Margin="0,40,0,0">
+					<Button Classes="actionButton"
+                            Content="Simulate Data"
+                            Command="{Binding GasMonitoring.SimulateDataCommand}"
+                            HorizontalAlignment="Center"
+                            Margin="0,10,0,0"/>
+				</StackPanel>
+
+				<!-- Gas Monitoring -->
+				<gas:GasMonitoringView Grid.Row="2"
+                                       DataContext="{Binding GasMonitoring}"
+                                       MaxWidth="400"
+                                       Margin="0,20,0,0"
+                                       VerticalAlignment="Top"/>
+			</Grid>
+		</Grid>
+
+		<!-- Footer Menu -->
+		<Border Grid.Row="2"
+                Background="#1A1A1A"
                 Padding="10">
-            <TextBlock Text="OPERATION ROOM CONTROL PANEL"
-                     FontSize="24"
-                     FontWeight="Bold"
-                     FontFamily="Segoe UI"
-                     Foreground="#00ff00"
-                     HorizontalAlignment="Center"
-                     VerticalAlignment="Center">
-                <TextBlock.Effect>
-                    <DropShadowEffect
-                        BlurRadius="3"
-                        Opacity="0.5"/>
-                </TextBlock.Effect>
-            </TextBlock>
-        </Border>
-
-        <!-- Main Content Area -->
-        <Grid Grid.Row="1" Margin="20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Left Side - Lighting Controls -->
-            <StackPanel Grid.Column="0" 
-                      Orientation="Vertical" 
-                      Spacing="10"
-                      VerticalAlignment="Top">
-                <lighting:GeneralLightingControl/>
-                <lighting:LaminarLightControl/>
-                <lighting:OTLightsControl/>
-            </StackPanel>
-
-            <!-- Left Timer (Blue) -->
-            <Grid Grid.Column="1">
-                <views:TimerPage/>
-            </Grid>
-
-            <!-- Middle Timer (Anesthesia - Orange) -->
-            <Grid Grid.Column="2">
-                <views:AnesthesiaTimerPage/>
-            </Grid>
-
-            <!-- Right Section (Clock and Gas Monitoring) -->
-            <Grid Grid.Column="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <!-- Clock -->
-                <clock:ClockPage Grid.Row="0"/>
-
-                <!-- Spacer for Set Time button area -->
-                <Border Grid.Row="1" Height="150"/>
-
-                <!-- Gas Monitoring -->
-                <gas:GasMonitoringView Grid.Row="2" 
-                                      DataContext="{Binding GasMonitoring}"
-                                      MaxWidth="400"
-                                      Margin="0,20,0,0"
-                                      VerticalAlignment="Top"/>
-            </Grid>
-        </Grid>
-    </Grid>
+			<StackPanel Classes="footerMenu"
+                        Orientation="Horizontal"
+                        Spacing="10"
+                        HorizontalAlignment="Center">
+				<Border Classes="footerItem">
+					<lighting:GeneralLightingControl/>
+				</Border>
+				<Border Classes="footerItem">
+					<lighting:LaminarLightControl/>
+				</Border>
+				<Border Classes="footerItem">
+					<lighting:OTLightsControl/>
+				</Border>
+				<Border Classes="footerItem">
+					<patient:PatientDataControl/>
+				</Border>
+				<Border Classes="footerItem">
+					<music:MusicButton/>
+				</Border>
+				<Border Classes="footerItem">
+					<intercom:IntercomButton/>
+				</Border>
+			</StackPanel>
+		</Border>
+	</Grid>
 </Window>

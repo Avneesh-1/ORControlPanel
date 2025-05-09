@@ -170,22 +170,12 @@ namespace ORControlPanelNew
             {
                 try
                 {
-                    var availablePorts = SerialPort.GetPortNames();
-                    Log($"Available ports: {string.Join(", ", availablePorts)}");
-                    if (!availablePorts.Contains(portName))
-                    {
-                        Log($"Warning: Port {portName} not found.");
-                        return false;
-                    }
-
-                    if (_myCOMPort.IsOpen)
-                    {
-                        _myCOMPort.Close();
-                        Log("Previous serial port closed.");
-                    }
+                  
 
                     _myCOMPort.PortName = portName;
                     _myCOMPort.BaudRate = baudRate;
+                    _myCOMPort.Open();
+                    
                     _myCOMPort.DataReceived += (s, e) =>
                     {
                         try
@@ -203,7 +193,7 @@ namespace ORControlPanelNew
 
                     _myCOMPort.Open();
                     Log($"Serial port {portName} opened.");
-                    DevicePort.CurrentPort = portName;
+
                     return true;
                 }
                 catch (Exception ex)
@@ -217,20 +207,7 @@ namespace ORControlPanelNew
             {
                 try
                 {
-                    var availablePorts = SerialPort.GetPortNames();
-                    Log($"Available ports: {string.Join(", ", availablePorts)}");
-
-                    if (_myCOMPort == null)
-                    {
-                        Log("Error: Serial port is not initialized.");
-                        return;
-                    }
-
-                    if (!availablePorts.Contains(_myCOMPort.PortName))
-                    {
-                        Log($"Error: Port {_myCOMPort.PortName} not available.");
-                        return;
-                    }
+                    
 
                     if (!_myCOMPort.IsOpen)
                     {
@@ -292,6 +269,7 @@ namespace ORControlPanelNew
             public static event Action<bool> OnFireStatusUpdated;
             public static event Action<bool> OnHepaStatusUpdated;
             public static event Action<bool> OnUpsStatusUpdated;
+            public static event Action<string> onAirDiffPressureUpdated;
 
             public static void ProcessData(string inData)
             {
@@ -506,8 +484,10 @@ namespace ORControlPanelNew
                         string[] parts = s.Split('$');
                         if (parts.Length > 1)
                         {
+                            string diffPressure = parts[1];
                             GasPressure.DiffPress = parts[1];
                             Log($"ARDP: Updated DiffPress to {parts[1]}");
+                            onAirDiffPressureUpdated?.Invoke( diffPressure);
                         }
                     }
 

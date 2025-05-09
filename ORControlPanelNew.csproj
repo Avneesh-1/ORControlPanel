@@ -31,6 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaXaml Remove="Views\HepaStatus\HepaStatusCard.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Views\Timer\TimerPage.axaml.cs">
       <DependentUpon>TimerPage.axaml</DependentUpon>
     </Compile>
@@ -48,10 +52,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </AvaloniaXaml>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\NewFolder\" />
   </ItemGroup>
 
 </Project>

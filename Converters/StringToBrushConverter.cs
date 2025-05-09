@@ -15,11 +15,11 @@ namespace ORControlPanelNew.Converters
         {
             if (value is not string input || parameter is not string param)
             {
-                Debug.WriteLine($"StringToBrushConverter: Invalid input or parameter - value={value}, parameter={parameter}");
+              
                 return AvaloniaProperty.UnsetValue;
             }
 
-            Debug.WriteLine($"StringToBrushConverter: Converting value={input}, parameter={param}");
+            //Debug.WriteLine($"StringToBrushConverter: Converting value={input}, parameter={param}");
 
             var map = new Dictionary<string, string>();
             foreach (var pair in param.Split('|', StringSplitOptions.RemoveEmptyEntries))
@@ -28,23 +28,23 @@ namespace ORControlPanelNew.Converters
                 if (kv.Length == 2)
                 {
                     map[kv[0]] = kv[1];
-                    Debug.WriteLine($"StringToBrushConverter: Mapping {kv[0]} to {kv[1]}");
+                    //Debug.WriteLine($"StringToBrushConverter: Mapping {kv[0]} to {kv[1]}");
                 }
             }
 
             if (!map.TryGetValue(input, out var resourceKey))
             {
-                Debug.WriteLine($"StringToBrushConverter: No mapping found for input={input} in parameter={param}");
+                //Debug.WriteLine($"StringToBrushConverter: No mapping found for input={input} in parameter={param}");
                 return AvaloniaProperty.UnsetValue;
             }
 
             if (Application.Current?.TryFindResource(resourceKey, out var found) == true)
             {
-                Debug.WriteLine($"StringToBrushConverter: Found resource for key={resourceKey}, value={found}");
+                //Debug.WriteLine($"StringToBrushConverter: Found resource for key={resourceKey}, value={found}");
                 return found;
             }
 
-            Debug.WriteLine($"StringToBrushConverter: Resource not found for key={resourceKey}");
+            //Debug.WriteLine($"StringToBrushConverter: Resource not found for key={resourceKey}");
             return AvaloniaProperty.UnsetValue;
         }
 

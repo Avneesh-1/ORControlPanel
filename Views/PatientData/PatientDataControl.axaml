@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="ORControlPanelNew.Views.PatientData.PatientDataControl">
+    <Button x:Name="PatientDataButton" Classes="lighting" ToolTip.Tip="Patient Data">
+        <Grid>
+            <Viewbox Width="40" Height="40" Margin="0,0,0,4">
+                <Canvas Width="24" Height="24">
+                    <!-- Placeholder: User icon (simple head and shoulders) -->
+                    <Ellipse Width="12" Height="12" Canvas.Left="6" Canvas.Top="2" Stroke="#FFD700" StrokeThickness="2" Fill="Transparent"/>
+                    <Path Data="M4,20 Q12,14 20,20" Stroke="#FFD700" StrokeThickness="2" Fill="Transparent"/>
+                </Canvas>
+            </Viewbox>
+            <TextBlock Text="Patient Data"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Bottom"
+                     FontSize="12"/>
+        </Grid>
+    </Button>
+    <UserControl.Styles>
+        <Style Selector="Button.lighting">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+        <Style Selector="Button.lighting:pointerover">
+            <Setter Property="Background" Value="#3D3D3D"/>
+        </Style>
+        <Style Selector="Button.lighting:pressed">
+            <Setter Property="Background" Value="#1D1D1D"/>
+        </Style>
+    </UserControl.Styles>
+</UserControl> 

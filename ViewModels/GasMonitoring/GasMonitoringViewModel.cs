@@ -21,6 +21,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
         [Reactive] public string GeneralGasPressureStatus { get; set; } = "Normal";
         [Reactive] public string Temperature { get; set; } = "0.0";
+        [Reactive] public string AirDiffPressure { get; set; } = "0.0";
         [Reactive] public string Humidity { get; set; } = "0.0";
         [Reactive] public string Voltage { get; set; } = "0.0";
         [Reactive] public string Current { get; set; } = "0.0";
@@ -37,10 +38,11 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             try
             {
                 InitializeGases();
-
-                if (!DevicePort.SerialPortInterface.Initialize("COM3"))
+                Log("INIT");
+               
+                if (!DevicePort.SerialPortInterface.Initialize("COM5"))
                 {
-                    Log("Warning: Serial port initialization failed for COM3. Proceeding without serial communication.");
+                    Log("Warning: Serial port initialization failed for COM5. Proceeding without serial communication.");
                 }
 
                 DevicePort.DataProcessor.OnGasPressureUpdated += (gasName, pressure) =>
@@ -127,6 +129,16 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     });
                 };
 
+
+                DevicePort.DataProcessor.onAirDiffPressureUpdated += (adp) =>
+                {
+                    Log($"Received onAirDiffPressureUpdated: ={adp}");
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        AirDiffPressure = adp;
+                    });
+                };
+
                 SimulateDataCommand = ReactiveCommand.Create(SimulateSerialData);
             }
             catch (Exception ex)
@@ -187,6 +199,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             string[] testData = new[]
             {
                 "RDGA$3.5",    // O₂ pressure
+                "ARDP$43",
                 "ALGA",        // O₂ alert ON
                 "RDGB$6.0",    // N₂O pressure
                 "BLGB",        // N₂O alert OFF

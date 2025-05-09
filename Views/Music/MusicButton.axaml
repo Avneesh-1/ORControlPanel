@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="ORControlPanelNew.Views.Music.MusicButton">
+    <Button x:Name="MusicControlButton" Classes="lighting" ToolTip.Tip="Music Control">
+        <Grid>
+            <Viewbox Width="40" Height="40" Margin="0,0,0,4">
+                <Canvas Width="24" Height="24">
+                    <!-- Music Note Icon -->
+                    <Path Data="M12,3V13.55A4,4 0 1,0 14,17V7H19V3H12Z" 
+                          Fill="#FFD700" 
+                          Stroke="#FFD700" 
+                          StrokeThickness="1"/>
+                </Canvas>
+            </Viewbox>
+            <TextBlock Text="Music"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Bottom"
+                     FontSize="12"/>
+        </Grid>
+    </Button>
+
+    <UserControl.Styles>
+        <Style Selector="Button.lighting">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+        <Style Selector="Button.lighting:pointerover">
+            <Setter Property="Background" Value="#3D3D3D"/>
+        </Style>
+        <Style Selector="Button.lighting:pressed">
+            <Setter Property="Background" Value="#1D1D1D"/>
+        </Style>
+    </UserControl.Styles>
+</UserControl> 

@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ORControlPanelNew.ViewModels.Temperature"
+             mc:Ignorable="d" d:DesignWidth="440" d:DesignHeight="240"
+             x:Class="ORControlPanelNew.Views.Temperature.TemperatureCard"
+             x:DataType="vm:TemperatureViewModel">
+
+	<UniformGrid Columns="2" Rows="3" Margin="" HorizontalAlignment="Left" VerticalAlignment="Center">
+		<!-- Temperature -->
+		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
+			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<TextBlock Text="Temperature" FontSize="13" Foreground="White"/>
+				<TextBlock Text="{Binding Temperature, StringFormat='{}{0}°C'}"
+						   FontSize="20" FontWeight="Bold" Foreground="#00BFFF"/>
+			</StackPanel>
+		</Border>
+
+		<!-- Humidity -->
+		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
+			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<TextBlock Text="Humidity" FontSize="13" Foreground="White"/>
+				<TextBlock Text="{Binding Humidity, StringFormat='{}{0}%'}"
+						   FontSize="20" FontWeight="Bold" Foreground="#90EE90"/>
+			</StackPanel>
+		</Border>
+
+		<!-- HEPA -->
+		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
+			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<TextBlock Text="HEPA" FontSize="13" Foreground="White"/>
+				<TextBlock Text="{Binding HepaStatus, StringFormat='{}{0}'}"
+						   FontSize="20" FontWeight="Bold"
+						   Foreground="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"/>
+			</StackPanel>
+		</Border>
+
+		<!-- Transformer -->
+		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
+			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<TextBlock Text="Transformer" FontSize="13" Foreground="White"/>
+				
+				<StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+					<TextBlock Text="{Binding Voltage , StringFormat='{}{0}V'}" FontSize="20"  FontWeight="Bold" Foreground="White"/>
+					<TextBlock Text="{Binding Current, StringFormat='{}{0}A'}" FontSize="20"  FontWeight="Bold" Foreground="White"/>
+					<TextBlock Text="{Binding TransformerStatus, StringFormat='{}{0}'}"
+						   FontSize="20" FontWeight="Bold"
+						   Foreground="{Binding TransformerStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ERROR:ErrorBrush|OK:OkBrush'}"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+
+		<!-- UPS -->
+		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
+			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<TextBlock Text="UPS" FontSize="13" Foreground="White"/>
+				<TextBlock Text="{Binding UpsStatus, StringFormat='{}{0}'}"
+						   FontSize="20" FontWeight="Bold"
+						   Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"/>
+			</StackPanel>
+		</Border>
+
+		<!-- Air Diff Pressure -->
+		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
+			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<TextBlock Text="Air Diff Pressure" FontSize="13" Foreground="White"/>
+				<TextBlock Text="{Binding AirDiffPressure, StringFormat='{}{0}'}"
+						   FontSize="20" FontWeight="Bold" Foreground="#00BFFF"/>
+			</StackPanel>
+		</Border>
+	</UniformGrid>
+
+</UserControl>

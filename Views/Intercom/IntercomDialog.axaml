@@ -1,0 +1,111 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ORControlPanelNew.ViewModels.Intercom"
+        xmlns:helpers="using:ORControlPanelNew.Helpers"
+        xmlns:conv="using:ORControlPanelNew.Converters"
+        mc:Ignorable="d"
+        x:Class="ORControlPanelNew.Views.Intercom.IntercomDialog"
+        x:DataType="vm:IntercomDialogViewModel"
+        Title="Inter-com"
+        Width="800" Height="600"
+        WindowStartupLocation="CenterOwner"
+        x:Name="RootWindow">
+    <Window.Resources>
+        <vm:IntercomDialogViewModel x:Key="IntercomVM"/>
+        <conv:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <StaticResource ResourceKey="IntercomVM"/>
+    </Window.DataContext>
+    <Window.Styles>
+        <Style Selector="Button.dialer-btn">
+            <Setter Property="Width" Value="64"/>
+            <Setter Property="Height" Value="64"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Background" Value="#f0f0f0"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="#b0b0b0"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="12"/>
+        </Style>
+    </Window.Styles>
+    <Grid ColumnDefinitions="2*,3*" Margin="16">
+        <!-- Dialer Section -->
+        <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+            <!-- Display -->
+            <TextBox Text="{Binding DialedNumber, Mode=OneWay}" FontSize="28" Height="56" Width="220" Margin="0,0,0,8" IsReadOnly="True" HorizontalAlignment="Center"/>
+            <!-- Dialer Buttons -->
+            <Grid Width="220" Height="292">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Content="1" Command="{Binding DialCommand}" CommandParameter="1" Grid.Row="0" Grid.Column="0" Classes="dialer-btn"/>
+                <Button Content="2" Command="{Binding DialCommand}" CommandParameter="2" Grid.Row="0" Grid.Column="1" Classes="dialer-btn"/>
+                <Button Content="3" Command="{Binding DialCommand}" CommandParameter="3" Grid.Row="0" Grid.Column="2" Classes="dialer-btn"/>
+                <Button Content="4" Command="{Binding DialCommand}" CommandParameter="4" Grid.Row="1" Grid.Column="0" Classes="dialer-btn"/>
+                <Button Content="5" Command="{Binding DialCommand}" CommandParameter="5" Grid.Row="1" Grid.Column="1" Classes="dialer-btn"/>
+                <Button Content="6" Command="{Binding DialCommand}" CommandParameter="6" Grid.Row="1" Grid.Column="2" Classes="dialer-btn"/>
+                <Button Content="7" Command="{Binding DialCommand}" CommandParameter="7" Grid.Row="2" Grid.Column="0" Classes="dialer-btn"/>
+                <Button Content="8" Command="{Binding DialCommand}" CommandParameter="8" Grid.Row="2" Grid.Column="1" Classes="dialer-btn"/>
+                <Button Content="9" Command="{Binding DialCommand}" CommandParameter="9" Grid.Row="2" Grid.Column="2" Classes="dialer-btn"/>
+                <Button Content="*" Command="{Binding DialCommand}" CommandParameter="*" Grid.Row="3" Grid.Column="0" Classes="dialer-btn"/>
+                <Button Content="0" Command="{Binding DialCommand}" CommandParameter="0" Grid.Row="3" Grid.Column="1" Classes="dialer-btn"/>
+                <Button Content="#" Command="{Binding DialCommand}" CommandParameter="#" Grid.Row="3" Grid.Column="2" Classes="dialer-btn"/>
+            </Grid>
+            <!-- Backspace and Call Row -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,12,0,0">
+                <Button Content="Del" Command="{Binding BackspaceCommand}" Width="60" Height="48"/>
+                <Button Content="📞" Width="60" Height="48"/>
+            </StackPanel>
+        </StackPanel>
+        <!-- Phonebook Section -->
+        <StackPanel Grid.Column="1" Margin="16,0,0,0" Spacing="8">
+            <TextBlock Text="Phonebook" FontWeight="Bold" FontSize="16"/>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Name" Width="60"/>
+                <TextBox Text="{Binding NewContactName, Mode=TwoWay}" Width="150"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="Number" Width="60"/>
+                <TextBox Text="{Binding NewContactNumber, Mode=TwoWay}" Width="150"/>
+            </StackPanel>
+            <Button Content="Save" Command="{Binding SaveContactCommand}" Width="80"/>
+            <TextBlock Text="No contacts saved."
+                       IsVisible="{Binding Contacts.Count, Converter={StaticResource ZeroToVisibilityConverter}}"
+                       Foreground="Gray" FontStyle="Italic" Margin="0,8,0,0"/>
+            <ItemsControl ItemsSource="{Binding Contacts}" Margin="0,16,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="LimeGreen" BorderThickness="2" CornerRadius="8" Margin="0,4,0,4" Padding="8">
+                            <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="LimeGreen" FontSize="18"/>
+                                <TextBlock Text=":" FontWeight="Bold" Foreground="LimeGreen" FontSize="18"/>
+                                <TextBlock Text="{Binding Number}" Foreground="LimeGreen" FontSize="18"/>
+                                <Button Content="Delete"
+                                        Command="{Binding DeleteContactCommand, Source={StaticResource IntercomVM}}"
+                                        CommandParameter="{Binding .}"
+                                        Background="Red"
+                                        Foreground="White"
+                                        Margin="16,0,0,0"
+                                        Padding="8,2"
+                                        FontWeight="Bold"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid>
+</Window> 

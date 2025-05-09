@@ -14,7 +14,7 @@ namespace ORControlPanelNew.Converters
         {
             if (value is not bool isAlert || parameter is not string param)
             {
-                Debug.WriteLine($"BoolToBrushConverter: Invalid input or parameter - value={value}, parameter={parameter}");
+                //Debug.WriteLine($"BoolToBrushConverter: Invalid input or parameter - value={value}, parameter={parameter}");
                 return AvaloniaProperty.UnsetValue;
             }
 
@@ -29,17 +29,17 @@ namespace ORControlPanelNew.Converters
             string key = isAlert.ToString().ToLower();
             if (!map.TryGetValue(key, out var resourceKey))
             {
-                Debug.WriteLine($"BoolToBrushConverter: No mapping found for isAlert={isAlert} in parameter={param}");
+                //Debug.WriteLine($"BoolToBrushConverter: No mapping found for isAlert={isAlert} in parameter={param}");
                 return AvaloniaProperty.UnsetValue;
             }
 
             if (Application.Current?.TryFindResource(resourceKey, out var found) == true)
             {
-                Debug.WriteLine($"BoolToBrushConverter: Found resource for key={resourceKey}, value={found}");
+                //Debug.WriteLine($"BoolToBrushConverter: Found resource for key={resourceKey}, value={found}");
                 return found;
             }
 
-            Debug.WriteLine($"BoolToBrushConverter: Resource not found for key={resourceKey}");
+            //Debug.WriteLine($"BoolToBrushConverter: Resource not found for key={resourceKey}");
             return AvaloniaProperty.UnsetValue;
         }
 
