@@ -9,7 +9,7 @@
 
     <Grid Margin="0" HorizontalAlignment="Stretch">
         <StackPanel>
-            <!-- Clock Display Panel -->
+           
             <Border CornerRadius="10"
                     Height="90"
                     Background="{DynamicResource ClockBackgroundBrush}"
@@ -30,7 +30,7 @@
                 </StackPanel>
             </Border>
 
-            <!-- Date Display -->
+           
             <TextBlock Text="{Binding CurrentDate}"
                      Foreground="White"
                      FontSize="14"

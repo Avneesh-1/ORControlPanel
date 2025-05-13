@@ -48,7 +48,7 @@
                         Command="{Binding SetTimeCommand}"
                         Classes="anesthesiaTimerButton"/>
             </StackPanel>
-        </StackPanel>
+     
     </Grid>
 
     <UserControl.Styles>

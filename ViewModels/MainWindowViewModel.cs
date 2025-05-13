@@ -3,7 +3,7 @@ using ORControlPanelNew.ViewModels.GasMonitoring;
 using ORControlPanelNew.ViewModels.Temperature;
 using ORControlPanelNew.ViewModels.Ups;
 using ORControlPanelNew.Services;
-
+using System.Reactive;
 namespace ORControlPanelNew.ViewModels
 {
     public enum FooterTab
