@@ -20,5 +20,7 @@ namespace ORControlPanelNew.Views.GasMonitoring
         {
             AvaloniaXamlLoader.Load(this);
         }
+
+     
     }
 }

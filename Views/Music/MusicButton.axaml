@@ -3,10 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
-             x:Class="ORControlPanelNew.Views.Music.MusicButton">
-    <Button x:Name="MusicControlButton" Classes="lighting" ToolTip.Tip="Music Control">
-        <Grid>
-            <Viewbox Width="40" Height="40" Margin="0,0,0,4">
+             x:Class="ORControlPanelNew.Views.Music.MusicButton"
+             Background="Transparent">
+    <Button x:Name="MusicControlButton" Classes="footerButton" ToolTip.Tip="Music Control" BorderThickness="0" Padding="0" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+            <Viewbox Width="32" Height="32" Margin="0,0,0,2">
                 <Canvas Width="24" Height="24">
                     <!-- Music Note Icon -->
                     <Path Data="M12,3V13.55A4,4 0 1,0 14,17V7H19V3H12Z" 
@@ -19,7 +20,7 @@
                      HorizontalAlignment="Center"
                      VerticalAlignment="Bottom"
                      FontSize="12"/>
-        </Grid>
+        </StackPanel>
     </Button>
 
     <UserControl.Styles>

@@ -19,7 +19,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             get => _gases;
             set => this.RaiseAndSetIfChanged(ref _gases, value);
         }
-        
+
         private readonly Guid _instanceId = Guid.NewGuid();
         private readonly IAlertService _alertService;
 

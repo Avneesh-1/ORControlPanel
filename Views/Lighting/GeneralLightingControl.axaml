@@ -5,32 +5,35 @@
              xmlns:vm="using:ORControlPanelNew.ViewModels.Lighting"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
              x:Class="ORControlPanelNew.Views.Lighting.GeneralLightingControl"
-             x:DataType="vm:GeneralLightingViewModel">
+             x:DataType="vm:GeneralLightingViewModel"
+             Background="Transparent">
 
-	<Button Command="{Binding OpenDialogCommand}"
-            Classes="lighting"
-            ToolTip.Tip="General Lighting Control">
-		<Grid>
-			<Viewbox Width="40" Height="40" Margin="0,0,0,4">
-				<Canvas Width="24" Height="24">
-					<!-- Dotted Circle -->
-					<Path Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2"
+    <Button Command="{Binding OpenDialogCommand}"
+            Classes="footerButton"
+            ToolTip.Tip="General Lighting Control"
+            BorderThickness="0" Padding="0" Margin="0"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+            <Viewbox Width="32" Height="32" Margin="0,0,0,2">
+                <Canvas Width="24" Height="24">
+                    <!-- Dotted Circle -->
+                    <Path Data="M12,2 A10,10 0 1,0 12,22 A10,10 0 1,0 12,2"
                           Stroke="{Binding IsLightOn, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#FFD700,#808080'}"
                           StrokeDashArray="1,1"
                           Fill="Transparent"
                           StrokeThickness="1"/>
-
-					<!-- Lightbulb -->
-					<Path Data="M12,2 A7,7 0 0,1 19,9C19,11.38 17.81,13.47 16,14.74V17A1,1 0 0,1 15,18H9A1,1 0 0,1 8,17V14.74C6.19,13.47 5,11.38 5,9A7,7 0 0,1 12,2M9,21V20H15V21A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21M12,4A5,5 0 0,0 7,9C7,11.05 8.23,12.81 10,13.58V16H14V13.58C15.77,12.81 17,11.05 17,9A5,5 0 0,0 12,4Z"
+                    
+                    <!-- Lightbulb -->
+                    <Path Data="M12,2 A7,7 0 0,1 19,9C19,11.38 17.81,13.47 16,14.74V17A1,1 0 0,1 15,18H9A1,1 0 0,1 8,17V14.74C6.19,13.47 5,11.38 5,9A7,7 0 0,1 12,2M9,21V20H15V21A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21M12,4A5,5 0 0,0 7,9C7,11.05 8.23,12.81 10,13.58V16H14V13.58C15.77,12.81 17,11.05 17,9A5,5 0 0,0 12,4Z"
                           Fill="{Binding IsLightOn, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#FFD700,#808080'}"/>
-				</Canvas>
-			</Viewbox>
-			<TextBlock Text="General Lights"
+                </Canvas>
+            </Viewbox>
+            <TextBlock Text="General Lights"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Bottom"
                      FontSize="12"/>
-		</Grid>
-	</Button>
+        </StackPanel>
+    </Button>
 
 	<UserControl.Styles>
 		<Style Selector="Button.lighting">
@@ -49,4 +52,4 @@
 			<Setter Property="Background" Value="#1D1D1D"/>
 		</Style>
 	</UserControl.Styles>
-</UserControl>
+</UserControl> 

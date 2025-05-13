@@ -54,13 +54,18 @@ namespace ORControlPanelNew
             {
                 string cs = GetConnectionString();
                 Log($"Connection string: {cs}");
+                if (string.IsNullOrEmpty(cs))
+                {
+                    Log("Error: Database connection string not found in settings.txt");
+                    return false;
+                }
 
                 Log("Attempting to connect to database...");
                 using (var connection = new SqliteConnection(cs))
                 {
                     try
                     {
-                        connection.Open();
+                    connection.Open();
                         Log("Successfully opened database connection.");
                     }
                     catch (Exception ex)
@@ -72,9 +77,9 @@ namespace ORControlPanelNew
                     Log("Creating tbl_OT table if it doesn't exist...");
                     using (var command = new SqliteCommand(
                         @"CREATE TABLE IF NOT EXISTS tbl_OT (
-                            FieldName TEXT PRIMARY KEY,
-                            Value TEXT
-                        )", connection))
+                                 FieldName TEXT PRIMARY KEY,
+                                 Value TEXT
+                             )", connection))
                     {
                         command.ExecuteNonQuery();
                         Log("tbl_OT table created or already exists.");
@@ -147,11 +152,11 @@ namespace ORControlPanelNew
                 }
             }
             catch (Exception ex)
-            {
+                {
                 Log($"Failed to insert patient data: {ex.Message}, InnerException: {ex.InnerException?.Message}");
                 throw new Exception($"Failed to insert patient data: {ex.Message}", ex);
             }
-        }
+                }
 
         public static void UpdateValueToDb(string value, string fieldName)
         {
@@ -159,6 +164,11 @@ namespace ORControlPanelNew
             {
                 string cs = GetConnectionString();
                 Log($"Connection string: {cs}");
+                if (string.IsNullOrEmpty(cs))
+                {
+                    Log("Error: Database connection string not found in settings.txt");
+                    return;
+                }
 
                 using (var connection = new SqliteConnection(cs))
                 {

@@ -70,7 +70,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
                 // Optionally sync the hardware with the fetched values
                 if (IsLightOn && LightIntensity > 0)
-                {
+        {
                     DevicePort.SerialPortInterface.Write("LITI" + (int)LightIntensity);
                 }
               

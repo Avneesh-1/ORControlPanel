@@ -10,29 +10,29 @@
         Width="400" Height="200"
         WindowStartupLocation="CenterOwner">
 
-	<Design.DataContext>
-		<vm:LaminarLightViewModel/>
-	</Design.DataContext>
+    <Design.DataContext>
+        <vm:LaminarLightViewModel/>
+    </Design.DataContext>
 
-	<Grid RowDefinitions="Auto,Auto" Margin="20">
-		<!-- Light Section -->
-		<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
-			<TextBlock Text="LAMINAR LIGHT" FontSize="16" FontWeight="Bold"/>
-			<Button Grid.Column="1"
+    <Grid RowDefinitions="Auto,Auto" Margin="20">
+        <!-- Light Section -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+            <TextBlock Text="LAMINAR LIGHT" FontSize="16" FontWeight="Bold"/>
+            <Button Grid.Column="1" 
                     Command="{Binding ToggleLightCommand}"
                     Width="60"
                     Height="30"
                     CornerRadius="15"
                     Background="{Binding IsLightOn, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#00FF00,#FF0000'}">
-				<TextBlock Text="{Binding IsLightOn, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
+                <TextBlock Text="{Binding IsLightOn, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
                          Foreground="White"
                          FontWeight="Bold"/>
-			</Button>
-		</Grid>
-		<Slider Grid.Row="1"
-                Minimum="0"
-                Maximum="100"
+            </Button>
+        </Grid>
+        <Slider Grid.Row="1" 
+                Minimum="0" 
+                Maximum="100" 
                 Value="{Binding LightIntensity}"
                 Margin="0,0,0,20"/>
-	</Grid>
-</Window>
+    </Grid>
+</Window> 

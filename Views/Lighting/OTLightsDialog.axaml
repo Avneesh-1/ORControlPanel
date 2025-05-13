@@ -10,39 +10,39 @@
         Width="400" Height="250"
         WindowStartupLocation="CenterOwner">
 
-	<Design.DataContext>
-		<vm:OTLightsViewModel/>
-	</Design.DataContext>
+    <Design.DataContext>
+        <vm:OTLightsViewModel/>
+    </Design.DataContext>
 
-	<Grid RowDefinitions="Auto,Auto,Auto,Auto" Margin="20">
-		<!-- Light 1 Section -->
-		<Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
-			<TextBlock Text="OT LIGHT 1" FontSize="16" FontWeight="Bold"/>
-			<Button Grid.Column="1"
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto" Margin="20">
+        <!-- Light 1 Section -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+            <TextBlock Text="OT LIGHT 1" FontSize="16" FontWeight="Bold"/>
+            <Button Grid.Column="1" 
                     Command="{Binding ToggleLight1Command}"
                     Width="60"
                     Height="30"
                     CornerRadius="15"
                     Background="{Binding IsLight1On, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#00FF00,#FF0000'}">
-				<TextBlock Text="{Binding IsLight1On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
+                <TextBlock Text="{Binding IsLight1On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
                          Foreground="White"
                          FontWeight="Bold"/>
-			</Button>
-		</Grid>
+            </Button>
+        </Grid>
 
-		<!-- Light 2 Section -->
-		<Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
-			<TextBlock Text="OT LIGHT 2" FontSize="16" FontWeight="Bold"/>
-			<Button Grid.Column="1"
+        <!-- Light 2 Section -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+            <TextBlock Text="OT LIGHT 2" FontSize="16" FontWeight="Bold"/>
+            <Button Grid.Column="1" 
                     Command="{Binding ToggleLight2Command}"
                     Width="60"
                     Height="30"
                     CornerRadius="15"
                     Background="{Binding IsLight2On, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#00FF00,#FF0000'}">
-				<TextBlock Text="{Binding IsLight2On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
+                <TextBlock Text="{Binding IsLight2On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
                          Foreground="White"
                          FontWeight="Bold"/>
-			</Button>
-		</Grid>
-	</Grid>
-</Window>
+            </Button>
+        </Grid>
+    </Grid>
+</Window> 

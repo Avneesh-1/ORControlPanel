@@ -3,77 +3,76 @@
              xmlns:vm="using:ORControlPanelNew.ViewModels.Timer"
              x:Class="ORControlPanelNew.Views.Timer.AnesthesiaTimerPage"
              x:DataType="vm:AnesthesiaTimerViewModel">
-
-	<Grid Margin="0" HorizontalAlignment="Stretch">
-		<StackPanel>
-			<!-- Timer Display Panel -->
-			<Border CornerRadius="10"
+    
+    <Grid Margin="0" HorizontalAlignment="Stretch">
+        <StackPanel>
+            <!-- Timer Display Panel -->
+            <Border CornerRadius="10"
                     Height="90"
                     Background="{DynamicResource AnesthesiaTimerBackgroundBrush}"
                     HorizontalAlignment="Stretch">
-				<StackPanel>
-					<TextBlock Text="ANESTHESIA TIMER"
+                <StackPanel>
+                    <TextBlock Text="ANESTHESIA TIMER"
                              FontSize="14"
                              FontWeight="Bold"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
                              Margin="0,5,0,0"/>
-					<TextBlock Text="{Binding ElapsedTime}"
+                    <TextBlock Text="{Binding ElapsedTime}"
                              FontSize="48"
                              FontFamily="Consolas"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"/>
-				</StackPanel>
-			</Border>
+                </StackPanel>
+            </Border>
 
-			<!-- Control Buttons -->
-			<StackPanel Orientation="Horizontal"
-                      HorizontalAlignment="Center"
+            <!-- Control Buttons -->
+            <StackPanel Orientation="Horizontal" 
+                      HorizontalAlignment="Center" 
                       Spacing="10"
                       Margin="0,10,0,0">
-				<Button Content="START"
+                <Button Content="START"
                         Command="{Binding StartCommand}"
                         Classes="anesthesiaTimerButton"/>
-				<Button Content="PAUSE"
+                <Button Content="PAUSE"
                         Command="{Binding StopCommand}"
                         Classes="anesthesiaTimerButton"/>
-				<Button Content="RESET"
+                <Button Content="RESET"
                         Command="{Binding ResetCommand}"
                         Classes="anesthesiaTimerButton"/>
 			</StackPanel>
 
 			<!-- Set Time Button -->
-			<Button Content="SET TIME"
-                    Command="{Binding SetTimeCommand}"
-                    Classes="anesthesiaTimerButton"
-                    HorizontalAlignment="Center"
-                    Margin="0,10,0,0"/>
-		</StackPanel>
-	</Grid>
+                <Button Content="SET TIME"
+                        Command="{Binding SetTimeCommand}"
+                        Classes="anesthesiaTimerButton"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 
-	<UserControl.Styles>
-		<Style Selector="Button.anesthesiaTimerButton">
-			<Setter Property="Background" Value="#404040"/>
-			<Setter Property="Foreground" Value="White"/>
-			<Setter Property="Width" Value="80"/>
-			<Setter Property="Height" Value="30"/>
-			<Setter Property="CornerRadius" Value="15"/>
-			<Setter Property="FontSize" Value="12"/>
-		</Style>
-		<Style Selector="Button.anesthesiaTimerButton:pointerover">
-			<Setter Property="Background" Value="#505050"/>
-		</Style>
-		<Style Selector="Button.anesthesiaTimerButton:pressed">
-			<Setter Property="Background" Value="#303030"/>
-		</Style>
-	</UserControl.Styles>
+    <UserControl.Styles>
+        <Style Selector="Button.anesthesiaTimerButton">
+            <Setter Property="Background" Value="#404040"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="CornerRadius" Value="15"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style Selector="Button.anesthesiaTimerButton:pointerover">
+            <Setter Property="Background" Value="#505050"/>
+        </Style>
+        <Style Selector="Button.anesthesiaTimerButton:pressed">
+            <Setter Property="Background" Value="#303030"/>
+        </Style>
+    </UserControl.Styles>
 
-	<UserControl.Resources>
-		<LinearGradientBrush x:Key="AnesthesiaTimerBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-			<GradientStop Offset="0" Color="#FFD700"/>
-			<GradientStop Offset="1" Color="#FFA500"/>
-		</LinearGradientBrush>
-	</UserControl.Resources>
-
-</UserControl>
+    <UserControl.Resources>
+        <LinearGradientBrush x:Key="AnesthesiaTimerBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Offset="0" Color="#FFD700"/>
+            <GradientStop Offset="1" Color="#FFA500"/>
+        </LinearGradientBrush>
+    </UserControl.Resources>
+    
+</UserControl> 

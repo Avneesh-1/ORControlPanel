@@ -96,7 +96,9 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
 
             ToggleLight1Command = ReactiveCommand.Create(ToggleOTLight1);
+
             ToggleLight2Command = ReactiveCommand.Create(ToggleOTLight2);
+
             OpenDialogCommand = ReactiveCommand.Create(() =>
             {
                 var dialog = new OTLightsDialog();
@@ -110,6 +112,8 @@ namespace ORControlPanelNew.ViewModels.Lighting
             {
                 if (!IsLight1On)
                 {
+                    
+
                     // Attempt to write to serial port
                     try
                     {
@@ -130,6 +134,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                         Debug.WriteLine($"Error updating database for OTLight1: {ex.Message}");
                     }
 
+                    
                     IsLight1On = true;
                 }
                 else
@@ -163,12 +168,17 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
         }
 
+
+
+
         private void ToggleOTLight2()
         {
             try
             {
                 if (!IsLight2On)
                 {
+                    
+
                     // Attempt to write to serial port
                     try
                     {
@@ -189,6 +199,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                         Debug.WriteLine($"Error updating database for OTLight2: {ex.Message}");
                     }
 
+                   
                     IsLight2On = true;
                 }
                 else
@@ -222,4 +233,4 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
         }
     }
-}
+} 

@@ -3,10 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
-             x:Class="ORControlPanelNew.Views.PatientData.PatientDataControl">
-    <Button x:Name="PatientDataButton" Classes="lighting" ToolTip.Tip="Patient Data">
-        <Grid>
-            <Viewbox Width="40" Height="40" Margin="0,0,0,4">
+             x:Class="ORControlPanelNew.Views.PatientData.PatientDataControl"
+             Background="Transparent">
+    <Button x:Name="PatientDataButton" Classes="footerButton" ToolTip.Tip="Patient Data" BorderThickness="0" Padding="0" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+            <Viewbox Width="32" Height="32" Margin="0,0,0,2">
                 <Canvas Width="24" Height="24">
                     <!-- Placeholder: User icon (simple head and shoulders) -->
                     <Ellipse Width="12" Height="12" Canvas.Left="6" Canvas.Top="2" Stroke="#FFD700" StrokeThickness="2" Fill="Transparent"/>
@@ -17,7 +18,7 @@
                      HorizontalAlignment="Center"
                      VerticalAlignment="Bottom"
                      FontSize="12"/>
-        </Grid>
+        </StackPanel>
     </Button>
     <UserControl.Styles>
         <Style Selector="Button.lighting">

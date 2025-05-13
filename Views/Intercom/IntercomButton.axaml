@@ -6,42 +6,42 @@
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
              x:Class="ORControlPanelNew.Views.Intercom.IntercomButton"
              x:DataType="vm:IntercomViewModel">
-	<Button x:Name="IntercomControlButton"
-            Classes="lighting"
+    <Button x:Name="IntercomControlButton" 
+            Classes="lighting" 
             ToolTip.Tip="Intercom Control"
             Command="{Binding OpenDialogCommand}">
-		<Grid>
-			<Viewbox Width="40" Height="40" Margin="0,0,0,4">
-				<Canvas Width="24" Height="24">
-					<!-- Phone Icon -->
-					<Path Data="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5C20.55,15.5 21,15.95 21,16.5V20C21,20.55 20.55,21 20,21C10.61,21 3,13.39 3,4C3,3.45 3.45,3 4,3H7.5C8.05,3 8.5,3.45 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"
-                          Fill="#FFD700"
-                          Stroke="#FFD700"
+        <Grid>
+            <Viewbox Width="40" Height="40" Margin="0,0,0,4">
+                <Canvas Width="24" Height="24">
+                    <!-- Phone Icon -->
+                    <Path Data="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5C20.55,15.5 21,15.95 21,16.5V20C21,20.55 20.55,21 20,21C10.61,21 3,13.39 3,4C3,3.45 3.45,3 4,3H7.5C8.05,3 8.5,3.45 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z" 
+                          Fill="#FFD700" 
+                          Stroke="#FFD700" 
                           StrokeThickness="1"/>
-				</Canvas>
-			</Viewbox>
-			<TextBlock Text="Intercom"
+                </Canvas>
+            </Viewbox>
+            <TextBlock Text="Intercom"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Bottom"
                      FontSize="12"/>
-		</Grid>
-	</Button>
+        </Grid>
+    </Button>
 
-	<UserControl.Styles>
-		<Style Selector="Button.lighting">
-			<Setter Property="Width" Value="100"/>
-			<Setter Property="Height" Value="100"/>
-			<Setter Property="Background" Value="#2D2D2D"/>
-			<Setter Property="CornerRadius" Value="8"/>
-			<Setter Property="Margin" Value="10"/>
-			<Setter Property="HorizontalAlignment" Value="Left"/>
-			<Setter Property="VerticalAlignment" Value="Bottom"/>
-		</Style>
-		<Style Selector="Button.lighting:pointerover">
-			<Setter Property="Background" Value="#3D3D3D"/>
-		</Style>
-		<Style Selector="Button.lighting:pressed">
-			<Setter Property="Background" Value="#1D1D1D"/>
-		</Style>
-	</UserControl.Styles>
-</UserControl>
+    <UserControl.Styles>
+        <Style Selector="Button.lighting">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+        <Style Selector="Button.lighting:pointerover">
+            <Setter Property="Background" Value="#3D3D3D"/>
+        </Style>
+        <Style Selector="Button.lighting:pressed">
+            <Setter Property="Background" Value="#1D1D1D"/>
+        </Style>
+    </UserControl.Styles>
+</UserControl> 

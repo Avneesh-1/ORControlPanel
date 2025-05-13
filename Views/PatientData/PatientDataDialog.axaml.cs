@@ -11,4 +11,4 @@ namespace ORControlPanelNew.Views.PatientData
             DataContext = new PatientDataDialogViewModel(this);
         }
     }
-}
+} 
