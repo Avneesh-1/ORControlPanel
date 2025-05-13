@@ -1,5 +1,5 @@
 using Avalonia.Controls;
-using Avalonia.Interactivity;
+using ORControlPanelNew.ViewModels.PatientData;
 
 namespace ORControlPanelNew.Views.PatientData
 {
@@ -8,11 +8,7 @@ namespace ORControlPanelNew.Views.PatientData
         public PatientDataDialog()
         {
             InitializeComponent();
-        }
-
-        private void OnCloseClick(object? sender, RoutedEventArgs e)
-        {
-            this.Close();
+            DataContext = new PatientDataDialogViewModel(this);
         }
     }
-} 
+}

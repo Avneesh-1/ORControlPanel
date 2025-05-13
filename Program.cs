@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
@@ -16,7 +17,21 @@ namespace ORControlPanelNew
             try
             {
                 Console.WriteLine("Starting application...");
-                DevicePort.InitializeDatabase();
+                try
+                {
+                    if (!DevicePort.InitializeDatabase())
+                    {
+                        Debug.WriteLine("Failed to initialize database. The application will exit.", "Error");
+                       
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Failed to initialize database: {ex.Message}\nThe application will exit.{ex} ");
+                  
+                    return;
+                }
                 var app = BuildAvaloniaApp()
                     .StartWithClassicDesktopLifetime(args);
                 

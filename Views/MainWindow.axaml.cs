@@ -13,6 +13,14 @@ namespace ORControlPanelNew.Views
             {
                 Console.WriteLine("Initializing MainWindow...");
                 InitializeComponent();
+                this.Opened += (_, _) =>
+                {
+                    this.WindowState = WindowState.Maximized;
+
+                    this.Topmost = true; // Forces focus on some WMs
+                    this.Activate();     // Bring to foreground
+                    this.Topmost = false;
+                };
                 // Create AlertService with this window as the owner
                 var alertService = new AlertService(this);
 

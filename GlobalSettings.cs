@@ -13,45 +13,93 @@ namespace ORControlPanelNew
     {
         public static string? CurrentPort { get; set; }
 
-          
+
+        private static string GetConnectionString()
+        {
+            // First, try the executable directory
+            string exeDir = AppDomain.CurrentDomain.BaseDirectory;
+            string dbPath = Path.Combine(exeDir, "mydata.db");
+            string cs = $"Data Source={dbPath};";
+
+            try
+            {
+                Log($"Attempting to use database in executable directory: {dbPath}");
+                using (var connection = new SqliteConnection(cs))
+                {
+                    connection.Open();
+                    Log("Successfully accessed database in executable directory.");
+                    return cs;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to access database in executable directory: {ex.Message}");
+                Log("Falling back to user-writable directory (AppData)...");
+
+                // Fall back to AppData directory
+                string appDataDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string appDir = Path.Combine(appDataDir, "ORControlPanel");
+                Directory.CreateDirectory(appDir); // Ensure the directory exists
+                dbPath = Path.Combine(appDir, "mydata.db");
+                cs = $"Data Source={dbPath};";
+
+                Log($"Using fallback database path: {dbPath}");
+                return cs;
+            }
+        }
 
         public static bool InitializeDatabase()
         {
             try
             {
-                string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt");
-                string cs = null;
+                string cs = GetConnectionString();
+                Log($"Connection string: {cs}");
 
-                if (File.Exists(settingsPath))
-                {
-                    cs = File.ReadLines(settingsPath).FirstOrDefault();
-                    Log($"Loaded connection string from settings.txt: {cs}");
-                }
-
-                if (string.IsNullOrWhiteSpace(cs))
-                {
-                    // Fallback to safe local path
-                    string fallbackDir = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "ORControlPanel");
-
-                    Directory.CreateDirectory(fallbackDir); // Ensure dir exists
-
-                    string fallbackDb = Path.Combine(fallbackDir, "mydata.db");
-                    cs = $"Data Source={fallbackDb}";
-                    Log($"Using fallback connection string: {cs}");
-                }
-
+                Log("Attempting to connect to database...");
                 using (var connection = new SqliteConnection(cs))
                 {
-                    connection.Open();
+                    try
+                    {
+                        connection.Open();
+                        Log("Successfully opened database connection.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"Failed to open database connection: {ex.Message}");
+                        throw new Exception($"Failed to open database connection: {ex.Message}", ex);
+                    }
+
+                    Log("Creating tbl_OT table if it doesn't exist...");
                     using (var command = new SqliteCommand(
                         @"CREATE TABLE IF NOT EXISTS tbl_OT (
-                    FieldName TEXT PRIMARY KEY,
-                    Value TEXT
-                )", connection))
+                            FieldName TEXT PRIMARY KEY,
+                            Value TEXT
+                        )", connection))
                     {
                         command.ExecuteNonQuery();
+                        Log("tbl_OT table created or already exists.");
+                    }
+
+                    Log("Creating patientData table if it doesn't exist...");
+                    using (var command = new SqliteCommand(
+                        @"CREATE TABLE IF NOT EXISTS patientData (
+                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            PatientID TEXT NOT NULL,
+                            Name TEXT NOT NULL,
+                            Gender TEXT,
+                            Age INTEGER,
+                            MobileNo TEXT,
+                            BloodGroup TEXT,
+                            OpDoctor TEXT NOT NULL,
+                            AstDoctor TEXT,
+                            StartTime TEXT,
+                            EndTime TEXT,
+                            ot TEXT,
+                            created_on TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+                        )", connection))
+                    {
+                        command.ExecuteNonQuery();
+                        Log("patientData table created or already exists.");
                     }
 
                     Log("Database initialized successfully.");
@@ -61,7 +109,47 @@ namespace ORControlPanelNew
             catch (Exception ex)
             {
                 Log($"Database initialization failed: {ex.Message}");
+                Log($"Stack trace: {ex.StackTrace}");
                 return false;
+            }
+        }
+
+
+        public static void InsertPatientData(string patientId, string name, string gender, int? age, string mobileNo, string bloodGroup, string opDoctor, string astDoctor, DateTime? startTime, string ot)
+        {
+            try
+            {
+                string cs = GetConnectionString();
+                Log($"Connection string: {cs}");
+
+                using (var connection = new SqliteConnection(cs))
+                {
+                    connection.Open();
+                    using (var command = new SqliteCommand(
+                        "INSERT INTO patientData (PatientID, Name, Gender, Age, MobileNo, BloodGroup, OpDoctor, AstDoctor, StartTime, EndTime, ot) " +
+                        "VALUES (@PatientID, @Name, @Gender, @Age, @MobileNo, @BloodGroup, @OpDoctor, @AstDoctor, @StartTime, @EndTime, @ot)",
+                        connection))
+                    {
+                        command.Parameters.AddWithValue("@PatientID", patientId ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@Name", name ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@Gender", gender ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@Age", age.HasValue ? age.Value : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@MobileNo", mobileNo ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@BloodGroup", bloodGroup ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@OpDoctor", opDoctor ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@AstDoctor", astDoctor ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@StartTime", startTime.HasValue ? startTime.Value.ToString("o") : (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@EndTime", (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@ot", ot ?? (object)DBNull.Value);
+                        int rowsAffected = command.ExecuteNonQuery();
+                        Log($"Inserted {rowsAffected} row(s) into patientData: PatientID={patientId}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to insert patient data: {ex.Message}, InnerException: {ex.InnerException?.Message}");
+                throw new Exception($"Failed to insert patient data: {ex.Message}", ex);
             }
         }
 
@@ -69,20 +157,8 @@ namespace ORControlPanelNew
         {
             try
             {
-                string settingsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt");
-                if (!File.Exists(settingsPath))
-                {
-                    Log($"Error: {settingsPath} not found.");
-                    return;
-                }
-
-                var cs = File.ReadLines(settingsPath).FirstOrDefault();
+                string cs = GetConnectionString();
                 Log($"Connection string: {cs}");
-                if (string.IsNullOrEmpty(cs))
-                {
-                    Log("Error: Database connection string not found in settings.txt");
-                    return;
-                }
 
                 using (var connection = new SqliteConnection(cs))
                 {
@@ -119,9 +195,8 @@ namespace ORControlPanelNew
         {
             try
             {
-                var cs = File.ReadLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.txt")).FirstOrDefault();
-                if (string.IsNullOrEmpty(cs))
-                    throw new InvalidOperationException("Database connection string not found in settings.txt");
+                string cs = GetConnectionString();
+                Log($"Connection string: {cs}");
 
                 var fieldNames = paramList.Split(',').Select(x => x.Trim(' ', '\'')).ToArray();
                 var paramPlaceholders = string.Join(",", fieldNames.Select((_, i) => $"@p{i}"));
@@ -147,6 +222,7 @@ namespace ORControlPanelNew
             }
             catch (Exception ex)
             {
+                Log($"Database read failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
                 throw new Exception($"Database read failed: {ex.Message}", ex);
             }
         }
