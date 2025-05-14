@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
+using LibVLCSharp.Shared;
 
 namespace ORControlPanelNew
 {
@@ -43,6 +44,16 @@ namespace ORControlPanelNew
                 }
                 catch (Exception ex) {
                     Debug.WriteLine($"Failed to initialize serial port: {ex.Message}");
+                }
+
+                try
+                {
+                    Core.Initialize();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Failed to initialize LibVLCSharp: {ex}");
+                    throw;
                 }
                 var app = BuildAvaloniaApp()
                     .StartWithClassicDesktopLifetime(args);

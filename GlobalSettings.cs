@@ -346,7 +346,7 @@ namespace ORControlPanelNew
             public static string Air7 { get; set; } = "0";
             public static string Air4 { get; set; } = "0";
             public static string Vacuum { get; set; } = "0";
-            public static string DiffPress { get; set; } = "0";
+            public static string AirDiffPress { get; set; } = "0";
             public static string Temperature { get; set; } = "0";
             public static string TemperatureSetValue { get; set; } = "0";
             public static string Humidity { get; set; } = "0";
@@ -399,7 +399,7 @@ namespace ORControlPanelNew
                             if (isAlert)
                             {
                                 Log($"GASR: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
-                                OnGeneralGasAlertUpdated?.Invoke(true);
+                                OnGasAlertUpdated?.Invoke("General Gas Pressure",true);
                             }
                         }
                     }
@@ -413,7 +413,7 @@ namespace ORControlPanelNew
                             if (isAlert)
                             {
                                 Log($"GASW: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
-                                OnGeneralGasAlertUpdated?.Invoke(false);
+                                OnGasAlertUpdated?.Invoke("General Gas Pressure",false);
                             }
                         }
                     }
@@ -583,7 +583,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string diffPressure = parts[1];
-                            SystemInfo.DiffPress = parts[1];
+                            SystemInfo.AirDiffPress = parts[1];
                             Log($"ARDP: Updated DiffPress to {parts[1]}");
                             onAirDiffPressureUpdated?.Invoke( diffPressure);
                         }
