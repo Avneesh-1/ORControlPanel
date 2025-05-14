@@ -213,7 +213,7 @@
 				CornerRadius="18"
 				Padding="4"
 				Margin="24,8,24,16">
-			<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0">
+			<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0" Height="100">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>

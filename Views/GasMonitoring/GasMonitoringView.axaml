@@ -68,7 +68,14 @@
 					<DataTemplate x:DataType="models:GasStatus">
 						<StackPanel Orientation="Horizontal" Margin="12,12,0,0" Spacing="10" VerticalAlignment="Center" Width="150">
 							<TextBlock Text="{Binding Name}" Foreground="White" FontSize="14" Margin="0,0,8,0"/>
-							<Border Height="18" Width="80" CornerRadius="8" Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"/>
+							<Border Height="24" Width="80" CornerRadius="8"
+									Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}">
+								<TextBlock Text="{Binding Pressure}"
+										   Foreground="White"
+										   FontSize="12"
+										   HorizontalAlignment="Center"
+										   VerticalAlignment="Center"/>
+							</Border>
 						</StackPanel>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
@@ -76,17 +83,14 @@
 			<!-- Legend -->
 			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="24" Margin="24,24,0,0">
 				<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-					<Border Background="#C6E377" Height="12" Width="32" CornerRadius="6"/>
+					<Border Background="green" Height="12" Width="32" CornerRadius="6"/>
 					<TextBlock Text="Normal" Foreground="White" FontSize="12"/>
 				</StackPanel>
 				<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
 					<Border Background="#D32F2F" Height="12" Width="32" CornerRadius="6"/>
-					<TextBlock Text="Exhausted" Foreground="White" FontSize="12"/>
+					<TextBlock Text="Alert" Foreground="White" FontSize="12"/>
 				</StackPanel>
-				<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-					<Border Background="#FFD600" Height="12" Width="32" CornerRadius="6"/>
-					<TextBlock Text="Low Pressure" Foreground="White" FontSize="12"/>
-				</StackPanel>
+				
 			</StackPanel>
 			<!-- Simulate Data Button below legend -->
 			<Button Classes="actionButton" HorizontalAlignment="Left" Margin="24,18,0,0" Command="{Binding SimulateDataCommand}">
