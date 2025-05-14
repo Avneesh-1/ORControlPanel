@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ORControlPanelNew.ViewModels.Clock"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="200"
+             x:Class="ORControlPanelNew.Views.Clock.ClockPage"
+             x:DataType="vm:ClockViewModel">
+
+    <Grid Margin="0" HorizontalAlignment="Stretch">
+        <StackPanel>
+           
+            <Border CornerRadius="10"
+                    Height="90"
+                    Background="{DynamicResource ClockBackgroundBrush}"
+                    HorizontalAlignment="Stretch">
+                <StackPanel>
+                    <TextBlock Text="TIME"
+                             FontSize="14"
+                             FontWeight="Bold"
+                             Foreground="#000000"
+                             HorizontalAlignment="Center"
+                             Margin="0,5,0,0"/>
+                    <TextBlock Text="{Binding CurrentTime}"
+                             FontSize="48"
+                             FontFamily="Consolas"
+                             Foreground="#000000"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+           
+            <TextBlock Text="{Binding CurrentDate}"
+                     Foreground="White"
+                     FontSize="14"
+                     HorizontalAlignment="Right"
+                     Margin="0,5,0,0"/>
+        </StackPanel>
+    </Grid>
+
+    <UserControl.Resources>
+        <LinearGradientBrush x:Key="ClockBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Offset="0" Color="#90EE90"/>
+            <GradientStop Offset="1" Color="#32CD32"/>
+        </LinearGradientBrush>
+    </UserControl.Resources>
+</UserControl>
