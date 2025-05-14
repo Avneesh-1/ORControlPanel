@@ -5,101 +5,103 @@
              x:Class="ORControlPanelNew.Views.Intercom.IntercomPanel"
              x:DataType="vm:IntercomDialogViewModel">
     <UserControl.Resources>
-        <conv:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+        <ResourceDictionary>
+            <conv:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+        </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.DataContext>
         <vm:IntercomDialogViewModel/>
     </UserControl.DataContext>
     <UserControl.Styles>
         <Style Selector="Button.dialer-btn">
-            <Setter Property="Width" Value="48"/>
-            <Setter Property="Height" Value="48"/>
-            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Width" Value="64"/>
+            <Setter Property="Height" Value="64"/>
+            <Setter Property="FontSize" Value="22"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Margin" Value="2"/>
             <Setter Property="Background" Value="#f0f0f0"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="BorderBrush" Value="#b0b0b0"/>
             <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Margin" Value="6"/>
         </Style>
     </UserControl.Styles>
-    <Border Background="#232323" CornerRadius="16" Padding="48,24" MinHeight="0" MaxHeight="1200" HorizontalAlignment="Center" VerticalAlignment="Top">
-        <Grid ColumnDefinitions="1*,1*" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <!-- Dialer Section -->
-            <Grid Grid.Column="0" RowDefinitions="Auto,*,Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,8,0">
-                <!-- Display -->
-                <TextBox Grid.Row="0" Text="{Binding DialedNumber, Mode=OneWay}" FontSize="20" Height="36" Margin="0,0,0,0" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-                <!-- Dialer Buttons -->
-                <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Content="1" Command="{Binding DialCommand}" CommandParameter="1" Grid.Row="0" Grid.Column="0" Classes="dialer-btn"/>
-                    <Button Content="2" Command="{Binding DialCommand}" CommandParameter="2" Grid.Row="0" Grid.Column="1" Classes="dialer-btn"/>
-                    <Button Content="3" Command="{Binding DialCommand}" CommandParameter="3" Grid.Row="0" Grid.Column="2" Classes="dialer-btn"/>
-                    <Button Content="4" Command="{Binding DialCommand}" CommandParameter="4" Grid.Row="1" Grid.Column="0" Classes="dialer-btn"/>
-                    <Button Content="5" Command="{Binding DialCommand}" CommandParameter="5" Grid.Row="1" Grid.Column="1" Classes="dialer-btn"/>
-                    <Button Content="6" Command="{Binding DialCommand}" CommandParameter="6" Grid.Row="1" Grid.Column="2" Classes="dialer-btn"/>
-                    <Button Content="7" Command="{Binding DialCommand}" CommandParameter="7" Grid.Row="2" Grid.Column="0" Classes="dialer-btn"/>
-                    <Button Content="8" Command="{Binding DialCommand}" CommandParameter="8" Grid.Row="2" Grid.Column="1" Classes="dialer-btn"/>
-                    <Button Content="9" Command="{Binding DialCommand}" CommandParameter="9" Grid.Row="2" Grid.Column="2" Classes="dialer-btn"/>
-                    <Button Content="*" Command="{Binding DialCommand}" CommandParameter="*" Grid.Row="3" Grid.Column="0" Classes="dialer-btn"/>
-                    <Button Content="0" Command="{Binding DialCommand}" CommandParameter="0" Grid.Row="3" Grid.Column="1" Classes="dialer-btn"/>
-                    <Button Content="#" Command="{Binding DialCommand}" CommandParameter="#" Grid.Row="3" Grid.Column="2" Classes="dialer-btn"/>
-                </Grid>
-                <!-- Backspace and Call Row -->
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch" Spacing="8" Margin="0,24,0,0">
-                    <Button Content="Del" Command="{Binding BackspaceCommand}" Height="32" HorizontalAlignment="Stretch"/>
-                    <Button Content="📞" Height="32" HorizontalAlignment="Stretch"/>
-                </StackPanel>
-            </Grid>
-            <!-- Phonebook Section -->
-            <StackPanel Grid.Column="1" Margin="16,0,0,0" Spacing="8" HorizontalAlignment="Stretch">
-                <TextBlock Text="Phonebook" FontWeight="Bold" FontSize="15"/>
-                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Stretch">
-                    <TextBlock Text="Name" Width="50"/>
-                    <TextBox Text="{Binding NewContactName, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Stretch">
-                    <TextBlock Text="Number" Width="50"/>
-                    <TextBox Text="{Binding NewContactNumber, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
-                </StackPanel>
-                <Button Content="Save" Command="{Binding SaveContactCommand}" HorizontalAlignment="Stretch"/>
-                <TextBlock Text="No contacts saved."
-                           IsVisible="{Binding Contacts.Count, Converter={StaticResource ZeroToVisibilityConverter}}"
-                           Foreground="Gray" FontStyle="Italic" Margin="0,4,0,0" FontSize="12"/>
-                <ItemsControl ItemsSource="{Binding Contacts}" Margin="0,8,0,0">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="LimeGreen" BorderThickness="1.5" CornerRadius="6" Margin="0,2,0,2" Padding="4">
-                                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="LimeGreen" FontSize="12"/>
-                                    <TextBlock Text=":" FontWeight="Bold" Foreground="LimeGreen" FontSize="12"/>
-                                    <TextBlock Text="{Binding Number}" Foreground="LimeGreen" FontSize="12"/>
-                                    <Button Content="Delete"
-                                            Click="OnDeleteContactClick"
-                                            CommandParameter="{Binding .}"
-                                            Background="Red"
-                                            Foreground="White"
-                                            Margin="8,0,0,0"
-                                            Padding="4,1"
-                                            FontWeight="Bold"
-                                            FontSize="11"/>
-                                </StackPanel>
+    <Border Background="#232323" CornerRadius="16" Padding="0" MinHeight="0" MaxHeight="1200" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,8,0,0">
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Top" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <!-- Add DIALER label above the card -->
+                <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,8,0,0" HorizontalAlignment="Left"/>
+                <!-- Dialer Card Start -->
+                <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="3" Background="#181A1B" BorderBrush="#444" BorderThickness="2" CornerRadius="16" Padding="24" Width="440" Height="580" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,0,0,16" HorizontalAlignment="Left"/>
+                        <StackPanel>
+                            <!-- Green Bar -->
+                            <Border Background="#7CB342" CornerRadius="10" Height="48" Margin="0,0,0,24" HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding DialedNumber, Mode=OneWay}" FontSize="24" VerticalAlignment="Center" Margin="24,0" Foreground="Black" HorizontalAlignment="Stretch" TextAlignment="Left"/>
                             </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </Grid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="24">
+                                <!-- Keypad -->
+                                <UniformGrid Rows="4" Columns="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,8">
+                                    <Button Content="1" Command="{Binding DialCommand}" CommandParameter="1" Classes="dialer-btn"/>
+                                    <Button Content="2" Command="{Binding DialCommand}" CommandParameter="2" Classes="dialer-btn"/>
+                                    <Button Content="3" Command="{Binding DialCommand}" CommandParameter="3" Classes="dialer-btn"/>
+                                    <Button Content="4" Command="{Binding DialCommand}" CommandParameter="4" Classes="dialer-btn"/>
+                                    <Button Content="5" Command="{Binding DialCommand}" CommandParameter="5" Classes="dialer-btn"/>
+                                    <Button Content="6" Command="{Binding DialCommand}" CommandParameter="6" Classes="dialer-btn"/>
+                                    <Button Content="7" Command="{Binding DialCommand}" CommandParameter="7" Classes="dialer-btn"/>
+                                    <Button Content="8" Command="{Binding DialCommand}" CommandParameter="8" Classes="dialer-btn"/>
+                                    <Button Content="9" Command="{Binding DialCommand}" CommandParameter="9" Classes="dialer-btn"/>
+                                    <Button Content="*" Command="{Binding DialCommand}" CommandParameter="*" Classes="dialer-btn"/>
+                                    <Button Content="0" Command="{Binding DialCommand}" CommandParameter="0" Classes="dialer-btn"/>
+                                    <Button Content="#" Command="{Binding DialCommand}" CommandParameter="#" Classes="dialer-btn"/>
+                                </UniformGrid>
+                                <!-- Action Buttons: CALL and HANG UP -->
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" Margin="16,0,0,0">
+                                    <Button Height="64" Width="120" Background="#7CB342" Foreground="Black" FontWeight="Bold" CornerRadius="10">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                                            <TextBlock Text="📞" FontSize="22"/>
+                                            <TextBlock Text="CALL" FontWeight="Bold"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Height="64" Width="120" Background="#E53935" Foreground="White" FontWeight="Bold" CornerRadius="10">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                                            <Viewbox Width="18" Height="18" VerticalAlignment="Center">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Data="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5C20.55,15.5 21,15.95 21,16.5V20C21,20.55 20.55,21 20,21C10.61,21 3,13.39 3,4C3,3.45 3.45,3 4,3H7.5C8.05,3 8.5,3.45 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"
+                                                      Fill="#fff" Stroke="#fff" StrokeThickness="1.5"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                            <TextBlock Text="HANG UP" FontWeight="Bold"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                            <!-- Del and Phonebook Buttons below keypad -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="16" Margin="0,24,0,0">
+                                <Button Content="Del" Command="{Binding BackspaceCommand}" Height="44" Width="90" Background="#404040" Foreground="White" FontWeight="Bold" CornerRadius="10"/>
+                                <Button Content="Phonebook"
+                                        Height="44" Width="140"
+                                        Foreground="White"
+                                        Background="#404040"
+                                        FontWeight="Bold"
+                                        FontSize="16"
+                                        Name="OpenPhonebookButton"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <!-- Dialer Card End -->
+            </Grid>
+        </DockPanel>
     </Border>
 </UserControl> 

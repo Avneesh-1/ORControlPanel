@@ -41,14 +41,12 @@
                 <Button Content="RESET"
                         Command="{Binding ResetCommand}"
                         Classes="anesthesiaTimerButton"/>
-			</StackPanel>
-
-			<!-- Set Time Button -->
                 <Button Content="SET TIME"
                         Command="{Binding SetTimeCommand}"
                         Classes="anesthesiaTimerButton"/>
             </StackPanel>
      
+        </StackPanel>
     </Grid>
 
     <UserControl.Styles>

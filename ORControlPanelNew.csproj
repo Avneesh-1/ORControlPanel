@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,7 +9,6 @@
     <AssemblyName>ORControlPanelNew</AssemblyName>
     <RootNamespace>ORControlPanelNew</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.7" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
@@ -31,15 +29,12 @@
     <PackageReference Include="VideoLAN.LibVLC.Mac" Version="3.1.3.1" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
   </ItemGroup>
-
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
-
   <ItemGroup>
     <AvaloniaXaml Remove="Views\HepaStatus\HepaStatusCard.axaml" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Views\AlertDialog\AlertDialog.axaml.cs">
       <DependentUpon>AlertDialog.axaml</DependentUpon>
@@ -52,7 +47,6 @@
       <SubType>Designer</SubType>
     </AvaloniaXaml>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Views\MainWindow.axaml.cs">
       <DependentUpon>MainWindow.axaml</DependentUpon>
