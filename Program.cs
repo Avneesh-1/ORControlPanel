@@ -32,6 +32,18 @@ namespace ORControlPanelNew
                   
                     return;
                 }
+                
+                
+                try
+                {
+                    if (!DevicePort.SerialPortInterface.Initialize("COM7"))
+                    {
+                        Debug.WriteLine("Warning: Serial port initialization failed for COM5. Proceeding without serial communication.");
+                    }
+                }
+                catch (Exception ex) {
+                    Debug.WriteLine($"Failed to initialize serial port: {ex.Message}");
+                }
                 var app = BuildAvaloniaApp()
                     .StartWithClassicDesktopLifetime(args);
                 

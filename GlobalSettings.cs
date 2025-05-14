@@ -312,8 +312,8 @@ namespace ORControlPanelNew
                         _myCOMPort.Open();
                     }
 
-                    _myCOMPort.Write(data + Environment.NewLine);
-                    Log($"Data written to port: {data}");
+                    _myCOMPort.Write(data );
+                    Log($"Data written to port: {data} AT {_myCOMPort.PortName}");
                 }
                 catch (Exception ex)
                 {
@@ -338,7 +338,7 @@ namespace ORControlPanelNew
             }
         }
 
-        internal class GasPressure
+        internal class SystemInfo
         {
             public static string Oxygen { get; set; } = "0";
             public static string Nitrogen { get; set; } = "0";
@@ -371,6 +371,7 @@ namespace ORControlPanelNew
             public static void ProcessData(string inData)
             {
                 string[] allData = inData.Split('#');
+                Debug.WriteLine(allData,"DATA TRRRRR");
                 foreach (string s in allData)
                 {
                     if (string.IsNullOrWhiteSpace(s))
@@ -491,7 +492,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string pressureStr = parts[1];
-                            GasPressure.Oxygen = pressureStr;
+                            SystemInfo.Oxygen = pressureStr;
                             Log($"RDGA: Invoking OnGasPressureUpdated for O₂ with pressure={pressureStr}");
                             OnGasPressureUpdated?.Invoke("O₂", pressureStr);
                         }
@@ -506,7 +507,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string pressureStr = parts[1];
-                            GasPressure.Nitrogen = pressureStr;
+                            SystemInfo.Nitrogen = pressureStr;
                             Log($"RDGB: Invoking OnGasPressureUpdated for N₂O with pressure={pressureStr}");
                             OnGasPressureUpdated?.Invoke("N₂O", pressureStr);
                         }
@@ -521,7 +522,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string pressureStr = parts[1];
-                            GasPressure.CO2 = pressureStr;
+                            SystemInfo.CO2 = pressureStr;
                             Log($"RDGC: Invoking OnGasPressureUpdated for CO₂ with pressure={pressureStr}");
                             OnGasPressureUpdated?.Invoke("CO₂", pressureStr);
                         }
@@ -536,7 +537,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string pressureStr = parts[1];
-                            GasPressure.Air4 = pressureStr;
+                            SystemInfo.Air4 = pressureStr;
                             Log($"RDGD: Invoking OnGasPressureUpdated for AIR 4 with pressure={pressureStr}");
                             OnGasPressureUpdated?.Invoke("AIR 4", pressureStr);
                         }
@@ -551,7 +552,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string pressureStr = parts[1];
-                            GasPressure.Air7 = pressureStr;
+                            SystemInfo.Air7 = pressureStr;
                             Log($"RDGE: Invoking OnGasPressureUpdated for AIR 7 with pressure={pressureStr}");
                             OnGasPressureUpdated?.Invoke("AIR 7", pressureStr);
                         }
@@ -566,7 +567,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string pressureStr = parts[1];
-                            GasPressure.Vacuum = pressureStr;
+                            SystemInfo.Vacuum = pressureStr;
                             Log($"RDGF: Invoking OnGasPressureUpdated for VAC with pressure={pressureStr}");
                             OnGasPressureUpdated?.Invoke("VAC", pressureStr);
                         }
@@ -582,7 +583,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string diffPressure = parts[1];
-                            GasPressure.DiffPress = parts[1];
+                            SystemInfo.DiffPress = parts[1];
                             Log($"ARDP: Updated DiffPress to {parts[1]}");
                             onAirDiffPressureUpdated?.Invoke( diffPressure);
                         }
@@ -594,7 +595,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string temp = parts[1];
-                            GasPressure.Temperature = temp;
+                            SystemInfo.Temperature = temp;
                             Log($"TEMP: Invoking OnTemperatureUpdated with temp={temp}");
                             OnTemperatureUpdated?.Invoke(temp);
                         }
@@ -606,7 +607,7 @@ namespace ORControlPanelNew
                         if (parts.Length > 1)
                         {
                             string humidity = parts[1];
-                            GasPressure.Humidity = humidity;
+                            SystemInfo.Humidity = humidity;
                             Log($"HUMD: Invoking OnHumidityUpdated with humidity={humidity}");
                             OnHumidityUpdated?.Invoke(humidity);
                         }
@@ -623,12 +624,12 @@ namespace ORControlPanelNew
                             if (s1.StartsWith("V"))
                             {
                                 voltage = s1.Substring(1);
-                                GasPressure.Voltage = voltage;
+                                SystemInfo.Voltage = voltage;
                             }
                             if (s1.StartsWith("C"))
                             {
                                 current = s1.Substring(1);
-                                GasPressure.Current = current;
+                                SystemInfo.Current = current;
                             }
                             if (s1.StartsWith("ST"))
                             {

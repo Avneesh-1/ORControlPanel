@@ -121,12 +121,7 @@
 				</ItemsControl>
 			</ScrollViewer>
 
-			<!-- Humidity -->
-		
-			<!-- Transformer Status -->
-		
-
-			<!-- Fire, HEPA Status -->
+			
 			<Grid Grid.Row="4" ColumnDefinitions="*,*" Margin="5">
 				<StackPanel Grid.Column="0"
                             Orientation="Horizontal"

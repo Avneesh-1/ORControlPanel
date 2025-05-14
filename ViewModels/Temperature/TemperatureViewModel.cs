@@ -28,6 +28,7 @@ namespace ORControlPanelNew.ViewModels.Temperature
 
         public TemperatureViewModel()
         {
+           
 
             DevicePort.DataProcessor.OnTemperatureUpdated += (temp) =>
             {

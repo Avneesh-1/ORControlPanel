@@ -47,10 +47,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                 InitializeGases();
                 Log("INIT");
                
-                if (!DevicePort.SerialPortInterface.Initialize("COM5"))
-                {
-                    Log("Warning: Serial port initialization failed for COM5. Proceeding without serial communication.");
-                }
+               
 
                 DevicePort.DataProcessor.OnGasPressureUpdated += (gasName, pressure) =>
                 {
@@ -225,10 +222,10 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                 "ALGE",        // AIR 7 alert ON
                 "RDGF$-0.2",   // VAC pressure
                 "BLGF",        // VAC alert OFF
-                "TEMP$24.0",   // Temperature
+                "TEMP$54.0",   // Temperature
                 "HUMD$50.0",   // Humidity
                 "ITIDV220$C10$ST1", // Transformer
-                "FRAM$20.0",   // Fire ON
+                "FRAM$20.0",   // Fire ON 
                 "HFST$8.0",    // HEPA GOOD
                 "UPSS$1"       // UPS ON
             };
