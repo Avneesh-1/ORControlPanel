@@ -4,19 +4,11 @@ using ORControlPanelNew.ViewModels.Intercom;
 
 namespace ORControlPanelNew.Views.Intercom
 {
-    public partial class IntercomPanel : UserControl
+    public partial class PhonebookDialog : Window
     {
-        public IntercomPanel()
+        public PhonebookDialog()
         {
             InitializeComponent();
-            OpenPhonebookButton.Click += (s, e) =>
-            {
-                var dialog = new PhonebookDialog();
-                if (this.VisualRoot is Window parent)
-                    dialog.ShowDialog(parent);
-                else
-                    dialog.Show();
-            };
         }
 
         private void OnDeleteContactClick(object? sender, RoutedEventArgs e)

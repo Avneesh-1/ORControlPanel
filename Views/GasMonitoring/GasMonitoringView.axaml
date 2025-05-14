@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:vm="using:ORControlPanelNew.ViewModels.GasMonitoring"
             xmlns:models="using:ORControlPanelNew.Models.GasMonitoring"
@@ -42,101 +42,62 @@
 		<vm:GasMonitoringViewModel />
 	</Design.DataContext>
 
-	<Border Background="#2D2D2D" CornerRadius="5" Padding="10">
-		<Grid RowDefinitions="Auto,*,Auto,Auto,Auto">
-			<!-- Title -->
-			<TextBlock Grid.Row="0"
-                       Text="GAS MONITORING STATUS"
-                       Foreground="White"
-                       FontSize="14"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,5"/>
-
-			<!-- Gas List -->
-			<ScrollViewer Grid.Row="1">
-				<ItemsControl ItemsSource="{Binding Gases}"
-                              HorizontalAlignment="Stretch">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Spacing="10"
-                                        Margin="5"
-                                        VerticalAlignment="Top"/>
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="models:GasStatus">
-							<Border x:Name="GasContainer"
-                                    CornerRadius="4"
-                                    Padding="8"
-                                    HorizontalAlignment="Stretch"
-                                    Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}">
-								<Border.Styles>
-									<Style Selector="Border[IsVisible=True]">
-										<Style Selector="^[Background=Red]">
-											<Setter Property="Transitions">
-												<Transitions>
-													<DoubleTransition Property="Opacity" Duration="0:0:0.5" Easing="LinearEasing"/>
-												</Transitions>
-											</Setter>
-											<Style.Animations>
-												<Animation IterationCount="INFINITE" PlaybackDirection="Alternate">
-													<KeyFrame Cue="0%">
-														<Setter Property="Opacity" Value="1"/>
-													</KeyFrame>
-													<KeyFrame Cue="100%">
-														<Setter Property="Opacity" Value="0.6"/>
-													</KeyFrame>
-												</Animation>
-											</Style.Animations>
-										</Style>
-									</Style>
-								</Border.Styles>
-								<Grid ColumnDefinitions="Auto,*">
-									<!-- Gas Name -->
-									<TextBlock Grid.Column="0"
-                                               Text="{Binding Name}"
-                                               Foreground="Black"
-                                               FontSize="12"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,10,0"/>
-									<!-- Pressure Display -->
-									<StackPanel Grid.Column="1"
-                                                Orientation="Horizontal"
-                                                Spacing="4"
-                                                VerticalAlignment="Center"
-                                                HorizontalAlignment="Right">
-										<TextBlock Text="{Binding Pressure}"
-                                                   Foreground="Black"
-                                                   FontSize="12"
-                                                   VerticalAlignment="Center"/>
-										<TextBlock Text="bar"
-                                                   Foreground="Black"
-                                                   FontSize="12"
-                                                   VerticalAlignment="Center"/>
-									</StackPanel>
+	<Border Background="#181A1B" CornerRadius="16" Padding="0" BorderBrush="#444" BorderThickness="2" Margin="0,0,0,0" Width="440" Height="580">
+		<StackPanel>
+			<!-- Top Bar -->
+			<Border>
+				<Border.Background>
+					<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+						<GradientStop Color="#444" Offset="0"/>
+						<GradientStop Color="#222" Offset="1"/>
+					</LinearGradientBrush>
+				</Border.Background>
+				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+					<TextBlock Text="🧪" FontSize="18" VerticalAlignment="Center"/>
+					<TextBlock Text="MEDICAL GAS STATUS" Foreground="White" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
+				</StackPanel>
+			</Border>
+			<!-- Gases Two-Column Grid -->
+			<ItemsControl ItemsSource="{Binding Gases}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<WrapPanel Orientation="Horizontal" ItemWidth="200" ItemHeight="60" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="models:GasStatus">
+						<StackPanel Orientation="Horizontal" Margin="12,12,0,0" Spacing="10" VerticalAlignment="Center" Width="150">
+							<TextBlock Text="{Binding Name}" Foreground="White" FontSize="14" Margin="0,0,8,0"/>
+							<Border Height="18" Width="80" CornerRadius="8" Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"/>
+						</StackPanel>
 								</Grid>
 							</Border>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-			</ScrollViewer>
-
-			<!-- Humidity -->
-		
-			<!-- Transformer Status -->
-		
-
-			<!-- Fire, HEPA Status -->
-			<Grid Grid.Row="4" ColumnDefinitions="*,*" Margin="5">
-				<StackPanel Grid.Column="0"
-                            Orientation="Horizontal"
-                            Spacing="4">
-					<TextBlock Classes="metricLabel"
-                               Text="Fire:"/>
-					<TextBlock Classes="metricValue"
-                               Text="{Binding FireStatus}"
-                               Foreground="{Binding FireStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"/>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+			<!-- Legend -->
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="24" Margin="24,24,0,0">
+				<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+					<Border Background="#C6E377" Height="12" Width="32" CornerRadius="6"/>
+					<TextBlock Text="Normal" Foreground="White" FontSize="12"/>
 				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+					<Border Background="#D32F2F" Height="12" Width="32" CornerRadius="6"/>
+					<TextBlock Text="Exhausted" Foreground="White" FontSize="12"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+					<Border Background="#FFD600" Height="12" Width="32" CornerRadius="6"/>
+					<TextBlock Text="Low Pressure" Foreground="White" FontSize="12"/>
+				</StackPanel>
+			</StackPanel>
+			<!-- Simulate Data Button below legend -->
+			<Button Classes="actionButton" HorizontalAlignment="Left" Margin="24,18,0,0" Command="{Binding SimulateDataCommand}">
+				<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+					<TextBlock Text="⛔" Foreground="Red" FontSize="16"/>
+					<TextBlock Text="Simulate Data" Foreground="White" FontSize="13"/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
 			
 			</Grid>
 		</Grid>

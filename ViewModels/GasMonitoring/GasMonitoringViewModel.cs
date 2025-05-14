@@ -44,6 +44,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
         public ReactiveCommand<Unit, Unit> SimulateDataCommand { get; }
 
         public GasMonitoringViewModel(IAlertService alertService)
+
         {
             _alertService = alertService ?? throw new ArgumentNullException(nameof(alertService));
 
@@ -88,6 +89,16 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     Dispatcher.UIThread.InvokeAsync(() => UpdateGasAlert(gasName, isAlert));
                 };
 
+                DevicePort.DataProcessor.OnGeneralGasAlertUpdated += (isAlert) =>
+                {
+                    Log($"Received OnGeneralGasAlertUpdated: isAlert={isAlert}");
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                      
+                        GeneralGasPressureStatus = isAlert ? "Alert" : "Normal";
+                    });
+                };
+
                 DevicePort.DataProcessor.OnTemperatureUpdated += (temp) =>
                 {
                     Log($"Received OnTemperatureUpdated: temp={temp}");
@@ -125,10 +136,11 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     Dispatcher.UIThread.InvokeAsync(() =>
                     {
                         FireStatus = isActive ? "ON" : "OFF";
-                        if (isActive)
-                        {
-                            _alertService.ShowAlert("Alert: Fire detected!");
-                        }
+                    });
+                    if (isActive)
+                    {
+                        _alertService.ShowAlert("Alert: Fire detected!");
+                    }
                     });
                 };
 
@@ -160,6 +172,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                         }
                     });
                 };
+
 
                 DevicePort.DataProcessor.onAirDiffPressureUpdated += (adp) =>
                 {
@@ -258,15 +271,17 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                 "RDGB$6.0",    // N₂O pressure
                 "BLGB",        // N₂O alert OFF
                 "RDGC$4.5",    // CO₂ pressure
+                "ALGC",        // CO₂ alert ON
                 "RDGD$9.0",    // AIR 4 pressure
                 "BLGD",        // AIR 4 alert OFF
                 "RDGE$7.0",    // AIR 7 pressure
+                "ALGE",        // AIR 7 alert ON
                 "RDGF$-0.2",   // VAC pressure
                 "BLGF",        // VAC alert OFF
                 "TEMP$54.0",   // Temperature
                 "HUMD$50.0",   // Humidity
                 "ITIDV220$C10$ST1", // Transformer
-                "FRAM$20.0",   // Fire ON 
+                "FRAM$20.0",   // Fire ON
                 "HFST$8.0",    // HEPA GOOD
                 "UPSS$1"       // UPS ON
             };

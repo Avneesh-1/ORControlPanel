@@ -49,6 +49,7 @@
                         Classes="anesthesiaTimerButton"/>
             </StackPanel>
      
+        </StackPanel>
     </Grid>
 
     <UserControl.Styles>

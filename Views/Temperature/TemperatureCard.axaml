@@ -7,68 +7,98 @@
              x:Class="ORControlPanelNew.Views.Temperature.TemperatureCard"
              x:DataType="vm:TemperatureViewModel">
 
-	<UniformGrid Columns="2" Rows="3" Margin="12" HorizontalAlignment="Center" VerticalAlignment="Center">
-		<!-- Temperature -->
-		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
-			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<TextBlock Text="Temperature" FontSize="13" Foreground="White"/>
-				<TextBlock Text="{Binding Temperature, StringFormat='{}{0}°C'}"
-						   FontSize="20" FontWeight="Bold" Foreground="#00BFFF"/>
-			</StackPanel>
-		</Border>
+	<UserControl.Resources>
+		<LinearGradientBrush x:Key="CardBlueGradient" StartPoint="0,0" EndPoint="1,0">
+			<GradientStop Color="#B0B0B0" Offset="0"/>
+			<GradientStop Color="#444444" Offset="1"/>
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="TabBlueGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#B3E5FC" Offset="0"/>
+			<GradientStop Color="#2196F3" Offset="1"/>
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="ValueYellowGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#FFD700" Offset="0"/>
+			<GradientStop Color="#FFA500" Offset="1"/>
+		</LinearGradientBrush>
+	</UserControl.Resources>
 
-		<!-- Humidity -->
-		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
-			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<TextBlock Text="Humidity" FontSize="13" Foreground="White"/>
-				<TextBlock Text="{Binding Humidity, StringFormat='{}{0}%'}"
-						   FontSize="20" FontWeight="Bold" Foreground="#90EE90"/>
-			</StackPanel>
-		</Border>
+	<Border Background="#181A1B" CornerRadius="16" Padding="24" BorderBrush="#444" BorderThickness="2" Height="580" Width="440" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+		<StackPanel>
+			<TextBlock Text="AIR CONDITION SYSTEM" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,0,0,16" HorizontalAlignment="Left"/>
+			<Grid HorizontalAlignment="Stretch">
+				<StackPanel Spacing="18" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+					<!-- Temperature Card -->
+					<Border Background="{StaticResource CardBlueGradient}" CornerRadius="14" Height="64" Margin="0,0,0,8" HorizontalAlignment="Stretch" MinWidth="0">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<!-- Notched tab -->
+							<Border Grid.Row="0" Background="#90CAF9" CornerRadius="12,12,0,0" Padding="18,0" HorizontalAlignment="Left" Margin="24,0,0,0" Height="28" MinWidth="120">
+								<TextBlock Text="Temperature" FontSize="13" Foreground="#222" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Border>
+							<!-- Value area -->
+							<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Height="36" VerticalAlignment="Center">
+								<Button Content="-" Width="40" Height="36" Margin="8,0,0,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+								<Border Grid.Column="1" Background="#FFE082" CornerRadius="8" Margin="8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="170">
+									<TextBlock Text="{Binding Temperature, StringFormat='{}{0} °C'}" FontSize="24" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+								</Border>
+								<Button Grid.Column="2" Content="+" Width="40" Height="36" Margin="0,0,8,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+							</Grid>
+						</Grid>
+					</Border>
 
-		<!-- HEPA -->
-		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
-			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<TextBlock Text="HEPA" FontSize="13" Foreground="White"/>
-				<TextBlock Text="{Binding HepaStatus, StringFormat='{}{0}'}"
-						   FontSize="20" FontWeight="Bold"
-						   Foreground="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"/>
-			</StackPanel>
-		</Border>
+					<!-- Humidity Card -->
+					<Border Background="{StaticResource CardBlueGradient}" CornerRadius="14" Height="64" Margin="0,0,0,8" HorizontalAlignment="Stretch" MinWidth="0">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Border Grid.Row="0" Background="#90CAF9" CornerRadius="12,12,0,0" Padding="18,0" HorizontalAlignment="Left" Margin="24,0,0,0" Height="28" MinWidth="120">
+								<TextBlock Text="Humidity" FontSize="13" Foreground="#222" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Border>
+							<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Height="36" VerticalAlignment="Center">
+								<Button Content="-" Width="40" Height="36" Margin="8,0,0,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+								<Border Grid.Column="1" Background="#FFE082" CornerRadius="8" Margin="8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="170">
+									<TextBlock Text="{Binding Humidity, StringFormat='{}{0} RH%'}" FontSize="24" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+								</Border>
+								<Button Grid.Column="2" Content="+" Width="40" Height="36" Margin="0,0,8,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+							</Grid>
+						</Grid>
+					</Border>
 
-		<!-- Transformer -->
-		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
-			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<TextBlock Text="Transformer" FontSize="13" Foreground="White"/>
-				
-				<StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-					<TextBlock Text="{Binding Voltage , StringFormat='{}{0}V'}" FontSize="20"  FontWeight="Bold" Foreground="White"/>
-					<TextBlock Text="{Binding Current, StringFormat='{}{0}A'}" FontSize="20"  FontWeight="Bold" Foreground="White"/>
-					<TextBlock Text="{Binding TransformerStatus, StringFormat='{}{0}'}"
-						   FontSize="20" FontWeight="Bold"
-						   Foreground="{Binding TransformerStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ERROR:ErrorBrush|OK:OkBrush'}"/>
+					<!-- Room Pressure Card -->
+					<Border Background="{StaticResource CardBlueGradient}" CornerRadius="14" Height="64" Margin="0,0,0,8" HorizontalAlignment="Stretch" MinWidth="0">
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+							<Border Grid.Row="0" Background="#90CAF9" CornerRadius="12,12,0,0" Padding="18,0" HorizontalAlignment="Left" Margin="24,0,0,0" Height="28" MinWidth="120">
+								<TextBlock Text="Room Pressure" FontSize="13" Foreground="#222" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+							</Border>
+							<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" Height="36" VerticalAlignment="Center">
+								<Button Content="-" Width="40" Height="36" Margin="8,0,0,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+								<Border Grid.Column="1" Background="#FFE082" CornerRadius="8" Margin="8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="170">
+									<TextBlock Text="{Binding AirDiffPressure, StringFormat='{}{0} PA'}" FontSize="24" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+								</Border>
+								<Button Grid.Column="2" Content="+" Width="40" Height="36" Margin="0,0,8,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+							</Grid>
+						</Grid>
+					</Border>
+
+					<!-- HEPA Filter Status -->
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,18,0,0">
+						<TextBlock Text="HEPA Filter" FontSize="15" Foreground="White" FontWeight="Bold"/>
+						<Ellipse Width="24" Height="24" Fill="Green" Stroke="Black" StrokeThickness="1"/>
+						<TextBlock Text="Normal" FontSize="15" Foreground="White" VerticalAlignment="Center"/>
+					</StackPanel>
 				</StackPanel>
-			</StackPanel>
-		</Border>
-
-		<!-- UPS -->
-		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
-			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<TextBlock Text="UPS" FontSize="13" Foreground="White"/>
-				<TextBlock Text="{Binding UpsStatus, StringFormat='{}{0}'}"
-						   FontSize="20" FontWeight="Bold"
-						   Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"/>
-			</StackPanel>
-		</Border>
-
-		<!-- Air Diff Pressure -->
-		<Border Background="#2D2D2D" CornerRadius="10" Padding="10" Width="200" Height="100" Margin="6">
-			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
-				<TextBlock Text="Air Diff Pressure" FontSize="13" Foreground="White"/>
-				<TextBlock Text="{Binding AirDiffPressure, StringFormat='{}{0}'}"
-						   FontSize="20" FontWeight="Bold" Foreground="#00BFFF"/>
-			</StackPanel>
-		</Border>
+			</Grid>
+		</StackPanel>
+	</Border>
 	</UniformGrid>
 
 </UserControl>
