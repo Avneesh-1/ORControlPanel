@@ -16,7 +16,7 @@
 
 		<SolidColorBrush x:Key="OnBrush" Color="Green"/>
 		<SolidColorBrush x:Key="OffBrush" Color="Red"/>
-		<SolidColorBrush x:Key="OkBrush" Color="White"/>
+		<SolidColorBrush x:Key="OkBrush" Color="Green"/>
 		<SolidColorBrush x:Key="ErrorBrush" Color="Red"/>
     </Application.Resources>
 </Application>

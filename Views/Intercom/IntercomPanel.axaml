@@ -38,10 +38,12 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                <!-- Add DIALER label above the card -->
+                <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,8,0,0" HorizontalAlignment="Left"/>
                 <!-- Dialer Card Start -->
-                <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="3" Background="#000000" BorderBrush="#444" BorderThickness="2" CornerRadius="16" Padding="24" Width="440" Height="580" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="3" Background="#181A1B" BorderBrush="#444" BorderThickness="2" CornerRadius="16" Padding="24" Width="440" Height="580" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <StackPanel>
-                        <TextBlock Text="DIALER" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,16" HorizontalAlignment="Left"/>
+                        <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,0,0,16" HorizontalAlignment="Left"/>
                         <StackPanel>
                             <!-- Green Bar -->
                             <Border Background="#7CB342" CornerRadius="10" Height="48" Margin="0,0,0,24" HorizontalAlignment="Stretch">

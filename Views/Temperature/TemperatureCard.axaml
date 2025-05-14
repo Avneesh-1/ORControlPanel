@@ -22,9 +22,9 @@
 		</LinearGradientBrush>
 	</UserControl.Resources>
 
-	<Border Background="#000000" CornerRadius="16" Padding="24" BorderBrush="#444" BorderThickness="2" Height="580" Width="440" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+	<Border Background="#181A1B" CornerRadius="16" Padding="24" BorderBrush="#444" BorderThickness="2" Height="580" Width="440" HorizontalAlignment="Stretch" VerticalAlignment="Center">
 		<StackPanel>
-			<TextBlock Text="AIR CONDITION SYSTEM" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,16" HorizontalAlignment="Left"/>
+			<TextBlock Text="AIR CONDITION SYSTEM" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,0,0,16" HorizontalAlignment="Left"/>
 			<Grid HorizontalAlignment="Stretch">
 				<StackPanel Spacing="18" VerticalAlignment="Center" HorizontalAlignment="Stretch">
 					<!-- Temperature Card -->
