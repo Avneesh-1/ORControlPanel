@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="150"
+        x:Class="ORControlPanelNew.Views.AlertDialog"
+        Title="Alert"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        SizeToContent="WidthAndHeight"
+        Background="#333333">
+
+	<Window.Styles>
+		<Style Selector="TextBlock">
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontSize" Value="16"/>
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="Background" Value="#4A4A4A"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="Padding" Value="10,5"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+			<Setter Property="Transitions">
+				<Transitions>
+					<BrushTransition Property="Background" Duration="0:0:0.2"/>
+				</Transitions>
+			</Setter>
+		</Style>
+		<Style Selector="Button:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="#5A5A5A"/>
+		</Style>
+		<Style Selector="Button:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="#3A3A3A"/>
+		</Style>
+	</Window.Styles>
+
+	<StackPanel Margin="20" Spacing="20">
+		<TextBlock x:Name="AlertMessageTextBlock" Text="Alert Message" TextAlignment="Center"/>
+		<Button Content="OK" Click="OnOkButtonClick"/>
+	</StackPanel>
+</Window>

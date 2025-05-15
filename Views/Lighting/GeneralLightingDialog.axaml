@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ORControlPanelNew.ViewModels.Lighting"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+        x:Class="ORControlPanelNew.Views.Lighting.LightingDialog"
+        x:DataType="vm:GeneralLightingViewModel"
+        Title="Lighting Control"
+        Width="400" Height="200"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:GeneralLightingViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,Auto" Margin="20">
+        <!-- Light 1 Section -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+            <TextBlock Text="General Light 1" FontSize="16" FontWeight="Bold"/>
+            <Button Grid.Column="1" 
+                    Command="{Binding ToggleLight1Command}"
+                    Width="60"
+                    Height="30"
+                    CornerRadius="15"
+                    Background="{Binding IsLight1On, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#00FF00,#FF0000'}">
+                <TextBlock Text="{Binding IsLight1On, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
+                         Foreground="White"
+                         FontWeight="Bold"/>
+            </Button>
+        </Grid>
+        <Slider Grid.Row="1" 
+                Minimum="0" 
+                Maximum="100" 
+                Value="{Binding Light1Intensity}"
+                Margin="0,0,0,20"/>
+    </Grid>
+</Window> 
