@@ -131,7 +131,18 @@
 			<!-- Footer Menu -->
 		</Grid.RowDefinitions>
 
-
+		<!-- Header with logo and title -->
+		<StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top" Margin="24,12,0,0" Spacing="16">
+			<Image Source="avares://ORControlPanelNew/Assets/Images/LOGO_1.png"
+				   Width="60" Height="32"
+				   VerticalAlignment="Center"/>
+			<TextBlock Text="OPERATION  ROOM  CONTROL  PANEL"
+					   Foreground="White"
+					   FontWeight="Bold"
+					   FontSize="22"
+					   VerticalAlignment="Center"
+					   LetterSpacing="2"/>
+		</StackPanel>
 
 		<!-- Main Content Area -->
 		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
