@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using LibVLCSharp.Shared;
+using System.IO;
 
 namespace ORControlPanelNew
 {
@@ -18,43 +19,67 @@ namespace ORControlPanelNew
             try
             {
                 Console.WriteLine("Starting application...");
+                
+                // Database initialization
                 try
                 {
+                    Console.WriteLine("Initializing database...");
                     if (!DevicePort.InitializeDatabase())
                     {
-                        Debug.WriteLine("Failed to initialize database. The application will exit.", "Error");
-                       
+                        Console.WriteLine("Failed to initialize database. The application will exit.");
                         return;
                     }
+                    Console.WriteLine("Database initialized successfully");
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Failed to initialize database: {ex.Message}\nThe application will exit.{ex} ");
-                  
+                    Console.WriteLine($"Failed to initialize database: {ex.Message}\nStack trace: {ex.StackTrace}");
                     return;
                 }
                 
-                
+                // Serial port initialization
                 try
                 {
-                    if (!DevicePort.SerialPortInterface.Initialize("COM7"))
+                    string portName = OperatingSystem.IsMacOS() ? "/dev/tty.usbserial" : "COM7";
+                    Console.WriteLine($"Attempting to initialize serial port: {portName}");
+                    if (!DevicePort.SerialPortInterface.Initialize(portName))
                     {
-                        Debug.WriteLine("Warning: Serial port initialization failed for COM5. Proceeding without serial communication.");
+                        Console.WriteLine($"Warning: Serial port initialization failed for {portName}. Proceeding without serial communication.");
                     }
-                }
-                catch (Exception ex) {
-                    Debug.WriteLine($"Failed to initialize serial port: {ex.Message}");
-                }
-
-                try
-                {
-                    Core.Initialize();
+                    else
+                    {
+                        Console.WriteLine("Serial port initialized successfully");
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Failed to initialize LibVLCSharp: {ex}");
+                    Console.WriteLine($"Failed to initialize serial port: {ex.Message}\nStack trace: {ex.StackTrace}");
+                }
+
+                // VLC initialization
+                try
+                {
+                    string libVlcPath = OperatingSystem.IsMacOS() 
+                        ? "/Applications/VLC.app/Contents/MacOS/lib"
+                        : null;
+                    
+                    Console.WriteLine($"Initializing LibVLCSharp with path: {libVlcPath}");
+                    if (OperatingSystem.IsMacOS() && !Directory.Exists(libVlcPath))
+                    {
+                        Console.WriteLine($"Warning: VLC library path does not exist: {libVlcPath}");
+                    }
+                    
+                    Core.Initialize(libVlcPath);
+                    Console.WriteLine("LibVLCSharp initialized successfully");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to initialize LibVLCSharp: {ex.Message}\nStack trace: {ex.StackTrace}");
                     throw;
                 }
+
+                // Start the application
+                Console.WriteLine("Starting Avalonia application...");
                 var app = BuildAvaloniaApp()
                     .StartWithClassicDesktopLifetime(args);
                 
@@ -62,8 +87,9 @@ namespace ORControlPanelNew
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Critical error starting application: {ex}");
+                Console.WriteLine($"Critical error starting application: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw; // Re-throw to see the full error in the console
             }
         }
 
@@ -83,7 +109,7 @@ namespace ORControlPanelNew
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error building Avalonia app: {ex}");
+                Console.WriteLine($"Error building Avalonia app: {ex.Message}\nStack trace: {ex.StackTrace}");
                 throw;
             }
         }

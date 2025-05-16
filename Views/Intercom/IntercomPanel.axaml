@@ -84,18 +84,13 @@
                                             <TextBlock Text="HANG UP" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Button>
+                                    <Button Height="44" Width="120" Background="#404040" Foreground="White" FontWeight="Bold" FontSize="16"
+                                            Name="OpenPhonebookButton" Content="Phonebook" Margin="0,8,0,0"/>
                                 </StackPanel>
                             </StackPanel>
-                            <!-- Del and Phonebook Buttons below keypad -->
+                            <!-- Del Button below keypad -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="16" Margin="0,24,0,0">
                                 <Button Content="Del" Command="{Binding BackspaceCommand}" Height="44" Width="90" Background="#404040" Foreground="White" FontWeight="Bold" CornerRadius="10"/>
-                                <Button Content="Phonebook"
-                                        Height="44" Width="140"
-                                        Foreground="White"
-                                        Background="#404040"
-                                        FontWeight="Bold"
-                                        FontSize="16"
-                                        Name="OpenPhonebookButton"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>

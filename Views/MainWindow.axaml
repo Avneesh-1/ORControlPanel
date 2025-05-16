@@ -131,7 +131,18 @@
 			<!-- Footer Menu -->
 		</Grid.RowDefinitions>
 
-
+		<!-- Header with logo and title -->
+		<StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top" Margin="24,12,0,0" Spacing="16">
+			<Image Source="avares://ORControlPanelNew/Assets/Images/LOGO_1.png"
+				   Width="60" Height="32"
+				   VerticalAlignment="Center"/>
+			<TextBlock Text="OPERATION  ROOM  CONTROL  PANEL"
+					   Foreground="White"
+					   FontWeight="Bold"
+					   FontSize="22"
+					   VerticalAlignment="Center"
+					   LetterSpacing="2"/>
+		</StackPanel>
 
 		<!-- Main Content Area -->
 		<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -224,16 +235,24 @@
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
 				<lighting:GeneralLightingControl Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="1" Background="#B3D1F7" Width="2" Margin="0,12"/>
-				<lighting:OTLightsControl Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<lighting:GeneralLight2Control Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="3" Background="#B3D1F7" Width="2" Margin="0,12"/>
-				<lighting:LaminarLightControl Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<lighting:OTLightsControl Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="5" Background="#B3D1F7" Width="2" Margin="0,12"/>
-				<patient:PatientDataControl Grid.Column="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<lighting:OTLight2Control Grid.Column="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="7" Background="#B3D1F7" Width="2" Margin="0,12"/>
-				<music:MusicButton Grid.Column="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<lighting:LaminarLightControl Grid.Column="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Border Grid.Column="9" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<patient:PatientDataControl Grid.Column="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Border Grid.Column="11" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<music:MusicButton Grid.Column="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 			</Grid>
 		</Border>
 	</Grid>

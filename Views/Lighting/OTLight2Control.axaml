@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:ORControlPanelNew.ViewModels.Lighting"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
-             x:Class="ORControlPanelNew.Views.Lighting.OTLightsControl"
-             x:DataType="vm:OTLightsViewModel"
+             x:Class="ORControlPanelNew.Views.Lighting.OTLight2Control"
+             x:DataType="vm:OTLight2ViewModel"
              Background="Transparent">
 
     <Button Command="{Binding OpenDialogCommand}"
             Classes="footerButton"
-            ToolTip.Tip="OT Lights Control"
+            ToolTip.Tip="OT Light 2 Control"
             BorderThickness="0" Padding="0" Margin="0"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
@@ -28,28 +28,28 @@
                           Fill="#FFD700"/>
                 </Canvas>
             </Viewbox>
-            <TextBlock Text="OT Light 1"
+            <TextBlock Text="OT Light 2"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Bottom"
                      FontSize="12"/>
         </StackPanel>
     </Button>
 
-	<UserControl.Styles>
-		<Style Selector="Button.lighting">
-			<Setter Property="Width" Value="100"/>
-			<Setter Property="Height" Value="100"/>
-			<Setter Property="Background" Value="#2D2D2D"/>
-			<Setter Property="CornerRadius" Value="8"/>
-			<Setter Property="Margin" Value="10"/>
-			<Setter Property="HorizontalAlignment" Value="Left"/>
-			<Setter Property="VerticalAlignment" Value="Bottom"/>
-		</Style>
-		<Style Selector="Button.lighting:pointerover">
-			<Setter Property="Background" Value="#3D3D3D"/>
-		</Style>
-		<Style Selector="Button.lighting:pressed">
-			<Setter Property="Background" Value="#1D1D1D"/>
-		</Style>
-	</UserControl.Styles>
+    <UserControl.Styles>
+        <Style Selector="Button.lighting">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+        <Style Selector="Button.lighting:pointerover">
+            <Setter Property="Background" Value="#3D3D3D"/>
+        </Style>
+        <Style Selector="Button.lighting:pressed">
+            <Setter Property="Background" Value="#1D1D1D"/>
+        </Style>
+    </UserControl.Styles>
 </UserControl> 

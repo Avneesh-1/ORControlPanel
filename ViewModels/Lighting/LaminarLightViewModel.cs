@@ -29,7 +29,6 @@ namespace ORControlPanelNew.ViewModels.Lighting
         public ICommand OpenDialogCommand { get; }
 
         public LaminarLightViewModel()
-
         {
             try
             {

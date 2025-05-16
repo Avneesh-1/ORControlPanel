@@ -8,22 +8,23 @@
         <StackPanel>
             <!-- Timer Display Panel -->
             <Border CornerRadius="10"
-                    Height="90"
+                    Height="140"
                     Background="{DynamicResource AnesthesiaTimerBackgroundBrush}"
                     HorizontalAlignment="Stretch">
                 <StackPanel>
                     <TextBlock Text="ANESTHESIA TIMER"
-                             FontSize="14"
+                             FontSize="18"
                              FontWeight="Bold"
                              Foreground="#000000"
-                             HorizontalAlignment="Center"
-                             Margin="0,5,0,0"/>
+                             HorizontalAlignment="Left"
+                             Margin="12,8,0,0"/>
                     <TextBlock Text="{Binding ElapsedTime}"
-                             FontSize="48"
+                             FontSize="64"
                              FontFamily="Consolas"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
-                             VerticalAlignment="Center"/>
+                             VerticalAlignment="Center"
+                             Margin="0,24,0,0"/>
                 </StackPanel>
             </Border>
 

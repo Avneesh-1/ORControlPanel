@@ -10,6 +10,7 @@ using ReactiveUI.Fody.Helpers;
 using ORControlPanelNew.Services;
 using Avalonia.Threading;
 using NAudio.Wave;
+using System.Reflection;
 
 namespace ORControlPanelNew.ViewModels.GasMonitoring
 {
@@ -18,8 +19,8 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
         private ObservableCollection<GasStatus> _gases = new();
         private readonly Guid _instanceId = Guid.NewGuid();
         private readonly IAlertService _alertService;
-        private readonly WaveOutEvent _waveOut;
-        private readonly WaveFileReader _waveReader;
+        private WaveOutEvent? _waveOut;
+        private WaveFileReader? _waveReader;
         private bool _isDisposed = false;
         private bool _isAudioPlaying = false;
 

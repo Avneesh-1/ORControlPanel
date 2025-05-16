@@ -151,7 +151,6 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 IsDialogOpen = false;
             });
 
-
             this.WhenAnyValue(x => x.Light1Intensity)
                .Where(_ => IsLight1On)
                .Throttle(TimeSpan.FromMilliseconds(500))

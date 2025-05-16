@@ -56,5 +56,9 @@
       <SubType>Designer</SubType>
     </AvaloniaXaml>
   </ItemGroup>
-
+  <ItemGroup>
+    <None Update="Assets\Sounds\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
