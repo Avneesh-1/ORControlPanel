@@ -12,12 +12,14 @@
                     Background="{DynamicResource TimerBackgroundBrush}"
                     HorizontalAlignment="Stretch">
                 <StackPanel>
-                    <TextBlock Text="OPERATION TIMING"
-                             FontSize="18"
-                             FontWeight="Bold"
-                             Foreground="#000000"
-                             HorizontalAlignment="Left"
-                             Margin="12,8,0,0"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,8,0,0" Spacing="6">
+                        <Image Source="avares://ORControlPanelNew/Assets/Icons/time-clock.png" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="OPERATION TIMING"
+                                 FontSize="18"
+                                 FontWeight="Bold"
+                                 Foreground="#000000"
+                                 VerticalAlignment="Center"/>
+                    </StackPanel>
                     <TextBlock Text="{Binding ElapsedTime}"
                              FontSize="64"
                              FontFamily="Consolas"
@@ -33,15 +35,24 @@
                       HorizontalAlignment="Center" 
                       Spacing="10"
                       Margin="0,10,0,0">
-                <Button Content="START"
-                        Command="{Binding StartCommand}"
-                        Classes="timerButton"/>
-                <Button Content="PAUSE"
-                        Command="{Binding StopCommand}"
-                        Classes="timerButton"/>
-                <Button Content="RESET"
-                        Command="{Binding ResetCommand}"
-                        Classes="timerButton"/>
+                <Button Command="{Binding StartCommand}" Classes="timerButton">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="START" VerticalAlignment="Center"/>
+                        <Image Source="avares://ORControlPanelNew/Assets/Icons/start.png" Width="16" Height="16" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding StopCommand}" Classes="timerButton">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="PAUSE" VerticalAlignment="Center"/>
+                        <Image Source="avares://ORControlPanelNew/Assets/Icons/pause.png" Width="16" Height="16" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ResetCommand}" Classes="timerButton">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Text="RESET" VerticalAlignment="Center"/>
+                        <Image Source="avares://ORControlPanelNew/Assets/Icons/reset.png" Width="16" Height="16" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </StackPanel>
     </Grid>

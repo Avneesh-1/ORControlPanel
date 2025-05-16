@@ -15,12 +15,14 @@
                     Background="{DynamicResource ClockBackgroundBrush}"
                     HorizontalAlignment="Stretch">
                 <StackPanel>
-                    <TextBlock Text="TIME"
-                             FontSize="18"
-                             FontWeight="Bold"
-                             Foreground="#000000"
-                             HorizontalAlignment="Left"
-                             Margin="12,8,0,0"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,8,0,0" Spacing="6">
+                        <Image Source="avares://ORControlPanelNew/Assets/Icons/circular-clock.png" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <TextBlock Text="TIME"
+                                 FontSize="18"
+                                 FontWeight="Bold"
+                                 Foreground="#000000"
+                                 VerticalAlignment="Center"/>
+                    </StackPanel>
                     <TextBlock Text="{Binding CurrentTime}"
                              FontSize="64"
                              FontFamily="Consolas"
@@ -32,11 +34,13 @@
             </Border>
 
            
-            <TextBlock Text="{Binding CurrentDate}"
-                     Foreground="White"
-                     FontSize="14"
-                     HorizontalAlignment="Right"
-                     Margin="0,5,0,0"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0" Spacing="6">
+                <Image Source="avares://ORControlPanelNew/Assets/Icons/schedule.png" Width="20" Height="20" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding CurrentDate}"
+                         Foreground="White"
+                         FontSize="14"
+                         VerticalAlignment="Center"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 

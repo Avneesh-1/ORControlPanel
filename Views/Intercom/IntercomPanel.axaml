@@ -69,23 +69,23 @@
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="16" Margin="16,0,0,0">
                                     <Button Height="64" Width="120" Background="#7CB342" Foreground="Black" FontWeight="Bold" CornerRadius="10">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
-                                            <TextBlock Text="📞" FontSize="22"/>
+                                            <Image Source="avares://ORControlPanelNew/Assets/Icons/telephone.png" Width="22" Height="22" VerticalAlignment="Center"/>
                                             <TextBlock Text="CALL" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Height="64" Width="120" Background="#E53935" Foreground="White" FontWeight="Bold" CornerRadius="10">
+                                    <Button Height="64" Width="120" Background="#D3D3D3" Foreground="Black" FontWeight="Bold" CornerRadius="10">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
-                                            <Viewbox Width="18" Height="18" VerticalAlignment="Center">
-                                                <Canvas Width="24" Height="24">
-                                                    <Path Data="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5C20.55,15.5 21,15.95 21,16.5V20C21,20.55 20.55,21 20,21C10.61,21 3,13.39 3,4C3,3.45 3.45,3 4,3H7.5C8.05,3 8.5,3.45 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"
-                                                      Fill="#fff" Stroke="#fff" StrokeThickness="1.5"/>
-                                                </Canvas>
-                                            </Viewbox>
+                                            <Image Source="avares://ORControlPanelNew/Assets/Icons/decline.png" Width="22" Height="22" VerticalAlignment="Center"/>
                                             <TextBlock Text="HANG UP" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Button>
                                     <Button Height="44" Width="120" Background="#404040" Foreground="White" FontWeight="Bold" FontSize="16"
-                                            Name="OpenPhonebookButton" Content="Phonebook" Margin="0,8,0,0"/>
+                                            Name="OpenPhonebookButton" Margin="0,8,0,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                                            <Image Source="avares://ORControlPanelNew/Assets/Icons/contacts.png" Width="20" Height="20" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Phonebook" FontSize="13"/>
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
                             </StackPanel>
                             <!-- Del Button below keypad -->

@@ -8,11 +8,7 @@
     <Button x:Name="PatientDataButton" Classes="footerButton" ToolTip.Tip="Patient Data" BorderThickness="0" Padding="0" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
             <Viewbox Width="32" Height="32" Margin="0,0,0,2">
-                <Canvas Width="24" Height="24">
-                    <!-- Placeholder: User icon (simple head and shoulders) -->
-                    <Ellipse Width="12" Height="12" Canvas.Left="6" Canvas.Top="2" Stroke="#FFD700" StrokeThickness="2" Fill="Transparent"/>
-                    <Path Data="M4,20 Q12,14 20,20" Stroke="#FFD700" StrokeThickness="2" Fill="Transparent"/>
-                </Canvas>
+                <Image Source="avares://ORControlPanelNew/Assets/Icons/data-security.png" Width="24" Height="24" Stretch="Uniform"/>
             </Viewbox>
             <TextBlock Text="Patient Data"
                      HorizontalAlignment="Center"

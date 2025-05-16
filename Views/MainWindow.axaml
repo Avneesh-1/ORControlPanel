@@ -139,7 +139,7 @@
 			<TextBlock Text="OPERATION  ROOM  CONTROL  PANEL"
 					   Foreground="White"
 					   FontWeight="Bold"
-					   FontSize="22"
+					   FontSize="15"
 					   VerticalAlignment="Center"
 					   LetterSpacing="2"/>
 		</StackPanel>
@@ -164,7 +164,7 @@
 					<!-- Temperature -->
 				</Grid.RowDefinitions>
 
-					<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch"/>
+					<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch" Margin="16,0,0,0"/>
 					<temp:TemperatureCard Grid.Row="1" Margin="0,36,0,0" HorizontalAlignment="Stretch"/>
 			</Grid>
 
