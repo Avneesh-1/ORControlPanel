@@ -8,7 +8,7 @@
         <StackPanel>
             <!-- Timer Display Panel -->
             <Border CornerRadius="10"
-                    Height="140"
+                    Height="180"
                     Background="{DynamicResource AnesthesiaTimerBackgroundBrush}"
                     HorizontalAlignment="Stretch">
                 <StackPanel>
@@ -22,10 +22,11 @@
                     </StackPanel>
                     <TextBlock Text="{Binding ElapsedTime}"
                              FontSize="64"
-                             FontFamily="Consolas"
+                             FontFamily="avares://ORControlPanelNew/Assets/fonts/digital7.monoitalic.ttf#Digital-7 Mono Italic"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"
+                             Padding="0,16,0,16"
                              Margin="0,24,0,0"/>
                 </StackPanel>
             </Border>
