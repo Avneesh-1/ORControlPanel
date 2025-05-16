@@ -13,7 +13,6 @@
         <converters:BoolToTextConverter x:Key="BoolToTextConverter"/>
 		<converters:StringToBrushConverter x:Key="StringToBrushConverter"/>
 		<converters:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
-
 		<SolidColorBrush x:Key="OnBrush" Color="Green"/>
 		<SolidColorBrush x:Key="OffBrush" Color="Red"/>
 		<SolidColorBrush x:Key="OkBrush" Color="Green"/>

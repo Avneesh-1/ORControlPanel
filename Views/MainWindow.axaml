@@ -154,7 +154,7 @@
 				</Grid.RowDefinitions>
 
 					<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch"/>
-					<temp:TemperatureCard Grid.Row="1" Margin="0,36,0,0" HorizontalAlignment="Stretch"/>
+					<temp:TemperatureCard Grid.Row="1" Margin="0,36,0,0" HorizontalAlignment="Stretch"  DataContext="{Binding TemperatureMonitoring}"/>
 			</Grid>
 
 				<!-- Vertical Divider 1 -->

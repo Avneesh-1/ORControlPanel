@@ -32,8 +32,8 @@ namespace ORControlPanelNew.ViewModels
         public MainWindowViewModel(IAlertService alertService)
         {
             GasMonitoring = new GasMonitoringViewModel(alertService);
-            TemperatureMonitoring = new TemperatureViewModel();
-            UpsStatus = new UpsStatusViewModel(alertService);
+            TemperatureMonitoring = new TemperatureViewModel(alertService);
+            
             SetTabCommand = ReactiveCommand.Create<FooterTab>(tab => SelectedTab = tab);
         }
     }

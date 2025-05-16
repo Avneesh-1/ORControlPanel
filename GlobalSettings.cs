@@ -392,30 +392,19 @@ namespace ORControlPanelNew
 
                     if (s.StartsWith("GASR"))
                     {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool isAlert = parts[1] == "1";
-                            if (isAlert)
-                            {
-                                Log($"GASR: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
+
+                                Log($"GASR: Invoking OnGeneralGasAlertUpdated with isAlert={false}");
                                 OnGasAlertUpdated?.Invoke("General Gas Pressure",true);
-                            }
-                        }
-                    }
+        
+                       }
+                    
 
                     if (s.StartsWith("GASW"))
                     {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool isAlert = parts[1] == "0";
-                            if (isAlert)
-                            {
-                                Log($"GASW: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
+  
+                                Log($"GASW: Invoking OnGeneralGasAlertUpdated with isAlert={false}");
                                 OnGasAlertUpdated?.Invoke("General Gas Pressure",false);
-                            }
-                        }
+                          
                     }
 
                     // Gas Alert Handling

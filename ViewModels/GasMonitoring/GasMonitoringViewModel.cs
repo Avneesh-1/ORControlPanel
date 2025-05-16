@@ -29,17 +29,13 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             set => this.RaiseAndSetIfChanged(ref _gases, value);
         }
 
-        [Reactive] public string GeneralGasPressure { get; set; } = "0.0";
-        [Reactive] public string Temperature { get; set; } = "0.0";
-        [Reactive] public string AirDiffPressure { get; set; } = "0.0";
-        [Reactive] public string Humidity { get; set; } = "0.0";
+      
+     
         [Reactive] public string Voltage { get; set; } = "0.0";
         [Reactive] public string Current { get; set; } = "0.0";
         [Reactive] public string TransformerStatus { get; set; } = "OK";
         [Reactive] public string FireStatus { get; set; } = "OFF";
-        [Reactive] public string HepaStatus { get; set; } = "BAD";
-        [Reactive] public string UpsStatus { get; set; } = "OFF";
-        [Reactive] public bool IsUpsOn { get; set; } = false;
+    
 
         public ReactiveCommand<Unit, Unit> SimulateDataCommand { get; }
 
@@ -56,20 +52,17 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     Log($"Audio file not found: {soundPath}");
                     throw new FileNotFoundException("Alert sound file not found.", soundPath);
                 }
+               
                 _waveReader = new WaveFileReader(soundPath);
-                var loopStream = new LoopStream(_waveReader); // Custom looping stream
                 _waveOut = new WaveOutEvent();
-                _waveOut.Init(loopStream);
+                _waveOut.Init(_waveReader);
                 _waveOut.PlaybackStopped += (s, e) =>
                 {
-                    if (!_isDisposed && _isAudioPlaying)
+                    Dispatcher.UIThread.InvokeAsync(() =>
                     {
-                        Dispatcher.UIThread.InvokeAsync(() =>
-                        {
-                            Log("Audio playback stopped unexpectedly, restarting.");
-                            _waveOut.Play();
-                        });
-                    }
+                        _isAudioPlaying = false;
+                        Log("Audio playback stopped.");
+                    });
                 };
 
                 InitializeGases();
@@ -88,25 +81,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     Dispatcher.UIThread.InvokeAsync(() => UpdateGasAlert(gasName, isAlert));
                 };
 
-                DevicePort.DataProcessor.OnTemperatureUpdated += (temp) =>
-                {
-                    Log($"Received OnTemperatureUpdated: temp={temp}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        DevicePort.UpdateValueToDb(temp, "Temperature");
-                        Temperature = temp;
-                    });
-                };
-
-                DevicePort.DataProcessor.OnHumidityUpdated += (humidity) =>
-                {
-                    Log($"Received OnHumidityUpdated: humidity={humidity}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        DevicePort.UpdateValueToDb(humidity, "Humidity");
-                        Humidity = humidity;
-                    });
-                };
+               
 
                 DevicePort.DataProcessor.OnTransformerUpdated += (voltage, current, isError) =>
                 {
@@ -132,42 +107,9 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     });
                 };
 
-                DevicePort.DataProcessor.OnHepaStatusUpdated += (isBad) =>
-                {
-                    Log($"Received OnHepaStatusUpdated: isBad={isBad}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        HepaStatus = isBad ? "BAD" : "GOOD";
-                        UpdateAudioPlayback();
-                        if (isBad)
-                        {
-                            _alertService.ShowAlert("Alert: HEPA filter status is BAD!");
-                        }
-                    });
-                };
+                
 
-                DevicePort.DataProcessor.OnUpsStatusUpdated += (isOn) =>
-                {
-                    Log($"Received OnUpsStatusUpdated: isOn={isOn}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        UpsStatus = isOn ? "ON" : "OFF";
-                        IsUpsOn = isOn;
-                        UpdateAudioPlayback();
-                        if (!isOn)
-                        {
-                            _alertService.ShowAlert("Alert: UPS is OFF!");
-                        }
-                    });
-                };
-
-                DevicePort.DataProcessor.onAirDiffPressureUpdated += (adp) =>
-                {
-                    Log($"Received onAirDiffPressureUpdated: adp={adp}");
-                    Dispatcher.UIThread.InvokeAsync(() => AirDiffPressure = adp);
-                };
-
-                SimulateDataCommand = ReactiveCommand.Create(SimulateSerialData);
+               SimulateDataCommand = ReactiveCommand.Create(SimulateSerialData);
             }
             catch (Exception ex)
             {
@@ -229,7 +171,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
         private void UpdateAudioPlayback()
         {
-            bool shouldPlay = Gases.Any(g => g.IsAlert) || UpsStatus == "OFF" || HepaStatus == "BAD";
+            bool shouldPlay = Gases.Any(g => g.IsAlert);
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -278,6 +220,8 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             }
         }
 
+
+
         public void Dispose()
         {
             if (_isDisposed)
@@ -302,53 +246,5 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
     }
 
 
-    public class LoopStream : WaveStream
-    {
-        private readonly WaveStream _sourceStream;
-
-        public LoopStream(WaveStream sourceStream)
-        {
-            _sourceStream = sourceStream;
-            EnableLooping = true;
-        }
-
-        public bool EnableLooping { get; set; }
-
-        public override WaveFormat WaveFormat => _sourceStream.WaveFormat;
-
-        public override long Length => _sourceStream.Length;
-
-        public override long Position
-        {
-            get => _sourceStream.Position;
-            set => _sourceStream.Position = value;
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            int totalBytesRead = 0;
-
-            while (totalBytesRead < count)
-            {
-                int bytesRead = _sourceStream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
-                if (bytesRead == 0)
-                {
-                    if (_sourceStream.Position == 0 || !EnableLooping)
-                        break;
-                    _sourceStream.Position = 0;
-                }
-                totalBytesRead += bytesRead;
-            }
-            return totalBytesRead;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _sourceStream?.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
+ 
 }
