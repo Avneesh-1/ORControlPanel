@@ -30,8 +30,8 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             set => this.RaiseAndSetIfChanged(ref _gases, value);
         }
 
-      
-     
+        
+        [Reactive] public bool GeneralGasAlert { get; set; } = false;
         [Reactive] public string Voltage { get; set; } = "0.0";
         [Reactive] public string Current { get; set; } = "0.0";
         [Reactive] public string TransformerStatus { get; set; } = "OK";
@@ -78,6 +78,16 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
                 DevicePort.DataProcessor.OnGasAlertUpdated += (gasName, isAlert) =>
                 {
+                    if (gasName == "General Gas Pressure")
+                    {
+                        Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
+                        Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            GeneralGasAlert = isAlert;
+                            _alertService.ShowAlert("General Gas Pressure Alert");
+                            UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
+                        });
+                    }
                     Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
                     Dispatcher.UIThread.InvokeAsync(() => UpdateGasAlert(gasName, isAlert));
                 };
@@ -195,6 +205,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
         {
             string[] testData = new[]
             {
+                "GASR",
                 "RDGA$3.5",    // O₂ pressure
                 "ARDP$43",
                 "ALGA",        // O₂ alert ON

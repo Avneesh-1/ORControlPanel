@@ -87,20 +87,10 @@
                     </Border>
 
                     <!-- General Gas Alert -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,18,0,0">
-                        <TextBlock Text="General Gas Pressure" FontSize="15" Foreground="White" FontWeight="Bold"/>
-                        <Ellipse Width="24" Height="24"
-                                 Fill="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='false:OkBrush|true:ErrorBrush'}"
-                                 Stroke="Black" StrokeThickness="1"/>
-                        <TextBlock Text="{Binding GeneralGasAlert, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Alert,Normal', StringFormat='{}{0}'}"
-                                   FontSize="15"
-                                   Foreground="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
-                                   VerticalAlignment="Center"/>
-                    </StackPanel>
-
+                   
                     <!-- HEPA Filter Status -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,18,0,0">
-                        <TextBlock Text="HEPA Filter" FontSize="15" Foreground="White" FontWeight="Bold"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,10,0,0">
+                        <TextBlock Text="HEPA " FontSize="15" Foreground="White" FontWeight="Bold"/>
                         <Ellipse Width="24" Height="24"
                                  Fill="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"
                                  Stroke="Black" StrokeThickness="1"/>
