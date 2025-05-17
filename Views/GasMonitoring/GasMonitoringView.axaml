@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:vm="using:ORControlPanelNew.ViewModels.GasMonitoring"
+            xmlns:models="using:ORControlPanelNew.Models.GasMonitoring"
+            xmlns:converters="using:ORControlPanelNew.Converters"
+            x:Class="ORControlPanelNew.Views.GasMonitoring.GasMonitoringView"
+            x:DataType="vm:GasMonitoringViewModel">
+
+	<UserControl.Resources>
+		<LinearGradientBrush x:Key="CardBlueGradient" StartPoint="0,0" EndPoint="1,0">
+			<GradientStop Color="#B0B0B0" Offset="0"/>
+			<GradientStop Color="#444444" Offset="1"/>
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="TabBlueGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#B3E5FC" Offset="0"/>
+			<GradientStop Color="#2196F3" Offset="1"/>
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="ValueYellowGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#FFD700" Offset="0"/>
+			<GradientStop Color="#FFA500" Offset="1"/>
+		</LinearGradientBrush>
+	</UserControl.Resources>
+
+	<Design.DataContext>
+		<vm:GasMonitoringViewModel />
+	</Design.DataContext>
+	<StackPanel Spacing="10">
+		<Border Background="#181A1B" CornerRadius="16" Padding="5" BorderBrush="#444" BorderThickness="2"  HorizontalAlignment="Stretch" VerticalAlignment="Center">
+
+			<StackPanel Spacing="12">
+				<!-- ✅ Heading -->
+				<TextBlock Text="GASES MONITORING"
+						   Foreground="White"
+						   FontSize="16"
+						   FontWeight="Bold"
+						   HorizontalAlignment="Center"
+						   Margin="0,0,0,8"/>
+
+				<!-- ✅ Items grid -->
+				<ItemsControl ItemsSource="{Binding Gases}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<UniformGrid Columns="2"  />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="models:GasStatus">
+							<Border Background="{StaticResource CardBlueGradient}"
+									CornerRadius="14"
+									Height="64"
+									Margin="5,5,5,5"
+								
+									BorderThickness="1"
+									BorderBrush="#444">
+								<StackPanel Orientation="Horizontal"
+										Spacing="0"
+										VerticalAlignment="Center"
+										Margin="0">
+
+									<TextBlock Text="{Binding Name}"
+											   Foreground="White"
+											   FontSize="14"
+											   Width="100"
+											   Padding="10"
+											   VerticalAlignment="Center"/>
+
+									<Border Height="28"
+											Width="80"
+											CornerRadius="8"
+									
+											Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Center">
+										<TextBlock Text="{Binding Pressure}"
+												   Foreground="White"
+												   FontSize="12"
+												   Padding="10"
+												   HorizontalAlignment="Center"
+												   VerticalAlignment="Center"/>
+									</Border>
+								</StackPanel>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</StackPanel>
+
+		
+
+
+		</Border>
+		<Button Classes="actionButton" HorizontalAlignment="Left" Margin="24,18,0,0" Command="{Binding SimulateDataCommand}">
+			<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+				<TextBlock Text="⛔" Foreground="Red" FontSize="16"/>
+				<TextBlock Text="Simulate Data" Foreground="White" FontSize="13"/>
+			</StackPanel>
+		</Button>
+	
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,18,0,0">
+			<TextBlock Text="General Gas Pressure" FontSize="15" Foreground="White" FontWeight="Bold"/>
+			<Ellipse Width="24" Height="24"
+					 Fill="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='false:OkBrush|true:ErrorBrush'}"
+					 Stroke="Black" StrokeThickness="1"/>
+			<TextBlock Text="{Binding GeneralGasAlert, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Alert,Normal', StringFormat='{}{0}'}"
+					   FontSize="15"
+					   Foreground="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
+					   VerticalAlignment="Center"/>
+		</StackPanel>
+	</StackPanel>
+
+
+</UserControl>

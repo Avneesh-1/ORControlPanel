@@ -1,12 +1,12 @@
 using System;
 using System.Timers;
-using System.Media;
 using ReactiveUI;
 using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using ORControlPanelNew.Views.Timer;
+using NAudio.Wave;
 
 namespace ORControlPanelNew.ViewModels.Timer
 {
@@ -16,7 +16,8 @@ namespace ORControlPanelNew.ViewModels.Timer
         private TimeSpan _remainingTime;
         private TimeSpan _initialTime;
         private bool _isRunning;
-        private SoundPlayer? _alarmSound;
+        private WaveOutEvent? _waveOut;
+        private WaveFileReader? _waveReader;
         private bool _alarmTriggered;
         private Window? _parentWindow;
 
@@ -35,7 +36,7 @@ namespace ORControlPanelNew.ViewModels.Timer
 
         public AnesthesiaTimerViewModel()
         {
-            _initialTime = TimeSpan.Zero; // Default to 0 minutes
+            _initialTime = TimeSpan.Zero;
             _remainingTime = _initialTime;
             _timer = new System.Timers.Timer(1000);
             _timer.Elapsed += Timer_Elapsed;
@@ -57,13 +58,19 @@ namespace ORControlPanelNew.ViewModels.Timer
         {
             try
             {
-                string soundPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "alarm.wav");
-                _alarmSound = new SoundPlayer(soundPath);
-                _alarmSound.LoadAsync();
+                string soundPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "digital-alarm-buzzer-992.wav");
+                if (!File.Exists(soundPath))
+                {
+                    Console.WriteLine($"Warning: Alarm sound file not found at {soundPath}");
+                    return;
+                }
+                _waveReader = new WaveFileReader(soundPath);
+                _waveOut = new WaveOutEvent();
+                _waveOut.Init(_waveReader);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading alarm sound: {ex.Message}");
+                Console.WriteLine($"Error initializing alarm sound: {ex.Message}");
             }
         }
 
@@ -71,14 +78,12 @@ namespace ORControlPanelNew.ViewModels.Timer
         {
             _remainingTime = _remainingTime.Subtract(TimeSpan.FromSeconds(1));
 
-            // Check if 30 seconds remaining and alarm not yet triggered
             if (_remainingTime.TotalSeconds <= 30 && !_alarmTriggered)
             {
                 PlayAlarm();
                 _alarmTriggered = true;
             }
 
-            // Stop at 00:00:00
             if (_remainingTime.TotalSeconds <= 0)
             {
                 _remainingTime = TimeSpan.Zero;
@@ -103,14 +108,15 @@ namespace ORControlPanelNew.ViewModels.Timer
             {
                 _timer.Stop();
                 IsRunning = false;
+                StopAlarm();
             }
         }
 
         private void Reset()
         {
             Stop();
-            _remainingTime = TimeSpan.Zero;  // Reset to zero instead of initial time
-            _initialTime = TimeSpan.Zero;    // Also reset initial time
+            _remainingTime = TimeSpan.Zero;
+            _initialTime = TimeSpan.Zero;
             _alarmTriggered = false;
             this.RaisePropertyChanged(nameof(ElapsedTime));
         }
@@ -119,10 +125,9 @@ namespace ORControlPanelNew.ViewModels.Timer
         {
             if (_parentWindow == null) return;
 
-            Stop(); // Stop the timer while setting new time
+            Stop();
             var dialog = new TimeInputDialog(_initialTime);
             
-            // Subscribe to real-time updates
             dialog.TimeChanged += (s, newTime) => 
             {
                 _remainingTime = newTime;
@@ -143,11 +148,27 @@ namespace ORControlPanelNew.ViewModels.Timer
         {
             try
             {
-                _alarmSound?.Play();
+                if (_waveOut != null && _waveReader != null)
+                {
+                    _waveReader.Position = 0;
+                    _waveOut.Play();
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error playing alarm sound: {ex.Message}");
+            }
+        }
+
+        private void StopAlarm()
+        {
+            try
+            {
+                _waveOut?.Stop();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error stopping alarm sound: {ex.Message}");
             }
         }
     }

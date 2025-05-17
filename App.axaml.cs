@@ -4,6 +4,8 @@ using Avalonia.Markup.Xaml;
 using ORControlPanelNew.ViewModels;
 using ORControlPanelNew.Views;
 using System;
+using System.IO.Ports;
+using System.Threading.Tasks;
 
 namespace ORControlPanelNew
 {
@@ -23,19 +25,26 @@ namespace ORControlPanelNew
             }
         }
 
-        public override void OnFrameworkInitializationCompleted()
+        public override async void OnFrameworkInitializationCompleted()
         {
             try
             {
                 Console.WriteLine("Framework initialization completed...");
                 if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
-                    Console.WriteLine("Creating main window...");
+                    // Show splash screen first
+                    var splash = new SplashScreen();
+                    desktop.MainWindow = splash;
+                    splash.Show();
+
+                    // Wait 5 seconds
+                    await Task.Delay(5000);
+
+                    // After splash, show main window
                     var mainWindow = new MainWindow();
-                    var viewModel = new MainWindowViewModel();
-                    mainWindow.DataContext = viewModel;
                     desktop.MainWindow = mainWindow;
-                    Console.WriteLine("Main window created and set");
+                    mainWindow.Show();
+                    splash.Close();
                 }
                 else
                 {

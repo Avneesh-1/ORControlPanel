@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:ORControlPanelNew.ViewModels.Lighting"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+        x:Class="ORControlPanelNew.Views.Lighting.OTLight2Dialog"
+        x:DataType="vm:OTLight2ViewModel"
+        Title="OT Light 2 Control"
+        Width="400" Height="200"
+        WindowStartupLocation="CenterOwner">
+
+    <Design.DataContext>
+        <vm:OTLight2ViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,Auto" Margin="20">
+        <!-- OT Light 2 Section -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+            <TextBlock Text="OT Light 2" FontSize="16" FontWeight="Bold"/>
+            <Button Grid.Column="1" 
+                    Command="{Binding ToggleLightCommand}"
+                    Width="60"
+                    Height="30"
+                    CornerRadius="15"
+                    Background="{Binding IsLightOn, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#00FF00,#FF0000'}">
+                <TextBlock Text="{Binding IsLightOn, Converter={StaticResource BoolToTextConverter}, ConverterParameter='ON,OFF'}"
+                         Foreground="White"
+                         FontWeight="Bold"/>
+            </Button>
+        </Grid>
+        <!-- <Slider Grid.Row="1" 
+                Minimum="0" 
+                Maximum="100" 
+                Value="{Binding LightIntensity}"
+                Margin="0,0,0,20"/> -->
+    </Grid>
+</Window> 

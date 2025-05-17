@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,7 +9,6 @@
     <AssemblyName>ORControlPanelNew</AssemblyName>
     <RootNamespace>ORControlPanelNew</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.7" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.7" />
@@ -20,14 +18,27 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.7" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.2.7" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="LibVLCSharp" Version="3.9.3" />
+    <PackageReference Include="LibVLCSharp.Avalonia" Version="3.9.3" />
+    <PackageReference Include="ManagedBass" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
     <PackageReference Include="System.Windows.Extensions" Version="9.0.4" />
+    <PackageReference Include="VideoLAN.LibVLC.Mac" Version="3.1.3.1" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
   </ItemGroup>
-
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
-
   <ItemGroup>
+    <AvaloniaXaml Remove="Views\HepaStatus\HepaStatusCard.axaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\AlertDialog\AlertDialog.axaml.cs">
+      <DependentUpon>AlertDialog.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\Timer\TimerPage.axaml.cs">
       <DependentUpon>TimerPage.axaml</DependentUpon>
     </Compile>
@@ -36,7 +47,6 @@
       <SubType>Designer</SubType>
     </AvaloniaXaml>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Views\MainWindow.axaml.cs">
       <DependentUpon>MainWindow.axaml</DependentUpon>
@@ -46,5 +56,9 @@
       <SubType>Designer</SubType>
     </AvaloniaXaml>
   </ItemGroup>
-
+  <ItemGroup>
+    <None Update="Assets\Sounds\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
