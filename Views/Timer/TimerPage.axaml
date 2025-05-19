@@ -9,8 +9,13 @@
             <!-- Timer Display Panel -->
             <Border CornerRadius="10"
                     Height="180"
-                    Background="{DynamicResource TimerBackgroundBrush}"
                     HorizontalAlignment="Stretch">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#5DB7F3" Offset="0" />
+                        <GradientStop Color="#3C8DCD" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,8,0,0" Spacing="6">
                         <Image Source="avares://ORControlPanelNew/Assets/Icons/time-clock.png" Width="24" Height="24" VerticalAlignment="Center"/>
@@ -77,8 +82,8 @@
 
     <UserControl.Resources>
         <LinearGradientBrush x:Key="TimerBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-            <GradientStop Offset="0" Color="#1E90FF"/>
-            <GradientStop Offset="1" Color="#0000CD"/>
+            <GradientStop Offset="0" Color="#5DB7F3"/>
+            <GradientStop Offset="1" Color="#3C8DCD"/>
         </LinearGradientBrush>
     </UserControl.Resources>
     

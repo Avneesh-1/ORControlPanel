@@ -14,8 +14,6 @@ namespace ORControlPanelNew.ViewModels.Lighting
     {
         private bool _isLightOn;
         private bool _isDialogOpen;
-        private double _light1Intensity;
-        private double _light2Intensity;
         private bool _isLight1On;
         private bool _isLight2On;
 
@@ -29,18 +27,6 @@ namespace ORControlPanelNew.ViewModels.Lighting
         {
             get => _isDialogOpen;
             set => this.RaiseAndSetIfChanged(ref _isDialogOpen, value);
-        }
-
-        public double Light1Intensity
-        {
-            get => _light1Intensity;
-            set => this.RaiseAndSetIfChanged(ref _light1Intensity, value);
-        }
-
-        public double Light2Intensity
-        {
-            get => _light2Intensity;
-            set => this.RaiseAndSetIfChanged(ref _light2Intensity, value);
         }
 
         public bool IsLight1On
@@ -80,15 +66,13 @@ namespace ORControlPanelNew.ViewModels.Lighting
                     {
                         if (fieldName == "General Lights 1")
                         {
-                            Light1Intensity = value;
                             IsLight1On = value > 0; // Light is on if intensity > 0
-                            Debug.WriteLine($"Fetched Light1Intensity from DB: {Light1Intensity}, IsLight1On: {IsLight1On}");
+                            Debug.WriteLine($"Fetched Light1Intensity from DB: {value}, IsLight1On: {IsLight1On}");
                         }
                         else if (fieldName == "General Lights 2")
                         {
-                            Light2Intensity = value;
                             IsLight2On = value > 0; // Light is on if intensity > 0
-                            Debug.WriteLine($"Fetched Light2Intensity from DB: {Light2Intensity}, IsLight2On: {IsLight2On}");
+                            Debug.WriteLine($"Fetched Light2Intensity from DB: {value}, IsLight2On: {IsLight2On}");
                         }
                     }
                     else
@@ -101,34 +85,23 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 if (dt.Rows.Cast<DataRow>().All(row => row["FieldName"].ToString() != "General Lights 1"))
                 {
                     Debug.WriteLine("No data found for General Lights 1 in DB, using defaults");
-                    Light1Intensity = 0;
                     IsLight1On = false;
                 }
                 if (dt.Rows.Cast<DataRow>().All(row => row["FieldName"].ToString() != "General Lights 2"))
                 {
                     Debug.WriteLine("No data found for General Lights 2 in DB, using defaults");
-                    Light2Intensity = 0;
                     IsLight2On = false;
                 }
 
                 // Optionally sync the hardware with the fetched values
-                if (IsLight1On && Light1Intensity > 0)
-                {
-                    DevicePort.SerialPortInterface.Write("LITA" + (int)Light1Intensity);
-                }
-                if (IsLight2On && Light2Intensity > 0)
-                {
-                    DevicePort.SerialPortInterface.Write("LITB" + (int)Light2Intensity);
-                }
+                // (No intensity logic here anymore)
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error fetching initial lighting data from DB: {ex.Message}");
                 // Fallback to default values
-            Light1Intensity = 0;
-            Light2Intensity = 0;
-            IsLight1On = false;
-            IsLight2On = false;
+                IsLight1On = false;
+                IsLight2On = false;
             }
 
             ToggleLightCommand = ReactiveCommand.Create(() =>
@@ -150,45 +123,6 @@ namespace ORControlPanelNew.ViewModels.Lighting
             {
                 IsDialogOpen = false;
             });
-
-            this.WhenAnyValue(x => x.Light1Intensity)
-               .Where(_ => IsLight1On)
-               .Throttle(TimeSpan.FromMilliseconds(500))
-               .Subscribe(value =>
-               {
-                   try
-                   {
-                       int intValue = (int)value;
-
-                       DevicePort.UpdateValueToDb(intValue.ToString(), "General Lights 1");
-
-                       Debug.WriteLine($"Updated Light1Intensity: {intValue}");
-                       DevicePort.SerialPortInterface.Write("LITA" + intValue);
-                   }
-                   catch (Exception ex)
-                   {
-                       Debug.WriteLine($"Error updating Light1Intensity: {ex.Message}, InnerException: {ex.InnerException?.Message}");
-                   }
-               });
-
-            this.WhenAnyValue(x => x.Light2Intensity)
-                .Where(_ => IsLight2On)
-                .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(value =>
-                {
-                    try
-                    {
-                        int intValue = (int)value;
-
-                        DevicePort.UpdateValueToDb(intValue.ToString(), "General Lights 2");
-                        Debug.WriteLine($"Updated Light2Intensity: {intValue}");
-                        DevicePort.SerialPortInterface.Write("LITB" + intValue);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating Light2Intensity: {ex.Message}, InnerException: {ex.InnerException?.Message}");
-                    }
-                });
         }
 
         private void ToggleLight1()
@@ -197,31 +131,23 @@ namespace ORControlPanelNew.ViewModels.Lighting
             {
                 if (!IsLight1On)
                 {
-                    var value = (int)(Light1Intensity == 0 ? 10 : Light1Intensity);
-
-                    // Attempt to write to serial port
+                    // Turn on the light (intensity logic removed)
                     try
                     {
-                        DevicePort.SerialPortInterface.Write("LITA" + value);
+                        DevicePort.SerialPortInterface.Write("LITA10"); // Default to 10 when turning on
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Error writing to serial port: {ex.Message}");
-                        // Optionally handle the error (e.g., show a user notification)
                     }
-
-                    // Attempt to update database
                     try
                     {
-                        DevicePort.UpdateValueToDb(value.ToString(), "General Lights 1");
+                        DevicePort.UpdateValueToDb("10", "General Lights 1");
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Error updating database: {ex.Message}");
-                        // Optionally handle the error (e.g., show a user notification)
                     }
-
-                    Light1Intensity = value;
                     IsLight1On = true;
                 }
                 else
@@ -229,14 +155,12 @@ namespace ORControlPanelNew.ViewModels.Lighting
                     // Turn off the light
                     try
                     {
-                        DevicePort.SerialPortInterface.Write("LITA" + "0");
+                        DevicePort.SerialPortInterface.Write("LITA0");
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                     }
-
-                    // Attempt to update database
                     try
                     {
                         DevicePort.UpdateValueToDb("0", "General Lights 1");
@@ -245,13 +169,11 @@ namespace ORControlPanelNew.ViewModels.Lighting
                     {
                         Debug.WriteLine($"Error updating database: {ex.Message}");
                     }
-
                     IsLight1On = false;
                 }
             }
             catch (Exception ex)
             {
-                // Catch any unexpected exceptions
                 Debug.WriteLine($"Unexpected error in ToggleLight1: {ex.Message}");
             }
         }
@@ -262,31 +184,23 @@ namespace ORControlPanelNew.ViewModels.Lighting
             {
                 if (!IsLight2On)
                 {
-                    var value = (int)(Light2Intensity == 0 ? 10 : Light2Intensity);
-
-                    // Attempt to write to serial port
+                    // Turn on the light (intensity logic removed)
                     try
                     {
-                        DevicePort.SerialPortInterface.Write("LITB" + value);
+                        DevicePort.SerialPortInterface.Write("LITB10"); // Default to 10 when turning on
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Error writing to serial port: {ex.Message}");
-                        // Optionally handle the error (e.g., show a user notification)
                     }
-
-                    // Attempt to update database
                     try
                     {
-                        DevicePort.UpdateValueToDb(value.ToString(), "General Lights 2");
+                        DevicePort.UpdateValueToDb("10", "General Lights 2");
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Error updating database: {ex.Message}");
-                        // Optionally handle the error (e.g., show a user notification)
                     }
-
-                    Light2Intensity = value;
                     IsLight2On = true;
                 }
                 else
@@ -294,14 +208,12 @@ namespace ORControlPanelNew.ViewModels.Lighting
                     // Turn off the light
                     try
                     {
-                        DevicePort.SerialPortInterface.Write("LITB" + "0");
+                        DevicePort.SerialPortInterface.Write("LITB0");
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                     }
-
-                    // Attempt to update database
                     try
                     {
                         DevicePort.UpdateValueToDb("0", "General Lights 2");
@@ -310,13 +222,11 @@ namespace ORControlPanelNew.ViewModels.Lighting
                     {
                         Debug.WriteLine($"Error updating database: {ex.Message}");
                     }
-
                     IsLight2On = false;
                 }
             }
             catch (Exception ex)
             {
-                // Catch any unexpected exceptions
                 Debug.WriteLine($"Unexpected error in ToggleLight2: {ex.Message}");
             }
         }

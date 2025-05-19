@@ -47,8 +47,8 @@
 
     <UserControl.Resources>
         <LinearGradientBrush x:Key="ClockBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-            <GradientStop Offset="0" Color="#90EE90"/>
-            <GradientStop Offset="1" Color="#32CD32"/>
+            <GradientStop Offset="0" Color="#B7E438"/>
+            <GradientStop Offset="1" Color="#B1F548"/>
         </LinearGradientBrush>
     </UserControl.Resources>
 </UserControl>

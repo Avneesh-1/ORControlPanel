@@ -12,6 +12,7 @@
         xmlns:temp="using:ORControlPanelNew.Views.Temperature"
         xmlns:music="using:ORControlPanelNew.Views.Music"
         xmlns:intercom="using:ORControlPanelNew.Views.Intercom"
+        xmlns:brightness="using:ORControlPanelNew.Views.Brightness"
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="ORControlPanelNew.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -239,6 +240,8 @@
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
 				<lighting:GeneralLightingControl Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="1" Background="#B3D1F7" Width="2" Margin="0,12"/>
@@ -248,11 +251,13 @@
 				<Border Grid.Column="5" Background="#B3D1F7" Width="2" Margin="0,12"/>
 				<lighting:OTLight2Control Grid.Column="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="7" Background="#B3D1F7" Width="2" Margin="0,12"/>
-				<lighting:LaminarLightControl Grid.Column="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<brightness:BrightnessControl Grid.Column="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="9" Background="#B3D1F7" Width="2" Margin="0,12"/>
-				<patient:PatientDataControl Grid.Column="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<lighting:LaminarLightControl Grid.Column="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 				<Border Grid.Column="11" Background="#B3D1F7" Width="2" Margin="0,12"/>
-				<music:MusicButton Grid.Column="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<patient:PatientDataControl Grid.Column="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+				<Border Grid.Column="13" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<music:MusicButton Grid.Column="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 			</Grid>
 		</Border>
 	</Grid>
