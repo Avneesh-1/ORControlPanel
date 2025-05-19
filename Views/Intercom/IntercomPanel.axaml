@@ -39,11 +39,17 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <!-- Add DIALER label above the card -->
-                <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,8,0,0" HorizontalAlignment="Left"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="0,8,0,0" HorizontalAlignment="Left">
+                    <Image Source="avares://ORControlPanelNew/Assets/Icons/dialer.png" Width="22" Height="22" VerticalAlignment="Center"/>
+                    <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                </StackPanel>
                 <!-- Dialer Card Start -->
                 <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="3" Background="#181A1B" BorderBrush="#444" BorderThickness="2" CornerRadius="16" Padding="24" Width="440" Height="580" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <StackPanel>
-                        <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" Margin="0,0,0,16" HorizontalAlignment="Left"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="0,0,0,16" HorizontalAlignment="Left">
+                            <Image Source="avares://ORControlPanelNew/Assets/Icons/dialer.png" Width="22" Height="22" VerticalAlignment="Center"/>
+                            <TextBlock Text="DIALER" Foreground="White" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                        </StackPanel>
                         <StackPanel>
                             <!-- Green Bar -->
                             <Border Background="#7CB342" CornerRadius="10" Height="48" Margin="0,0,0,24" HorizontalAlignment="Stretch">
@@ -79,10 +85,10 @@
                                             <TextBlock Text="HANG UP" FontWeight="Bold"/>
                                         </StackPanel>
                                     </Button>
-                                    <Button Height="44" Width="120" Background="#404040" Foreground="White" FontWeight="Bold" FontSize="16"
+                                    <Button Height="64" Width="120" Background="#404040" Foreground="White" FontWeight="Bold" FontSize="16"
                                             Name="OpenPhonebookButton" Margin="0,8,0,0">
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
-                                            <Image Source="avares://ORControlPanelNew/Assets/Icons/contacts.png" Width="20" Height="20" VerticalAlignment="Center"/>
+                                            <Image Source="avares://ORControlPanelNew/Assets/Icons/contacts.png" Width="22" Height="22" VerticalAlignment="Center"/>
                                             <TextBlock Text="Phonebook" FontSize="13"/>
                                         </StackPanel>
                                     </Button>

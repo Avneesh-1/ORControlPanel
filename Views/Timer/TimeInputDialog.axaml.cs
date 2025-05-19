@@ -75,5 +75,10 @@ namespace ORControlPanelNew.Views.Timer
         {
             Close(null);
         }
+
+        private void OnStartClick(object sender, RoutedEventArgs e)
+        {
+            Close(TimeSpan.MaxValue);
+        }
     }
 } 

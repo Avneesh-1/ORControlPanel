@@ -127,20 +127,29 @@ namespace ORControlPanelNew.ViewModels.Timer
 
             Stop();
             var dialog = new TimeInputDialog(_initialTime);
-            
             dialog.TimeChanged += (s, newTime) => 
             {
                 _remainingTime = newTime;
                 this.RaisePropertyChanged(nameof(ElapsedTime));
             };
-            
             var result = await dialog.ShowDialog<TimeSpan?>(_parentWindow);
 
-            if (result.HasValue && result.Value.TotalSeconds > 0)
+            if (result.HasValue)
             {
-                _initialTime = result.Value;
-                _remainingTime = _initialTime;
-                this.RaisePropertyChanged(nameof(ElapsedTime));
+                if (result.Value == TimeSpan.MaxValue)
+                {
+                    // Start button was clicked in the dialog
+                    _initialTime = dialog.SelectedTime;
+                    _remainingTime = _initialTime;
+                    this.RaisePropertyChanged(nameof(ElapsedTime));
+                    Start();
+                }
+                else if (result.Value.TotalSeconds > 0)
+                {
+                    _initialTime = result.Value;
+                    _remainingTime = _initialTime;
+                    this.RaisePropertyChanged(nameof(ElapsedTime));
+                }
             }
         }
 

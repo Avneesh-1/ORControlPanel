@@ -60,6 +60,10 @@
                     Click="OnOKClick"
                     Width="80"
                     Classes="accent"/>
+            <Button Content="Start"
+                    Click="OnStartClick"
+                    Width="80"
+                    Classes="accent"/>
             <Button Content="Cancel"
                     Click="OnCancelClick"
                     Width="80"/>

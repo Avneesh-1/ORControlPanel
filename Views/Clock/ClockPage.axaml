@@ -24,7 +24,7 @@
                                  VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="{Binding CurrentTime}"
-                             FontSize="64"
+                             FontSize="90"
                              FontFamily="avares://ORControlPanelNew/Assets/fonts/digital7.monoitalic.ttf#Digital-7 Mono Italic"
                              Foreground="#000000"
                              HorizontalAlignment="Center"

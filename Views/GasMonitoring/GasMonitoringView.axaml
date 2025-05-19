@@ -53,7 +53,7 @@
 					</LinearGradientBrush>
 				</Border.Background>
 				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
-					<TextBlock Text="🧪" FontSize="18" VerticalAlignment="Center"/>
+					<Image Source="avares://ORControlPanelNew/Assets/Icons/gas.png" Width="22" Height="22" VerticalAlignment="Center"/>
 					<TextBlock Text="MEDICAL GAS STATUS" Foreground="White" FontWeight="Bold" FontSize="15" VerticalAlignment="Center"/>
 				</StackPanel>
 			</Border>

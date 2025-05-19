@@ -18,7 +18,7 @@
                 </Border.Background>
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,8,0,0" Spacing="6">
-                        <Image Source="avares://ORControlPanelNew/Assets/Icons/time-clock.png" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Image Source="avares://ORControlPanelNew/Assets/Icons/time-clock.png" Width="24" Height="22" VerticalAlignment="Center"/>
                         <TextBlock Text="OPERATION TIMING"
                                  FontSize="18"
                                  FontWeight="Bold"
@@ -26,7 +26,7 @@
                                  VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="{Binding ElapsedTime}"
-                             FontSize="64"
+                             FontSize="90"
                              FontFamily="avares://ORControlPanelNew/Assets/fonts/digital7.monoitalic.ttf#Digital-7 Mono Italic"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
@@ -65,18 +65,20 @@
 
     <UserControl.Styles>
         <Style Selector="Button.timerButton">
-            <Setter Property="Background" Value="#404040"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Width" Value="80"/>
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="CornerRadius" Value="15"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="BorderBrush" Value="#404040"/>
+            <Setter Property="BorderThickness" Value="2"/>
         </Style>
         <Style Selector="Button.timerButton:pointerover">
-            <Setter Property="Background" Value="#505050"/>
+            <Setter Property="Background" Value="#f0f0f0"/>
         </Style>
         <Style Selector="Button.timerButton:pressed">
-            <Setter Property="Background" Value="#303030"/>
+            <Setter Property="Background" Value="#e0e0e0"/>
         </Style>
     </UserControl.Styles>
 

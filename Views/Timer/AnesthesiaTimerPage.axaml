@@ -13,7 +13,7 @@
                     HorizontalAlignment="Stretch">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,8,0,0" Spacing="6">
-                        <Image Source="avares://ORControlPanelNew/Assets/Icons/clock.png" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Image Source="avares://ORControlPanelNew/Assets/Icons/clock.png" Width="24" Height="26" VerticalAlignment="Center"/>
                         <TextBlock Text="ANESTHESIA TIMER"
                                  FontSize="18"
                                  FontWeight="Bold"
@@ -21,7 +21,7 @@
                                  VerticalAlignment="Center"/>
                     </StackPanel>
                     <TextBlock Text="{Binding ElapsedTime}"
-                             FontSize="64"
+                             FontSize="90"
                              FontFamily="avares://ORControlPanelNew/Assets/fonts/digital7.monoitalic.ttf#Digital-7 Mono Italic"
                              Foreground="#000000"
                              HorizontalAlignment="Center"
@@ -36,10 +36,10 @@
                       HorizontalAlignment="Center" 
                       Spacing="10"
                       Margin="0,10,0,0">
-                <Button Command="{Binding StartCommand}" Classes="anesthesiaTimerButton">
+                <Button Command="{Binding SetTimeCommand}" Classes="anesthesiaTimerButton">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
                         <TextBlock Text="START" VerticalAlignment="Center"/>
-                        <Image Source="avares://ORControlPanelNew/Assets/Icons/start.png" Width="16" Height="16" VerticalAlignment="Center"/>
+                         <Image Source="avares://ORControlPanelNew/Assets/Icons/start.png" Width="16" Height="16" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding StopCommand}" Classes="anesthesiaTimerButton">
@@ -54,12 +54,7 @@
                         <Image Source="avares://ORControlPanelNew/Assets/Icons/reset.png" Width="16" Height="16" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding SetTimeCommand}" Classes="anesthesiaTimerButton">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
-                        <TextBlock Text="SET TIME" VerticalAlignment="Center"/>
-                        <Image Source="avares://ORControlPanelNew/Assets/Icons/select.png" Width="16" Height="16" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                
             </StackPanel>
      
         </StackPanel>
@@ -67,18 +62,20 @@
 
     <UserControl.Styles>
         <Style Selector="Button.anesthesiaTimerButton">
-            <Setter Property="Background" Value="#404040"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#404040"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="CornerRadius" Value="15"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="BorderBrush" Value="#404040"/>
+            <Setter Property="BorderThickness" Value="2"/>
         </Style>
         <Style Selector="Button.anesthesiaTimerButton:pointerover">
-            <Setter Property="Background" Value="#505050"/>
+            <Setter Property="Background" Value="#f0f0f0"/>
         </Style>
         <Style Selector="Button.anesthesiaTimerButton:pressed">
-            <Setter Property="Background" Value="#303030"/>
+            <Setter Property="Background" Value="#e0e0e0"/>
         </Style>
     </UserControl.Styles>
 
