@@ -67,11 +67,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 DevicePort.SerialPortInterface.Write("LITF" + (IsLightOn ? ((int)(LightIntensity == 0 ? 10 : LightIntensity)).ToString() : "0"));
             });
 
-            OpenDialogCommand = ReactiveCommand.Create(() =>
-            {
-                var dialog = new Views.Lighting.OTLight2Dialog();
-                dialog.Show();
-            });
+          
 
             this.WhenAnyValue(x => x.LightIntensity)
                 .Where(_ => IsLightOn)

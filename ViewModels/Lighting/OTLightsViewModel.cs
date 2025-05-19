@@ -99,11 +99,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
             ToggleLight2Command = ReactiveCommand.Create(ToggleOTLight2);
 
-            OpenDialogCommand = ReactiveCommand.Create(() =>
-            {
-                var dialog = new OTLightsDialog();
-                dialog.Show();
-            });
+           
         }
 
         private void ToggleOTLight1()

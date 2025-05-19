@@ -11,16 +11,16 @@ namespace ORControlPanelNew.ViewModels.Lighting
 {
     public class GeneralLight2ViewModel : ReactiveObject
     {
-        private bool _isLightOn;
+        private bool _isLight2On;
 
-        public bool IsLightOn
+        public bool IsLight2On
         {
-            get => _isLightOn;
-            set => this.RaiseAndSetIfChanged(ref _isLightOn, value);
+            get => _isLight2On;
+            set => this.RaiseAndSetIfChanged(ref _isLight2On, value);
         }
 
-        public ICommand ToggleLightCommand { get; }
-        public ICommand OpenDialogCommand { get; }
+        public ICommand ToggleLight2Command { get; }
+
 
         public GeneralLight2ViewModel()
         {
@@ -32,12 +32,12 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     var row = dt.Rows[0];
-                    IsLightOn = Convert.ToDouble(row["Value"]) > 0;
+                    IsLight2On = Convert.ToDouble(row["Value"]) > 0;
                 }
                 else
                 {
                     Debug.WriteLine("No data found for General Lights 2 in DB, using defaults");
-                    IsLightOn = false;
+                    IsLight2On = false;
                 }
 
                 // Optionally sync the hardware with the fetched values
@@ -46,19 +46,64 @@ namespace ORControlPanelNew.ViewModels.Lighting
             {
                 Debug.WriteLine($"Error fetching initial lighting data from DB: {ex.Message}");
                 // Fallback to default values
-                IsLightOn = false;
+                IsLight2On = false;
             }
 
-            ToggleLightCommand = ReactiveCommand.Create(() =>
-            {
-                IsLightOn = !IsLightOn;
-            });
+            ToggleLight2Command = ReactiveCommand.Create(ToggleGeneralLight2);
+        }
 
-            OpenDialogCommand = ReactiveCommand.Create(() =>
+            private void ToggleGeneralLight2()
+        {
+            try
             {
-                var dialog = new GeneralLight2Dialog();
-                dialog.Show();
-            });
+                if (!IsLight2On)
+                {
+                    // Turn on the light (intensity logic removed)
+                    try
+                    {
+                        DevicePort.SerialPortInterface.Write("LITB" + 10); // Default to 10 when turning on
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error writing to serial port: {ex.Message}");
+                    }
+                    try
+                    {
+                        DevicePort.UpdateValueToDb("10", "General Lights 2");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error updating database: {ex.Message}");
+                    }
+                    IsLight2On = true;
+                }
+                else
+                {
+                    // Turn off the light
+                    try
+                    {
+                        DevicePort.SerialPortInterface.Write("LITB" + 0);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error writing to serial port: {ex.Message}");
+                    }
+                    try
+                    {
+                        DevicePort.UpdateValueToDb("0", "General Lights 2");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error updating database: {ex.Message}");
+                    }
+                    IsLight2On = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Unexpected error in General lights 2 ToggleLight: {ex.Message}");
+            }
         }
     }
+    
 } 

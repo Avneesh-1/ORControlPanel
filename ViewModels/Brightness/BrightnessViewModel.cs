@@ -118,7 +118,10 @@ namespace ORControlPanelNew.ViewModels.Brightness
 
             OpenDialogCommand = ReactiveCommand.Create(() =>
             {
-                var dialog = new BrightnessDialog();
+                var dialog = new BrightnessDialog
+                {
+                    DataContext = this // Set the ViewModel
+                };
                 dialog.Show();
             });
         }

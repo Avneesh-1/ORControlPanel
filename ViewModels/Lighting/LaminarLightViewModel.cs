@@ -19,7 +19,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
         }
 
         public ICommand ToggleLightCommand { get; }
-        public ICommand OpenDialogCommand { get; }
+       
 
         public LaminarLightViewModel()
         {
@@ -57,11 +57,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
             ToggleLightCommand = ReactiveCommand.Create(ToggleLaminarLight);
 
-            OpenDialogCommand = ReactiveCommand.Create(() =>
-            {
-                var dialog = new LaminarLightDialog();
-                dialog.Show();
-            });
+           
         }
 
         private void ToggleLaminarLight()
@@ -73,7 +69,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                     // Turn on the light (intensity logic removed)
                     try
                     {
-                        DevicePort.SerialPortInterface.Write("LITI10"); // Default to 10 when turning on
+                        DevicePort.SerialPortInterface.Write("LITI"+10); // Default to 10 when turning on
                     }
                     catch (Exception ex)
                     {
@@ -94,7 +90,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                     // Turn off the light
                     try
                     {
-                        DevicePort.SerialPortInterface.Write("LITI0");
+                        DevicePort.SerialPortInterface.Write("LITI"+0);
                     }
                     catch (Exception ex)
                     {

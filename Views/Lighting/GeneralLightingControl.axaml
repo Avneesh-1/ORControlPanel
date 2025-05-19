@@ -8,12 +8,12 @@
              x:DataType="vm:GeneralLightingViewModel"
              Background="Transparent">
 
-    <Button Command="{Binding ToggleLight1Command}"
+    <Button Command="{Binding ToggleLightCommand}"
             Classes="footerButton"
             ToolTip.Tip="General Lighting Control"
             BorderThickness="0" Padding="0" Margin="0"
             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-            Background="{Binding IsLight1On, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4fc3f7,#2D2D2D'}">
+            Background="{Binding IsLightOn, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4fc3f7,#2D2D2D'}">
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
             <Viewbox Width="32" Height="32" Margin="0,0,0,2">
                 <Image Source="avares://ORControlPanelNew/Assets/Icons/light-bulb.png" Width="24" Height="24" Stretch="Uniform"/>
