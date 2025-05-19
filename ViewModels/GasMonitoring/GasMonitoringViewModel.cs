@@ -30,17 +30,13 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             set => this.RaiseAndSetIfChanged(ref _gases, value);
         }
 
-        
-        [Reactive] public string Temperature { get; set; } = "0.0";
-        [Reactive] public string AirDiffPressure { get; set; } = "0.0";
-        [Reactive] public string Humidity { get; set; } = "0.0";
+
+        [Reactive] public bool GeneralGasAlert { get; set; } = false;
         [Reactive] public string Voltage { get; set; } = "0.0";
         [Reactive] public string Current { get; set; } = "0.0";
         [Reactive] public string TransformerStatus { get; set; } = "OK";
         [Reactive] public string FireStatus { get; set; } = "OFF";
-        [Reactive] public string HepaStatus { get; set; } = "BAD";
-        [Reactive] public string UpsStatus { get; set; } = "OFF";
-        [Reactive] public bool IsUpsOn { get; set; } = false;
+
 
         public ReactiveCommand<Unit, Unit> SimulateDataCommand { get; }
 
@@ -50,7 +46,26 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
             try
             {
-                InitializeAudio();
+                // Initialize NAudio
+                var soundPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "digital-alarm-buzzer-992.wav");
+                if (!File.Exists(soundPath))
+                {
+                    Log($"Audio file not found: {soundPath}");
+                    throw new FileNotFoundException("Alert sound file not found.", soundPath);
+                }
+
+                _waveReader = new WaveFileReader(soundPath);
+                _waveOut = new WaveOutEvent();
+                _waveOut.Init(_waveReader);
+                _waveOut.PlaybackStopped += (s, e) =>
+                {
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        _isAudioPlaying = false;
+                        Log("Audio playback stopped.");
+                    });
+                };
+
                 InitializeGases();
                 Log("INIT");
 
@@ -63,29 +78,21 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
                 DevicePort.DataProcessor.OnGasAlertUpdated += (gasName, isAlert) =>
                 {
+                    if (gasName == "General Gas Pressure")
+                    {
+                        Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
+                        Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            GeneralGasAlert = isAlert;
+                            _alertService.ShowAlert("General Gas Pressure Alert");
+                            UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
+                        });
+                    }
                     Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
                     Dispatcher.UIThread.InvokeAsync(() => UpdateGasAlert(gasName, isAlert));
                 };
 
-                DevicePort.DataProcessor.OnTemperatureUpdated += (temp) =>
-                {
-                    Log($"Received OnTemperatureUpdated: temp={temp}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        DevicePort.UpdateValueToDb(temp, "Temperature");
-                        Temperature = temp;
-                    });
-                };
 
-                DevicePort.DataProcessor.OnHumidityUpdated += (humidity) =>
-                {
-                    Log($"Received OnHumidityUpdated: humidity={humidity}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        DevicePort.UpdateValueToDb(humidity, "Humidity");
-                        Humidity = humidity;
-                    });
-                };
 
                 DevicePort.DataProcessor.OnTransformerUpdated += (voltage, current, isError) =>
                 {
@@ -111,40 +118,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     });
                 };
 
-                DevicePort.DataProcessor.OnHepaStatusUpdated += (isBad) =>
-                {
-                    Log($"Received OnHepaStatusUpdated: isBad={isBad}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        HepaStatus = isBad ? "BAD" : "GOOD";
-                        UpdateAudioPlayback();
-                        if (isBad)
-                        {
-                            _alertService.ShowAlert("Alert: HEPA filter status is BAD!");
-                        }
-                    });
-                };
 
-                DevicePort.DataProcessor.OnUpsStatusUpdated += (isOn) =>
-                {
-                    Log($"Received OnUpsStatusUpdated: isOn={isOn}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        UpsStatus = isOn ? "ON" : "OFF";
-                        IsUpsOn = isOn;
-                        UpdateAudioPlayback();
-                        if (!isOn)
-                        {
-                            _alertService.ShowAlert("Alert: UPS is OFF!");
-                        }
-                    });
-                };
-
-                DevicePort.DataProcessor.onAirDiffPressureUpdated += (adp) =>
-                {
-                    Log($"Received onAirDiffPressureUpdated: adp={adp}");
-                    Dispatcher.UIThread.InvokeAsync(() => AirDiffPressure = adp);
-                };
 
                 SimulateDataCommand = ReactiveCommand.Create(SimulateSerialData);
             }
@@ -152,55 +126,6 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             {
                 Log($"Failed to initialize GasMonitoringViewModel: {ex.Message}");
                 throw;
-            }
-        }
-
-        private void InitializeAudio()
-        {
-            try
-            {
-                string[] possiblePaths = new[]
-                {
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "digital-alarm-buzzer-992.wav"),
-                    Path.Combine(Directory.GetCurrentDirectory(), "Assets", "Sounds", "digital-alarm-buzzer-992.wav"),
-                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "Assets", "Sounds", "digital-alarm-buzzer-992.wav")
-                };
-
-                string? soundPath = null;
-                foreach (string path in possiblePaths)
-                {
-                    if (File.Exists(path))
-                    {
-                        soundPath = path;
-                        break;
-                    }
-                }
-
-                if (soundPath == null)
-                {
-                    Log("Warning: Alert sound file not found. Audio alerts will be disabled.");
-                    return;
-                }
-
-                _waveReader = new WaveFileReader(soundPath);
-                var loopStream = new LoopStream(_waveReader);
-                _waveOut = new WaveOutEvent();
-                _waveOut.Init(loopStream);
-                _waveOut.PlaybackStopped += (s, e) =>
-                {
-                    if (!_isDisposed && _isAudioPlaying)
-                    {
-                        Dispatcher.UIThread.InvokeAsync(() =>
-                        {
-                            Log("Audio playback stopped unexpectedly, restarting.");
-                            _waveOut?.Play();
-                        });
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                Log($"Warning: Failed to initialize audio: {ex.Message}. Audio alerts will be disabled.");
             }
         }
 
@@ -226,6 +151,11 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                 Log($"Before pressure update: {gas.Name} Pressure={gas.Pressure}");
                 gas.Pressure = pressure;
                 Log($"After pressure update: {gas.Name} Pressure={gas.Pressure}");
+                this.RaisePropertyChanged(nameof(Gases));
+            }
+            else
+            {
+                Log($"Gas {gasName} not found in Gases collection.");
             }
         }
 
@@ -234,28 +164,35 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             var gas = Gases.FirstOrDefault(g => g.Name == gasName);
             if (gas != null)
             {
+                Log($"Before alert update: {gas.Name} IsAlert={gas.IsAlert}");
                 gas.IsAlert = isAlert;
-                UpdateAudioPlayback();
                 if (isAlert)
                 {
-                    _alertService.ShowAlert($"Alert: {gasName} pressure is out of range!");
+                    _alertService.ShowAlert($"Alert: Abnormal Gas : {gas.Name} !");
                 }
+                UpdateAudioPlayback();
+                Log($"After alert update: {gas.Name} IsAlert={gas.IsAlert}");
+                this.RaisePropertyChanged(nameof(Gases));
+            }
+            else
+            {
+                Log($"Gas {gasName} not found in Gases collection.");
             }
         }
 
         private void UpdateAudioPlayback()
         {
-            bool shouldPlay = Gases.Any(g => g.IsAlert) || UpsStatus == "OFF" || HepaStatus == "BAD";
+            bool shouldPlay = Gases.Any(g => g.IsAlert);
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (shouldPlay && !_isAudioPlaying && _waveOut != null)
+                if (shouldPlay && !_isAudioPlaying)
                 {
                     _waveOut.Play();
                     _isAudioPlaying = true;
                     Log("Started audio playback due to alert condition.");
                 }
-                else if (!shouldPlay && _isAudioPlaying && _waveOut != null)
+                else if (!shouldPlay && _isAudioPlaying)
                 {
                     _waveOut.Stop();
                     _isAudioPlaying = false;
@@ -268,6 +205,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
         {
             string[] testData = new[]
             {
+                "GASR",
                 "RDGA$3.5",    // O₂ pressure
                 "ARDP$43",
                 "ALGA",        // O₂ alert ON
@@ -294,11 +232,13 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             }
         }
 
+
+
         public void Dispose()
         {
-            if (_isDisposed) return;
+            if (_isDisposed)
+                return;
             _isDisposed = true;
-
             try
             {
                 _waveOut?.Stop();
@@ -307,66 +247,16 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             }
             catch (Exception ex)
             {
-                Log($"Error disposing audio resources: {ex.Message}");
+                Log($"Error disposing GasMonitoringViewModel: {ex}");
             }
         }
 
         private static void Log(string message)
         {
-            Debug.WriteLine($"[GasMonitoringViewModel] {message}");
+            Debug.WriteLine(message);
         }
     }
 
-    public class LoopStream : WaveStream
-    {
-        private readonly WaveStream _sourceStream;
 
-        public LoopStream(WaveStream sourceStream)
-        {
-            _sourceStream = sourceStream;
-            EnableLooping = true;
-        }
 
-        public bool EnableLooping { get; set; }
-
-        public override WaveFormat WaveFormat => _sourceStream.WaveFormat;
-
-        public override long Length => _sourceStream.Length;
-
-        public override long Position
-        {
-            get => _sourceStream.Position;
-            set => _sourceStream.Position = value;
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            int totalBytesRead = 0;
-
-            while (totalBytesRead < count)
-            {
-                int bytesRead = _sourceStream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
-                if (bytesRead == 0)
-                {
-                    if (_sourceStream.Position == 0 || !EnableLooping)
-                    {
-                        break;
-                    }
-                    _sourceStream.Position = 0;
-                }
-                totalBytesRead += bytesRead;
-            }
-
-            return totalBytesRead;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _sourceStream.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    }
 }
