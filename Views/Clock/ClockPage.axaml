@@ -15,7 +15,7 @@
                     Background="{DynamicResource ClockBackgroundBrush}"
                     HorizontalAlignment="Stretch">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,8,0,0" Spacing="6">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="24,8,24,0" Spacing="12">
                         <Image Source="avares://ORControlPanelNew/Assets/Icons/circular-clock.png" Width="24" Height="24" VerticalAlignment="Center"/>
                         <TextBlock Text="TIME"
                                  FontSize="18"
