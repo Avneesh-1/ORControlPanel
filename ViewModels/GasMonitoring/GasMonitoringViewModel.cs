@@ -30,7 +30,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             set => this.RaiseAndSetIfChanged(ref _gases, value);
         }
 
-        [Reactive] public string GeneralGasPressure { get; set; } = "0.0";
+        
         [Reactive] public string Temperature { get; set; } = "0.0";
         [Reactive] public string AirDiffPressure { get; set; } = "0.0";
         [Reactive] public string Humidity { get; set; } = "0.0";
