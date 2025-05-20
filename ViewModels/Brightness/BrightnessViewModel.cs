@@ -120,10 +120,11 @@ namespace ORControlPanelNew.ViewModels.Brightness
             {
                 var dialog = new BrightnessDialog
                 {
-                    DataContext = this // Set the ViewModel
+                    DataContext = new BrightnessViewModel()
                 };
                 dialog.Show();
             });
+
         }
     }
 } 

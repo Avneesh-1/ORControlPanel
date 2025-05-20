@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using ORControlPanelNew.ViewModels.Brightness;
 
 namespace ORControlPanelNew.Views.Brightness
 {
@@ -7,6 +8,7 @@ namespace ORControlPanelNew.Views.Brightness
         public BrightnessDialog()
         {
             InitializeComponent();
+            DataContext = new BrightnessViewModel();
         }
     }
 } 
