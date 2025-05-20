@@ -166,7 +166,8 @@
 				</Grid.RowDefinitions>
 
 					<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch" Margin="16,0,0,0"/>
-					<temp:TemperatureCard Grid.Row="1" Margin="0,36,0,0" HorizontalAlignment="Stretch"/>
+					<temp:TemperatureCard Grid.Row="1" Margin="0,36,0,0" HorizontalAlignment="Stretch"
+										  />
 			</Grid>
 
 				<!-- Vertical Divider 1 -->
@@ -176,7 +177,7 @@
 				<Grid Grid.Column="2">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="*"/>
+						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					<views:AnesthesiaTimerPage Grid.Row="0" HorizontalAlignment="Stretch"/>
 					<intercom:IntercomPanel Grid.Row="1" Margin="0,30,0,0"/>
@@ -208,6 +209,7 @@
 
 				<!-- Gas Monitoring -->
 				<gas:GasMonitoringView Grid.Row="2"
+									   HorizontalAlignment="Stretch"
                                        DataContext="{Binding GasMonitoring}"
                                        MaxWidth="400"
                                        Margin="0,20,0,0"
@@ -223,9 +225,9 @@
 		<Border Grid.Row="3"
 				Background="{DynamicResource FooterLightBlueBrush}"
 				CornerRadius="18"
-				Padding="4"
+				Padding=""
 				Margin="24,8,24,16">
-			<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0" Height="100">
+			<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0" Height="80">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="*"/>
 					<ColumnDefinition Width="Auto"/>
@@ -244,19 +246,19 @@
 					<ColumnDefinition Width="*"/>
 				</Grid.ColumnDefinitions>
 				<lighting:GeneralLightingControl Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-				<Border Grid.Column="1" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<Border Grid.Column="1" Background="#B3D1F7" Width="2" Margin="0,10"/>
 				<lighting:GeneralLight2Control Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-				<Border Grid.Column="3" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<Border Grid.Column="3" Background="#B3D1F7" Width="2" Margin="0,10"/>
 				<lighting:OTLightsControl Grid.Column="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-				<Border Grid.Column="5" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<Border Grid.Column="5" Background="#B3D1F7" Width="2" Margin="0,10"/>
 				<lighting:OTLight2Control Grid.Column="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-				<Border Grid.Column="7" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<Border Grid.Column="7" Background="#B3D1F7" Width="2" Margin="0,10"/>
 				<brightness:BrightnessControl Grid.Column="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-				<Border Grid.Column="9" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<Border Grid.Column="9" Background="#B3D1F7" Width="2" Margin="0,10"/>
 				<lighting:LaminarLightControl Grid.Column="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-				<Border Grid.Column="11" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<Border Grid.Column="11" Background="#B3D1F7" Width="2" Margin="0,10"/>
 				<patient:PatientDataControl Grid.Column="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-				<Border Grid.Column="13" Background="#B3D1F7" Width="2" Margin="0,12"/>
+				<Border Grid.Column="13" Background="#B3D1F7" Width="2" Margin="0,10"/>
 				<music:MusicButton Grid.Column="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 			</Grid>
 		</Border>

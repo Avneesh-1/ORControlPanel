@@ -8,7 +8,7 @@
         <StackPanel>
             <!-- Timer Display Panel -->
             <Border CornerRadius="10"
-                    Height="180"
+                    Height="140"
                     Background="{DynamicResource AnesthesiaTimerBackgroundBrush}"
                     HorizontalAlignment="Stretch">
                 <StackPanel>
@@ -27,7 +27,7 @@
                              HorizontalAlignment="Center"
                              VerticalAlignment="Center"
                              Padding="0,16,0,16"
-                             Margin="0,24,0,0"/>
+                             Margin="0,12,0,0"/>
                 </StackPanel>
             </Border>
 

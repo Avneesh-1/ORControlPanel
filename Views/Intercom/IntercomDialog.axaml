@@ -9,7 +9,7 @@
         x:Class="ORControlPanelNew.Views.Intercom.IntercomDialog"
         x:DataType="vm:IntercomDialogViewModel"
         Title="Inter-com"
-        Width="800" Height="600"
+        Width="800" 
         WindowStartupLocation="CenterOwner"
         x:Name="RootWindow">
 	<Window.Resources>
@@ -21,8 +21,8 @@
 	</Window.DataContext>
 	<Window.Styles>
 		<Style Selector="Button.dialer-btn">
-			<Setter Property="Width" Value="64"/>
-			<Setter Property="Height" Value="64"/>
+			<Setter Property="Width" Value="58"/>
+			
 			<Setter Property="FontSize" Value="24"/>
 			<Setter Property="FontWeight" Value="Bold"/>
 			<Setter Property="Margin" Value="4"/>
@@ -33,13 +33,13 @@
 			<Setter Property="CornerRadius" Value="12"/>
 		</Style>
 	</Window.Styles>
-	<Grid ColumnDefinitions="2*,3*" Margin="16">
+	<Grid ColumnDefinitions="2*,3*" Margin="14">
 		<!-- Dialer Section -->
-		<StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+		<StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
 			<!-- Display -->
-			<TextBox Text="{Binding DialedNumber, Mode=OneWay}" FontSize="28" Height="56" Width="220" Margin="0,0,0,8" IsReadOnly="True" HorizontalAlignment="Center"/>
+			<TextBox Text="{Binding DialedNumber, Mode=OneWay}" FontSize="14"  Width="180" Margin="0,0,0,6" IsReadOnly="True" HorizontalAlignment="Center"/>
 			<!-- Dialer Buttons -->
-			<Grid Width="220" Height="292">
+			<Grid Width="200" >
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*"/>
 					<RowDefinition Height="*"/>
@@ -65,9 +65,9 @@
 				<Button Content="#" Command="{Binding DialCommand}" CommandParameter="#" Grid.Row="3" Grid.Column="2" Classes="dialer-btn"/>
 			</Grid>
 			<!-- Backspace and Call Row -->
-			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,12,0,0">
-				<Button Content="Del" Command="{Binding BackspaceCommand}" Width="60" Height="48"/>
-				<Button Content="📞" Width="60" Height="48"/>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,10,0,0">
+				<Button Content="Del" Command="{Binding BackspaceCommand}" Width="60"/>
+				<Button Content="📞" Width="60" />
 			</StackPanel>
 		</StackPanel>
 		<!-- Phonebook Section -->
