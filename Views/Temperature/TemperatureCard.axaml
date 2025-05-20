@@ -44,11 +44,11 @@
 							</Border>
 							<!-- Value area -->
 							<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto"  VerticalAlignment="Center">
-								<Button Content="-" Width="40"  Margin="8,0,0,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+								<Button Command="{Binding DecTempCommand}" Content="-" Width="40"  Margin="8,0,0,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
 								<Border Grid.Column="1" Background="#FFE082" CornerRadius="8" Margin="8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="170">
 									<TextBlock Text="{Binding Temperature, StringFormat='{}{0} °C'}" FontSize="24" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 								</Border>
-								<Button Grid.Column="2" Content="+" Width="40"  Margin="0,0,8,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+								<Button Command="{Binding IncTempCommand}" Grid.Column="2" Content="+" Width="40"  Margin="0,0,8,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
 							</Grid>
 						</Grid>
 					</Border>
@@ -64,11 +64,11 @@
 								<TextBlock Text="Humidity" FontSize="13" Foreground="#222" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 							</Border>
 							<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto"  VerticalAlignment="Center">
-								<Button Content="-" Width="40"  Margin="8,0,0,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+								<Button Command="{Binding DecHumdCommand}" Content="-" Width="40"  Margin="8,0,0,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
 								<Border Grid.Column="1" Background="#FFE082" CornerRadius="8" Margin="8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="170">
 									<TextBlock Text="{Binding Humidity, StringFormat='{}{0} RH%'}" FontSize="24" FontWeight="Bold" Foreground="#333" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 								</Border>
-								<Button Grid.Column="2" Content="+" Width="40"  Margin="0,0,8,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
+								<Button Command="{Binding IncHumdCommand}" Grid.Column="2" Content="+" Width="40"  Margin="0,0,8,0" FontSize="22" FontWeight="Bold" Background="#263238" Foreground="White" CornerRadius="20" VerticalAlignment="Center"/>
 							</Grid>
 						</Grid>
 					</Border>
@@ -95,36 +95,29 @@
 
 					<!-- HEPA Filter Status -->
 
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,18,0,0">
+						<TextBlock Text="HEPA Filter" FontSize="15" Foreground="White" FontWeight="Bold"/>
+						<Ellipse Width="18" Height="18"
+								 Fill="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"
+								 Stroke="Black" StrokeThickness="1"/>
+						<TextBlock Text="{Binding HepaStatus, StringFormat='{}{0}'}"
+								   FontSize="15"
+								   Foreground="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"
+								   VerticalAlignment="Center"/>
+					</StackPanel>
+
 				</StackPanel>
 
-
+				
 
 			</Grid>
 		</StackPanel>
 	</Border>
 
-	<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,18,0,0">
-		<TextBlock Text="HEPA Filter" FontSize="15" Foreground="White" FontWeight="Bold"/>
-		<Ellipse Width="18" Height="18"
-				 Fill="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"
-				 Stroke="Black" StrokeThickness="1"/>
-		<TextBlock Text="{Binding HepaStatus, StringFormat='{}{0}'}"
-				   FontSize="15"
-				   Foreground="{Binding HepaStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='GOOD:OkBrush|BAD:ErrorBrush'}"
-				   VerticalAlignment="Center"/>
-	</StackPanel>
+	
 
 	<!-- UPS Status -->
-	<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,18,0,0">
-		<TextBlock Text="UPS" FontSize="15" Foreground="White" FontWeight="Bold"/>
-		<Ellipse Width="18" Height="18"
-				 Fill="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
-				 Stroke="Black" StrokeThickness="1"/>
-		<TextBlock Text="{Binding UpsStatus, StringFormat='{}{0}'}"
-				   FontSize="15"
-				   Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
-				   VerticalAlignment="Center"/>
-	</StackPanel>
+	
 
 	</StackPanel>
 

@@ -36,7 +36,8 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
         [Reactive] public string Current { get; set; } = "0.0";
         [Reactive] public string TransformerStatus { get; set; } = "OK";
         [Reactive] public string FireStatus { get; set; } = "OFF";
-
+        [Reactive] public string UpsStatus { get; set; } = "OFF";
+        [Reactive] public bool IsUpsOn { get; set; } = false;
 
         public ReactiveCommand<Unit, Unit> SimulateDataCommand { get; }
 
@@ -74,6 +75,16 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                 {
                     Log($"Received OnGasPressureUpdated: gasName={gasName}, pressure={pressure}");
                     Dispatcher.UIThread.InvokeAsync(() => UpdateGasPressure(gasName, pressure));
+                };
+
+                DevicePort.DataProcessor.OnUpsStatusUpdated += (isOn) =>
+                {
+                    Log($"Received OnUpsStatusUpdated: isOn={isOn}");
+                    Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        UpsStatus = isOn ? "ON" : "OFF";
+                        IsUpsOn = isOn;
+                    });
                 };
 
                 DevicePort.DataProcessor.OnGasAlertUpdated += (gasName, isAlert) =>

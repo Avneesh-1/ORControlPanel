@@ -17,8 +17,8 @@
 
 	<UserControl.Styles>
 		<Style Selector="Button.dialer-btn">
-			<Setter Property="Width" Value="40"/>
-			<Setter Property="Height" Value="40"/>
+			<Setter Property="Width" Value="52"/>
+			<Setter Property="Height" Value="52"/>
 			<Setter Property="FontSize" Value="22"/>
 			<Setter Property="FontWeight" Value="Bold"/>
 			<Setter Property="Background" Value="#f0f0f0"/>
@@ -31,7 +31,7 @@
 	</UserControl.Styles>
 
 	
-			<Grid Margin="16">
+			<Grid >
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto"/>
 					<RowDefinition Height="Auto"/>
@@ -56,9 +56,9 @@
 											   Margin="24,4" Foreground="Black" TextAlignment="Left"/>
 								</Border>
 
-								<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="24">
-									<!-- Keypad -->
-									<UniformGrid Rows="4" Columns="3" HorizontalAlignment="Center" VerticalAlignment="Center">
+								<Grid ColumnDefinitions="*,Auto" HorizontalAlignment="Stretch">
+									<!-- Keypad Grid -->
+									<UniformGrid Grid.Column="0" Rows="4" Columns="3" HorizontalAlignment="Stretch" VerticalAlignment="Center">
 										<Button Content="1" Command="{Binding DialCommand}" CommandParameter="1" Classes="dialer-btn"/>
 										<Button Content="2" Command="{Binding DialCommand}" CommandParameter="2" Classes="dialer-btn"/>
 										<Button Content="3" Command="{Binding DialCommand}" CommandParameter="3" Classes="dialer-btn"/>
@@ -74,7 +74,7 @@
 									</UniformGrid>
 
 									<!-- Action Buttons -->
-									<StackPanel Orientation="Vertical" VerticalAlignment="Center" Spacing="16">
+									<StackPanel Grid.Column="1" VerticalAlignment="Stretch" Spacing="10" HorizontalAlignment="Right">
 										<Button Width="120" Background="#7CB342" Foreground="Black" FontWeight="Bold" CornerRadius="10">
 											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="6">
 												<Image Source="avares://ORControlPanelNew/Assets/Icons/telephone.png" Width="22"/>
@@ -93,14 +93,18 @@
 												<TextBlock Text="Phonebook" FontSize="13"/>
 											</StackPanel>
 										</Button>
+										<Button Width="120" Background="#404040" Foreground="White" FontWeight="Bold" FontSize="16" Name="OpenPhonebookButton" Margin="0,8,0,0">
+											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="6">
+												
+												<TextBlock Text="Delete" FontSize="13"/>
+											</StackPanel>
+										</Button>
 									</StackPanel>
-								</StackPanel>
+								</Grid>
+
 
 								<!-- Delete Button -->
-								<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="12">
-									<Button Content="Del" Command="{Binding BackspaceCommand}" Width="90" Background="#404040"
-											Foreground="White" FontWeight="Bold" CornerRadius="10"/>
-								</StackPanel>
+								
 							</StackPanel>
 						</StackPanel>
 					</Border>

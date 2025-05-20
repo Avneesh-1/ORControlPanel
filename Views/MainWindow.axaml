@@ -166,7 +166,7 @@
 				</Grid.RowDefinitions>
 
 					<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch" Margin="16,0,0,0"/>
-					<temp:TemperatureCard Grid.Row="1" Margin="0,36,0,0" HorizontalAlignment="Stretch"
+					<temp:TemperatureCard Grid.Row="1" Margin="20,20,20,20" HorizontalAlignment="Stretch"  DataContext="{Binding TemperatureMonitoring}"
 										  />
 			</Grid>
 
@@ -180,7 +180,7 @@
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
 					<views:AnesthesiaTimerPage Grid.Row="0" HorizontalAlignment="Stretch"/>
-					<intercom:IntercomPanel Grid.Row="1" Margin="0,30,0,0"/>
+					<intercom:IntercomPanel Grid.Row="1"  Margin="20,20,20,20"/>
 			</Grid>
 
 				<!-- Vertical Divider 2 -->
@@ -198,22 +198,15 @@
 					<clock:ClockPage Grid.Row="0" HorizontalAlignment="Stretch"/>
 
 				<!-- Simulate Data Button -->
-				<StackPanel Grid.Row="1" Margin="0,40,0,0">
-					<Button Classes="actionButton"
-                            Content="Simulate Data"
-                            Command="{Binding GasMonitoring.SimulateDataCommand}"
-                            HorizontalAlignment="Center"
-                            Margin="0,10,0,0"
-                            IsVisible="False"/>
-				</StackPanel>
+				
 
 				<!-- Gas Monitoring -->
 				<gas:GasMonitoringView Grid.Row="2"
 									   HorizontalAlignment="Stretch"
                                        DataContext="{Binding GasMonitoring}"
-                                       MaxWidth="400"
-                                       Margin="0,20,0,0"
-                                       VerticalAlignment="Top"/>
+                                      
+                                        Margin="20,20,20,20"
+                                      />
 			</Grid>
 		</Grid>
 		</ScrollViewer>
