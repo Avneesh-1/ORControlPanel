@@ -131,7 +131,7 @@ namespace ORControlPanelNew.ViewModels.Brightness
             {
                 _suppressUpdates = true;
 
-                string paramList = "('General Lights 1','General Lights 2','Laminar Light')";
+                string paramList = "'General Lights 1','General Lights 2','Laminar Light'";
                 DataTable dt = DevicePort.ReadValueFromDb(paramList);
 
                 foreach (DataRow row in dt.Rows)

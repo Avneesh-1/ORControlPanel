@@ -17,9 +17,9 @@
 
 	<UserControl.Styles>
 		<Style Selector="Button.dialer-btn">
-			<Setter Property="Width" Value="52"/>
-			<Setter Property="Height" Value="52"/>
-			<Setter Property="FontSize" Value="22"/>
+			<Setter Property="Width" Value="56"/>
+			<Setter Property="Height" Value="56"/>
+			<Setter Property="FontSize" Value="20"/>
 			<Setter Property="FontWeight" Value="Bold"/>
 			<Setter Property="Background" Value="#f0f0f0"/>
 			<Setter Property="Foreground" Value="Black"/>
@@ -93,7 +93,7 @@
 												<TextBlock Text="Phonebook" FontSize="13"/>
 											</StackPanel>
 										</Button>
-										<Button Width="120" Background="#404040" Foreground="White" FontWeight="Bold" FontSize="16" Name="OpenPhonebookButton" Margin="0,8,0,0">
+										<Button Width="120" Command="{Binding BackspaceCommand}"  Background="#404040" Foreground="White" FontWeight="Bold" FontSize="16" Name="deleteButton" Margin="0,8,0,0">
 											<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="6">
 												
 												<TextBlock Text="Delete" FontSize="13"/>

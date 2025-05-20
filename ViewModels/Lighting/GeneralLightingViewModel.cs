@@ -1,7 +1,6 @@
 using System.Windows.Input;
 using ReactiveUI;
 using System;
-using Avalonia.Controls;
 using ORControlPanelNew.Views.Lighting;
 using System.Diagnostics;
 using System.Reactive.Linq;
@@ -51,9 +50,8 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
 
             ToggleLightCommand = ReactiveCommand.Create(ToggleGeneralLight1);
-
-
         }
+
         private void ToggleGeneralLight1()
         {
             try
@@ -107,4 +105,5 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
         }
     }
-} 
+
+}
