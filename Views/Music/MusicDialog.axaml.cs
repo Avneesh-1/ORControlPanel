@@ -6,14 +6,14 @@ using System;
 using System.IO;
 using System.Reflection;
 using Avalonia.Media;
-using NAudio.Wave;
+//using NAudio.Wave;
 
 namespace ORControlPanelNew.Views.Music
 {
     public partial class MusicDialog : Window
     {
-        private WaveOutEvent? _waveOut;
-        private WaveFileReader? _waveReader;
+        //private WaveOutEvent? _waveOut;
+        //private WaveFileReader? _waveReader;
         private bool _isPlaying = false;
         private string _currentTrack = "";
         private bool _isTrackSelected = false;
@@ -46,16 +46,16 @@ namespace ORControlPanelNew.Views.Music
                     Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "Assets", "Sounds", "digital-alarm-buzzer-992.wav")
                 };
 
-                foreach (string path in possiblePaths)
-                {
-                    if (File.Exists(path))
-                    {
-                        _waveReader = new WaveFileReader(path);
-                        _waveOut = new WaveOutEvent();
-                        _waveOut.Init(_waveReader);
-                        break;
-                    }
-                }
+                //foreach (string path in possiblePaths)
+                //{
+                //    if (File.Exists(path))
+                //    {
+                //        _waveReader = new WaveFileReader(path);
+                //        _waveOut = new WaveOutEvent();
+                //        _waveOut.Init(_waveReader);
+                //        break;
+                //    }
+                //}
             }
             catch (Exception ex)
             {
@@ -73,16 +73,16 @@ namespace ORControlPanelNew.Views.Music
             }
 
             var volumeSlider = this.FindControl<Slider>("VolumeSlider");
-            if (volumeSlider != null)
-            {
-                volumeSlider.PropertyChanged += (s, e) =>
-                {
-                    if (e.Property.Name == "Value" && _waveOut != null)
-                    {
-                        _waveOut.Volume = (float)volumeSlider.Value / 100f;
-                    }
-                };
-            }
+            //if (volumeSlider != null)
+            //{
+            //    volumeSlider.PropertyChanged += (s, e) =>
+            //    {
+            //        if (e.Property.Name == "Value" && _waveOut != null)
+            //        {
+            //            _waveOut.Volume = (float)volumeSlider.Value / 100f;
+            //        }
+            //    };
+            //}
 
             var trackComboBox = this.FindControl<ComboBox>("TrackComboBox");
             if (trackComboBox != null)
@@ -93,11 +93,11 @@ namespace ORControlPanelNew.Views.Music
 
         private void OnPlayPauseClick(object? sender, RoutedEventArgs e)
         {
-            if (_waveOut == null || _waveReader == null) return;
+            //if (_waveOut == null || _waveReader == null) return;
 
             if (_isPlaying)
             {
-                _waveOut.Stop();
+                //_waveOut.Stop();
                 _isPlaying = false;
                 if (sender is Button button)
                 {
@@ -106,8 +106,8 @@ namespace ORControlPanelNew.Views.Music
             }
             else
             {
-                _waveReader.Position = 0;
-                _waveOut.Play();
+                //_waveReader.Position = 0;
+                //_waveOut.Play();
                 _isPlaying = true;
                 if (sender is Button button)
                 {
@@ -118,7 +118,7 @@ namespace ORControlPanelNew.Views.Music
 
         private void OnTrackSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if (_waveOut == null || _waveReader == null) return;
+            //if (_waveOut == null || _waveReader == null) return;
 
             var comboBox = sender as ComboBox;
             if (comboBox?.SelectedItem is ComboBoxItem selectedItem)
@@ -126,7 +126,7 @@ namespace ORControlPanelNew.Views.Music
                 _currentTrack = selectedItem.Content?.ToString() ?? "";
                 _isTrackSelected = !string.IsNullOrEmpty(_currentTrack);
                 
-                _waveOut.Stop();
+                //_waveOut.Stop();
                 _isPlaying = false;
 
                 var playPauseButton = this.FindControl<Button>("PlayPauseButton");
@@ -149,8 +149,8 @@ namespace ORControlPanelNew.Views.Music
                     {
                         if (File.Exists(path))
                         {
-                            _waveReader = new WaveFileReader(path);
-                            _waveOut.Init(_waveReader);
+                            //_waveReader = new WaveFileReader(path);
+                            //_waveOut.Init(_waveReader);
                             break;
                         }
                     }

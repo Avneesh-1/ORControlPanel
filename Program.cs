@@ -57,26 +57,26 @@ namespace ORControlPanelNew
                 }
 
                 // VLC initialization
-                try
-                {
-                    string libVlcPath = OperatingSystem.IsMacOS() 
-                        ? "/Applications/VLC.app/Contents/MacOS/lib"
-                        : null;
-                    
-                    Console.WriteLine($"Initializing LibVLCSharp with path: {libVlcPath}");
-                    if (OperatingSystem.IsMacOS() && !Directory.Exists(libVlcPath))
-                    {
-                        Console.WriteLine($"Warning: VLC library path does not exist: {libVlcPath}");
-                    }
-                    
-                    Core.Initialize(libVlcPath);
-                    Console.WriteLine("LibVLCSharp initialized successfully");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to initialize LibVLCSharp: {ex.Message}\nStack trace: {ex.StackTrace}");
-                    throw;
-                }
+                //try
+                //{
+                //    string libVlcPath = OperatingSystem.IsMacOS()
+                //        ? "/Applications/VLC.app/Contents/MacOS/lib"
+                //        : null;
+
+                //    Console.WriteLine($"Initializing LibVLCSharp with path: {libVlcPath}");
+                //    if (OperatingSystem.IsMacOS() && !Directory.Exists(libVlcPath))
+                //    {
+                //        Console.WriteLine($"Warning: VLC library path does not exist: {libVlcPath}");
+                //    }
+
+                //    Core.Initialize(libVlcPath);
+                //    Console.WriteLine("LibVLCSharp initialized successfully");
+                //}
+                //catch (Exception ex)
+                //{
+                //    Console.WriteLine($"Failed to initialize LibVLCSharp: {ex.Message}\nStack trace: {ex.StackTrace}");
+                //    throw;
+                //}
 
                 // Start the application
                 Console.WriteLine("Starting Avalonia application...");

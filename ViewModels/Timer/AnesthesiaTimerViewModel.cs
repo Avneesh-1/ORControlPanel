@@ -6,7 +6,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using ORControlPanelNew.Views.Timer;
-using NAudio.Wave;
+//using NAudio.Wave;
 
 namespace ORControlPanelNew.ViewModels.Timer
 {
@@ -16,8 +16,8 @@ namespace ORControlPanelNew.ViewModels.Timer
         private TimeSpan _remainingTime;
         private TimeSpan _initialTime;
         private bool _isRunning;
-        private WaveOutEvent? _waveOut;
-        private WaveFileReader? _waveReader;
+        //private WaveOutEvent? _waveOut;
+        //private WaveFileReader? _waveReader;
         private bool _alarmTriggered;
         private Window? _parentWindow;
 
@@ -64,9 +64,9 @@ namespace ORControlPanelNew.ViewModels.Timer
                     Console.WriteLine($"Warning: Alarm sound file not found at {soundPath}");
                     return;
                 }
-                _waveReader = new WaveFileReader(soundPath);
-                _waveOut = new WaveOutEvent();
-                _waveOut.Init(_waveReader);
+                //_waveReader = new WaveFileReader(soundPath);
+                //_waveOut = new WaveOutEvent();
+                //_waveOut.Init(_waveReader);
             }
             catch (Exception ex)
             {
@@ -157,11 +157,11 @@ namespace ORControlPanelNew.ViewModels.Timer
         {
             try
             {
-                if (_waveOut != null && _waveReader != null)
-                {
-                    _waveReader.Position = 0;
-                    _waveOut.Play();
-                }
+                //if (_waveOut != null && _waveReader != null)
+                //{
+                //    _waveReader.Position = 0;
+                //    _waveOut.Play();
+                //}
             }
             catch (Exception ex)
             {
@@ -173,7 +173,7 @@ namespace ORControlPanelNew.ViewModels.Timer
         {
             try
             {
-                _waveOut?.Stop();
+                //_waveOut?.Stop();
             }
             catch (Exception ex)
             {

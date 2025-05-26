@@ -9,20 +9,20 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ORControlPanelNew.Services;
 using Avalonia.Threading;
-using NAudio.Wave;
+//using NAudio.Wave;
 using System.Reflection;
 
 namespace ORControlPanelNew.ViewModels.GasMonitoring
 {
-    public class GasMonitoringViewModel : ReactiveObject, IDisposable
+    public class GasMonitoringViewModel : ReactiveObject
     {
         private ObservableCollection<GasStatus> _gases = new();
         private readonly Guid _instanceId = Guid.NewGuid();
         private readonly IAlertService _alertService;
-        private WaveOutEvent? _waveOut;
-        private WaveFileReader? _waveReader;
-        private bool _isDisposed = false;
-        private bool _isAudioPlaying = false;
+        //private WaveOutEvent? _waveOut;
+        //private WaveFileReader? _waveReader;
+        //private bool _isDisposed = false;
+        //private bool _isAudioPlaying = false;
 
         public ObservableCollection<GasStatus> Gases
         {
@@ -55,17 +55,17 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                     throw new FileNotFoundException("Alert sound file not found.", soundPath);
                 }
 
-                _waveReader = new WaveFileReader(soundPath);
-                _waveOut = new WaveOutEvent();
-                _waveOut.Init(_waveReader);
-                _waveOut.PlaybackStopped += (s, e) =>
-                {
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        _isAudioPlaying = false;
-                        Log("Audio playback stopped.");
-                    });
-                };
+                //_waveReader = new WaveFileReader(soundPath);
+                //_waveOut = new WaveOutEvent();
+                //_waveOut.Init(_waveReader);
+                //_waveOut.PlaybackStopped += (s, e) =>
+                //{
+                //    Dispatcher.UIThread.InvokeAsync(() =>
+                //    {
+                //        _isAudioPlaying = false;
+                //        Log("Audio playback stopped.");
+                //    });
+                //};
 
                 InitializeGases();
                 Log("INIT");
@@ -96,7 +96,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                         {
                             GeneralGasAlert = isAlert;
                             _alertService.ShowAlert("General Gas Pressure Alert");
-                            UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
+                            //UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
                         });
                     }
                     Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
@@ -181,7 +181,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                 {
                     _alertService.ShowAlert($"Alert: Abnormal Gas : {gas.Name} !");
                 }
-                UpdateAudioPlayback();
+                //UpdateAudioPlayback();
                 Log($"After alert update: {gas.Name} IsAlert={gas.IsAlert}");
                 this.RaisePropertyChanged(nameof(Gases));
             }
@@ -191,26 +191,26 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
             }
         }
 
-        private void UpdateAudioPlayback()
-        {
-            bool shouldPlay = Gases.Any(g => g.IsAlert);
+        //private void UpdateAudioPlayback()
+        //{
+        //    bool shouldPlay = Gases.Any(g => g.IsAlert);
 
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                if (shouldPlay && !_isAudioPlaying)
-                {
-                    _waveOut.Play();
-                    _isAudioPlaying = true;
-                    Log("Started audio playback due to alert condition.");
-                }
-                else if (!shouldPlay && _isAudioPlaying)
-                {
-                    _waveOut.Stop();
-                    _isAudioPlaying = false;
-                    Log("Stopped audio playback; no alert conditions active.");
-                }
-            });
-        }
+        //    Dispatcher.UIThread.InvokeAsync(() =>
+        //    {
+        //        if (shouldPlay && !_isAudioPlaying)
+        //        {
+        //            _waveOut.Play();
+        //            _isAudioPlaying = true;
+        //            Log("Started audio playback due to alert condition.");
+        //        }
+        //        else if (!shouldPlay && _isAudioPlaying)
+        //        {
+        //            _waveOut.Stop();
+        //            _isAudioPlaying = false;
+        //            Log("Stopped audio playback; no alert conditions active.");
+        //        }
+        //    });
+        //}
 
         private void SimulateSerialData()
         {
@@ -245,22 +245,22 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
 
 
-        public void Dispose()
-        {
-            if (_isDisposed)
-                return;
-            _isDisposed = true;
-            try
-            {
-                _waveOut?.Stop();
-                _waveOut?.Dispose();
-                _waveReader?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Log($"Error disposing GasMonitoringViewModel: {ex}");
-            }
-        }
+        //public void Dispose()
+        //{
+        //    if (_isDisposed)
+        //        return;
+        //    _isDisposed = true;
+        //    try
+        //    {
+        //        _waveOut?.Stop();
+        //        _waveOut?.Dispose();
+        //        _waveReader?.Dispose();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log($"Error disposing GasMonitoringViewModel: {ex}");
+        //    }
+        //}
 
         private static void Log(string message)
         {

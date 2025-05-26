@@ -7,18 +7,18 @@ using Avalonia.Threading;
 using System.Globalization;
 using System.Windows.Input;
 using ORControlPanelNew.Services;
-using NAudio.Wave;
+//using NAudio.Wave;
 using System.IO;
 
 namespace ORControlPanelNew.ViewModels.Temperature
 {
     public class TemperatureViewModel : ReactiveObject
     {
-        private readonly WaveOutEvent _waveOut;
-        private readonly WaveFileReader _waveReader;
-        private bool _isDisposed = false;
-        private bool _isAudioPlaying = false;
-        private bool _wasAlertTriggered = false;
+        //private readonly WaveOutEvent _waveOut;
+        //private readonly WaveFileReader _waveReader;
+        //private bool _isDisposed = false;
+        //private bool _isAudioPlaying = false;
+        //private bool _wasAlertTriggered = false;
 
         private readonly IAlertService _alertService;
         [Reactive] public string Temperature { get; set; } = "0.0";
@@ -40,23 +40,23 @@ namespace ORControlPanelNew.ViewModels.Temperature
         public TemperatureViewModel(IAlertService alertService)
         {
             _alertService = alertService ?? throw new ArgumentNullException(nameof(alertService));
-            var soundPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "digital-alarm-buzzer-992.wav");
-            if (!File.Exists(soundPath))
-            {
-                Log($"Audio file not found: {soundPath}");
-                throw new FileNotFoundException("Alert sound file not found.", soundPath);
-            }
-            _waveReader = new WaveFileReader(soundPath);
-            _waveOut = new WaveOutEvent();
-            _waveOut.Init(_waveReader);
-            _waveOut.PlaybackStopped += (s, e) =>
-            {
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    _isAudioPlaying = false;
-                    Log("Audio playback stopped.");
-                });
-            };
+            //var soundPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "digital-alarm-buzzer-992.wav");
+            //if (!File.Exists(soundPath))
+            //{
+            //    Log($"Audio file not found: {soundPath}");
+            //    throw new FileNotFoundException("Alert sound file not found.", soundPath);
+            //}
+            //_waveReader = new WaveFileReader(soundPath);
+            //_waveOut = new WaveOutEvent();
+            //_waveOut.Init(_waveReader);
+            //_waveOut.PlaybackStopped += (s, e) =>
+            //{
+            //    Dispatcher.UIThread.InvokeAsync(() =>
+            //    {
+            //        _isAudioPlaying = false;
+            //        Log("Audio playback stopped.");
+            //    });
+            //};
 
             DevicePort.DataProcessor.OnGasAlertUpdated += (gasName, isAlert) =>
             {
@@ -67,7 +67,7 @@ namespace ORControlPanelNew.ViewModels.Temperature
                     {
                         GeneralGasAlert = isAlert;
                         _alertService.ShowAlert("General Gas Pressure Alert");
-                        UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
+                        //UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
                     });
                 }
             };
@@ -116,7 +116,7 @@ namespace ORControlPanelNew.ViewModels.Temperature
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     FireStatus = isActive ? "ON" : "OFF";
-                    UpdateAudioPlayback();
+                    //UpdateAudioPlayback();
                 });
             };
 
@@ -126,7 +126,7 @@ namespace ORControlPanelNew.ViewModels.Temperature
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     HepaStatus = isBad ? "BAD" : "GOOD";
-                    UpdateAudioPlayback();
+                    //UpdateAudioPlayback();
                 });
             };
 
@@ -137,7 +137,7 @@ namespace ORControlPanelNew.ViewModels.Temperature
                 {
                     UpsStatus = isOn ? "ON" : "OFF";
                     IsUpsOn = isOn;
-                    UpdateAudioPlayback();
+                    //UpdateAudioPlayback();
                 });
             };
 
@@ -147,49 +147,49 @@ namespace ORControlPanelNew.ViewModels.Temperature
             DecHumdCommand = ReactiveCommand.Create(DecHumd);
         }
 
-        private void UpdateAudioPlayback()
-        {
-            bool shouldPlay = UpsStatus == "OFF" || HepaStatus == "BAD" || GeneralGasAlert;
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                if (shouldPlay && !_isAudioPlaying && !_wasAlertTriggered)
-                {
-                    _waveReader.Position = 0;
-                    _waveOut.Play();
-                    _isAudioPlaying = true;
-                    _wasAlertTriggered = true;
-                    Log("Started audio playback for alert condition.");
-                }
-                else if (!shouldPlay && _isAudioPlaying)
-                {
-                    _waveOut.Stop();
-                    _isAudioPlaying = false;
-                    _wasAlertTriggered = false;
-                    Log("Stopped audio playback; no alert conditions active.");
-                }
-                else if (!shouldPlay)
-                {
-                    _wasAlertTriggered = false;
-                }
-            });
-        }
+        //private void UpdateAudioPlayback()
+        //{
+        //    bool shouldPlay = UpsStatus == "OFF" || HepaStatus == "BAD" || GeneralGasAlert;
+        //    Dispatcher.UIThread.InvokeAsync(() =>
+        //    {
+        //        if (shouldPlay && !_isAudioPlaying && !_wasAlertTriggered)
+        //        {
+        //            _waveReader.Position = 0;
+        //            _waveOut.Play();
+        //            _isAudioPlaying = true;
+        //            _wasAlertTriggered = true;
+        //            Log("Started audio playback for alert condition.");
+        //        }
+        //        else if (!shouldPlay && _isAudioPlaying)
+        //        {
+        //            _waveOut.Stop();
+        //            _isAudioPlaying = false;
+        //            _wasAlertTriggered = false;
+        //            Log("Stopped audio playback; no alert conditions active.");
+        //        }
+        //        else if (!shouldPlay)
+        //        {
+        //            _wasAlertTriggered = false;
+        //        }
+        //    });
+        //}
 
-        public void Dispose()
-        {
-            if (_isDisposed)
-                return;
-            _isDisposed = true;
-            try
-            {
-                _waveOut?.Stop();
-                _waveOut?.Dispose();
-                _waveReader?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Log($"Error disposing TemperatureViewModel: {ex}");
-            }
-        }
+        //public void Dispose()
+        //{
+        //    if (_isDisposed)
+        //        return;
+        //    _isDisposed = true;
+        //    try
+        //    {
+        //        _waveOut?.Stop();
+        //        _waveOut?.Dispose();
+        //        _waveReader?.Dispose();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log($"Error disposing TemperatureViewModel: {ex}");
+        //    }
+        //}
 
         private void IncTemp()
         {
