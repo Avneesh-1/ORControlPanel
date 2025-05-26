@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ORControlPanelNew.ViewModels.Brightness"
+        x:Class="ORControlPanelNew.Views.Brightness.BrightnessDialog"
+        x:DataType="vm:BrightnessViewModel"
+        Title="Brightness Control"
+        Width="600" Height="400"
+        Background="Transparent"
+        TransparencyLevelHint="Blur,Transparent"
+        WindowStartupLocation="CenterOwner">
+    <Border Background="#80232323" CornerRadius="18" Padding="24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="48">
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                        IsVisible="{Binding IsGeneralLight1On}">
+                <TextBlock Text="General Light 1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Slider Orientation="Vertical" Minimum="0" Maximum="100" Height="200" Value="{Binding GeneralLight1Intensity}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                        IsVisible="{Binding IsGeneralLight2On}">
+                <TextBlock Text="General Light 2" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Slider Orientation="Vertical" Minimum="0" Maximum="100" Height="200" Value="{Binding GeneralLight2Intensity}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                        IsVisible="{Binding IsLaminarLightOn}">
+                <TextBlock Text="Laminar Light" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Slider Orientation="Vertical" Minimum="0" Maximum="100" Height="200" Value="{Binding LaminarLightIntensity}"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window> 
