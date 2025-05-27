@@ -1,0 +1,154 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:vm="using:ORControlPanelNew.ViewModels.GasMonitoring"
+            xmlns:models="using:ORControlPanelNew.Models.GasMonitoring"
+            xmlns:converters="using:ORControlPanelNew.Converters"
+            x:Class="ORControlPanelNew.Views.GasMonitoring.GasMonitoringView"
+            x:DataType="vm:GasMonitoringViewModel">
+
+	<UserControl.Resources>
+		<LinearGradientBrush x:Key="CardBlueGradient" StartPoint="0,0" EndPoint="1,0">
+			<GradientStop Color="#B0B0B0" Offset="0"/>
+			<GradientStop Color="#444444" Offset="1"/>
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="TabBlueGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#B3E5FC" Offset="0"/>
+			<GradientStop Color="#2196F3" Offset="1"/>
+		</LinearGradientBrush>
+		<LinearGradientBrush x:Key="ValueYellowGradient" StartPoint="0,0" EndPoint="0,1">
+			<GradientStop Color="#FFD700" Offset="0"/>
+			<GradientStop Color="#FFA500" Offset="1"/>
+		</LinearGradientBrush>
+	</UserControl.Resources>
+
+	<Design.DataContext>
+		<vm:GasMonitoringViewModel />
+	</Design.DataContext>
+	<StackPanel Spacing="10">
+		<Border Background="#181A1B"  CornerRadius="16"  Padding="24" BorderBrush="#444" BorderThickness="2"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="440" Height="570">
+
+			<StackPanel>
+				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="0,0,0,16" HorizontalAlignment="Left">
+					<Image Source="avares://ORControlPanelNew/Assets/Icons/air press.png" Width="22" Height="22" VerticalAlignment="Center"/>
+					<TextBlock Text="GAS MONITORING SYSTEM" Foreground="White" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+				</StackPanel>
+
+				<!-- ✅ Items grid -->
+				<ItemsControl ItemsSource="{Binding Gases}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<UniformGrid Columns="2"  />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="models:GasStatus">
+							<Border Background="{StaticResource CardBlueGradient}"
+									CornerRadius="14"
+									Height="64"
+									Margin="5"
+									BorderThickness="1"
+									BorderBrush="#444"
+									HorizontalAlignment="Stretch">
+
+								<Grid ColumnDefinitions="*,Auto"
+									  VerticalAlignment="Center"
+									  Margin="10,0"
+									  HorizontalAlignment="Stretch">
+
+									<TextBlock Grid.Column="0"
+											   Text="{Binding Name}"
+											   Foreground="White"
+											   FontSize="14"
+											   Padding="10,0"
+											   VerticalAlignment="Center"
+											   TextTrimming="CharacterEllipsis"
+											   TextWrapping="NoWrap"/>
+
+									<Border Grid.Column="1"
+											Height="28"
+											MinWidth="60"
+											Padding="8,0"
+											Margin="10,0,0,0"
+											CornerRadius="8"
+											Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
+											VerticalAlignment="Center"
+											HorizontalAlignment="Right">
+										<!-- No TextBlock inside, bar is empty but visible -->
+									</Border>
+								</Grid>
+							</Border>
+						</DataTemplate>
+
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+
+
+
+
+				<Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+
+					<!-- Row 1 -->
+					<TextBlock Grid.Row="0" Grid.Column="0"
+							   Text="General Gas Pressure"
+							   FontSize="15" Foreground="White" FontWeight="Bold"
+							   VerticalAlignment="Center" Margin="12"/>
+
+					<Border Grid.Row="0" Grid.Column="1"
+							Height="28"
+							MinWidth="60"
+							Padding="8,0"
+							Margin="10,0,0,0"
+							CornerRadius="8"
+							Background="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
+							VerticalAlignment="Center"
+							HorizontalAlignment="Right">
+						<!-- No TextBlock inside, bar is empty but visible -->
+					</Border>
+
+					<TextBlock Grid.Row="0" Grid.Column="2"
+							   Text="{Binding GeneralGasAlert, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Alert,Normal', StringFormat='{}{0}'}"
+							   FontSize="15"
+							   Foreground="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
+							   VerticalAlignment="Center" Margin="12"/>
+
+					<!-- Row 2 -->
+					<TextBlock Grid.Row="1" Grid.Column="0"
+							   Text="UPS"
+							   FontSize="15" Foreground="White" FontWeight="Bold"
+							   VerticalAlignment="Center" Margin="12"/>
+
+					<Ellipse Grid.Row="1" Grid.Column="1"
+							 Width="18" Height="18"
+							 Fill="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
+							 Stroke="Black" StrokeThickness="1"
+							 VerticalAlignment="Center" Margin="12"/>
+
+					<TextBlock Grid.Row="1" Grid.Column="2"
+							   Text="{Binding UpsStatus, StringFormat='{}{0}'}"
+							   FontSize="15"
+							   Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
+							   VerticalAlignment="Center" Margin="12"/>
+				</Grid>
+
+
+
+			</StackPanel>
+		</Border>
+	
+
+	
+	</StackPanel>
+
+
+</UserControl>

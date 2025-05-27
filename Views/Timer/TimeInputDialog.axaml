@@ -1,0 +1,97 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:ORControlPanelNew.Views.Timer"
+        mc:Ignorable="d"
+        x:Class="ORControlPanelNew.Views.Timer.TimeInputDialog"
+        x:DataType="local:TimeInputDialog"
+        Title="Set Timer Duration"
+        Width="300"
+        Height="200"
+        WindowStartupLocation="CenterOwner"
+        Background="#2C2C2C">
+
+    <Grid RowDefinitions="Auto,Auto,Auto" Margin="20">
+        <TextBlock Text="Enter Time Duration"
+                 Foreground="White"
+                 FontSize="18"
+                 HorizontalAlignment="Center"
+                 Margin="0,0,0,20"/>
+
+        <StackPanel Grid.Row="1" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Center"
+                    Spacing="10">
+            <NumericUpDown Value="{Binding Hours, Mode=TwoWay}"
+                         Minimum="0"
+                         Maximum="23"
+                         Width="70"
+                         FormatString="00"
+                         Watermark="HH"/>
+            <TextBlock Text=":" 
+                     VerticalAlignment="Center"
+                     Foreground="White"
+                     FontSize="20"/>
+            <NumericUpDown Value="{Binding Minutes, Mode=TwoWay}"
+                         Minimum="0"
+                         Maximum="59"
+                         Width="70"
+                         FormatString="00"
+                         Watermark="MM"/>
+            <TextBlock Text=":" 
+                     VerticalAlignment="Center"
+                     Foreground="White"
+                     FontSize="20"/>
+            <NumericUpDown Value="{Binding Seconds, Mode=TwoWay}"
+                         Minimum="0"
+                         Maximum="59"
+                         Width="70"
+                         FormatString="00"
+                         Watermark="SS"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Center"
+                    Spacing="10"
+                    Margin="0,20,0,0">
+            <Button Content="OK"
+                    Click="OnOKClick"
+                    Width="80"
+                    Classes="accent"/>
+            <Button Content="Start"
+                    Click="OnStartClick"
+                    Width="80"
+                    Classes="accent"/>
+            <Button Content="Cancel"
+                    Click="OnCancelClick"
+                    Width="80"/>
+        </StackPanel>
+    </Grid>
+
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#404040"/>
+        </Style>
+        <Style Selector="Button:pointerover">
+            <Setter Property="Background" Value="#505050"/>
+        </Style>
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="#007ACC"/>
+        </Style>
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="#1C8DD9"/>
+        </Style>
+        <Style Selector="NumericUpDown">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#404040"/>
+            <Setter Property="Height" Value="35"/>
+        </Style>
+    </Window.Styles>
+</Window> 

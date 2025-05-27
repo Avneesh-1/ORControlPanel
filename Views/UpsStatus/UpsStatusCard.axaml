@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			   mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="ORControlPanelNew.Views.UpsStatus.UpsStatusCard"
+	         xmlns:vm="using:ORControlPanelNew.ViewModels.Ups"	  
+             x:DataType="vm:UpsStatusViewModel">
+	<Border Background="#2D2D2D" CornerRadius="10" Padding="10">
+		<StackPanel>
+			<TextBlock Text="UPS STATUS"
+                       Foreground="White"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,5"/>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="15" Margin="0,0,0,10">
+				<TextBlock Text="🔋" FontSize="24"/>
+				<TextBlock Text="{Binding UpsStatus}"
+                  Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"/>
+			</StackPanel>
+
+		</StackPanel>
+	</Border>
+</UserControl> 

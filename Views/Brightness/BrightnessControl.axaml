@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ORControlPanelNew.ViewModels.Brightness"
+             x:Class="ORControlPanelNew.Views.Brightness.BrightnessControl"
+             x:DataType="vm:BrightnessViewModel"
+             Background="Transparent">
+
+    <Button Command="{Binding OpenDialogCommand}"
+            Classes="footerButton"
+            ToolTip.Tip="Brightness Control"
+            BorderThickness="0" Padding="0" Margin="0"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+            <Viewbox Width="32" Height="25" Margin="0,0,0,2">
+                <Image Source="avares://ORControlPanelNew/Assets/Icons/brightness.png" Width="24" Height="24" Stretch="Uniform"/>
+            </Viewbox>
+    <TextBlock Text="Brightness"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Bottom"
+                     FontSize="12"/>
+        </StackPanel>
+    </Button>
+</UserControl> 
