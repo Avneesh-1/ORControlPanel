@@ -32,6 +32,7 @@ namespace ORControlPanelNew.ViewModels.Temperature
         [Reactive] public bool GeneralGasAlert { get; set; } = false;
         [Reactive] public bool IsUpsOn { get; set; } = false;
         [Reactive] public string AirDiffPressure { get; set; } = "0.0";
+        [Reactive] public double HepaPercentage { get; set; } = 48;
         public ICommand IncTempCommand { get; }
         public ICommand DecTempCommand { get; }
         public ICommand IncHumdCommand { get; }

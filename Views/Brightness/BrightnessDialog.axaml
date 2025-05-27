@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ORControlPanelNew.ViewModels.Brightness"
+        xmlns:converters="using:ORControlPanelNew.Converters"
         x:Class="ORControlPanelNew.Views.Brightness.BrightnessDialog"
         x:DataType="vm:BrightnessViewModel"
         Title="Brightness Control"
@@ -8,6 +9,9 @@
         Background="Transparent"
         TransparencyLevelHint="Blur,Transparent"
         WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <converters:SliderValueToHeightConverter x:Key="SliderValueToHeightConverter" Minimum="0" Maximum="100" TrackHeight="200"/>
+    </Window.Resources>
     <Border Background="#80232323" CornerRadius="18" Padding="24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="48">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
@@ -27,4 +31,13 @@
             </StackPanel>
         </StackPanel>
     </Border>
+
+    <Window.Styles>
+        <Style Selector="Slider">
+            <Setter Property="Width" Value="60"/>
+        </Style>
+        <Style Selector="Slider:vertical">
+            <Setter Property="Width" Value="24"/>
+        </Style>
+    </Window.Styles>
 </Window> 

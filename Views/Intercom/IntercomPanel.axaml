@@ -42,7 +42,7 @@
 				<StackPanel>
 					<!-- Dialer Card -->
 					<Border Grid.Row="1" Background="#181A1B" BorderBrush="#444" BorderThickness="2" CornerRadius="16" Padding="24"
-							HorizontalAlignment="Stretch" VerticalAlignment="Top" MaxWidth="480">
+							HorizontalAlignment="Stretch" VerticalAlignment="Top" MaxWidth="480" Width="440" Height="440">
 						<StackPanel>
 							<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="0,0,0,16">
 								<Image Source="avares://ORControlPanelNew/Assets/Icons/dialer.png" Width="22"  VerticalAlignment="Center"/>

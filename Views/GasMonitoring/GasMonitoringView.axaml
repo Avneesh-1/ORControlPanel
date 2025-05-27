@@ -25,7 +25,7 @@
 		<vm:GasMonitoringViewModel />
 	</Design.DataContext>
 	<StackPanel Spacing="10">
-		<Border Background="#181A1B"  CornerRadius="16"  Padding="24" BorderBrush="#444" BorderThickness="2"  HorizontalAlignment="Stretch" VerticalAlignment="Center">
+		<Border Background="#181A1B"  CornerRadius="16"  Padding="24" BorderBrush="#444" BorderThickness="2"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="440" Height="440">
 
 			<StackPanel>
 				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="0,0,0,16" HorizontalAlignment="Left">
