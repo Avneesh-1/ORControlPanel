@@ -26,68 +26,63 @@
 	</Design.DataContext>
 	<StackPanel Spacing="10">
 		<Border Background="#181A1B"  CornerRadius="16"  Padding="24" BorderBrush="#444" BorderThickness="2"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="440" Height="570">
-
-			<StackPanel>
-				<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="0,0,0,16" HorizontalAlignment="Left">
-					<Image Source="avares://ORControlPanelNew/Assets/Icons/air press.png" Width="22" Height="22" VerticalAlignment="Center"/>
-					<TextBlock Text="GAS MONITORING SYSTEM" Foreground="White" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<!-- Top: Title and Gas List -->
+				<StackPanel Grid.Row="0">
+					<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8" Margin="0,0,0,16" HorizontalAlignment="Left">
+						<Image Source="avares://ORControlPanelNew/Assets/Icons/air press.png" Width="22" Height="22" VerticalAlignment="Center"/>
+						<TextBlock Text="GAS MONITORING SYSTEM" Foreground="White" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+					</StackPanel>
+					<ItemsControl ItemsSource="{Binding Gases}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<UniformGrid Columns="2" VerticalAlignment="Stretch"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="models:GasStatus">
+								<Border Background="{StaticResource CardBlueGradient}"
+										CornerRadius="14"
+										MinHeight="80"
+										Margin="5"
+										BorderThickness="1"
+										BorderBrush="#444"
+										HorizontalAlignment="Stretch"
+										VerticalAlignment="Stretch">
+									<Grid ColumnDefinitions="*,Auto"
+										  VerticalAlignment="Center"
+										  Margin="10,0"
+										  HorizontalAlignment="Stretch">
+										<TextBlock Grid.Column="0"
+												   Text="{Binding Name}"
+												   Foreground="White"
+												   FontSize="14"
+												   Padding="10,0"
+												   VerticalAlignment="Center"
+												   TextTrimming="CharacterEllipsis"
+												   TextWrapping="NoWrap"/>
+										<Border Grid.Column="1"
+												Height="28"
+												MinWidth="60"
+												Padding="8,0"
+												Margin="10,0,0,0"
+												CornerRadius="8"
+												Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
+												VerticalAlignment="Center"
+												HorizontalAlignment="Right">
+										</Border>
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
 				</StackPanel>
-
-				<!-- ✅ Items grid -->
-				<ItemsControl ItemsSource="{Binding Gases}">
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<UniformGrid Columns="2"  />
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-
-					<ItemsControl.ItemTemplate>
-						<DataTemplate x:DataType="models:GasStatus">
-							<Border Background="{StaticResource CardBlueGradient}"
-									CornerRadius="14"
-									Height="64"
-									Margin="5"
-									BorderThickness="1"
-									BorderBrush="#444"
-									HorizontalAlignment="Stretch">
-
-								<Grid ColumnDefinitions="*,Auto"
-									  VerticalAlignment="Center"
-									  Margin="10,0"
-									  HorizontalAlignment="Stretch">
-
-									<TextBlock Grid.Column="0"
-											   Text="{Binding Name}"
-											   Foreground="White"
-											   FontSize="14"
-											   Padding="10,0"
-											   VerticalAlignment="Center"
-											   TextTrimming="CharacterEllipsis"
-											   TextWrapping="NoWrap"/>
-
-									<Border Grid.Column="1"
-											Height="28"
-											MinWidth="60"
-											Padding="8,0"
-											Margin="10,0,0,0"
-											CornerRadius="8"
-											Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
-											VerticalAlignment="Center"
-											HorizontalAlignment="Right">
-										<!-- No TextBlock inside, bar is empty but visible -->
-									</Border>
-								</Grid>
-							</Border>
-						</DataTemplate>
-
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-
-
-
-
-
-				<Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+				<!-- Bottom: Info Grid -->
+				<Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom">
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto"/>
@@ -97,13 +92,11 @@
 						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
-
 					<!-- Row 1 -->
 					<TextBlock Grid.Row="0" Grid.Column="0"
 							   Text="General Gas Pressure"
 							   FontSize="15" Foreground="White" FontWeight="Bold"
 							   VerticalAlignment="Center" Margin="12"/>
-
 					<Border Grid.Row="0" Grid.Column="1"
 							Height="28"
 							MinWidth="60"
@@ -113,42 +106,29 @@
 							Background="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
 							VerticalAlignment="Center"
 							HorizontalAlignment="Right">
-						<!-- No TextBlock inside, bar is empty but visible -->
 					</Border>
-
 					<TextBlock Grid.Row="0" Grid.Column="2"
 							   Text="{Binding GeneralGasAlert, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Alert,Normal', StringFormat='{}{0}'}"
 							   FontSize="15"
 							   Foreground="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
 							   VerticalAlignment="Center" Margin="12"/>
-
 					<!-- Row 2 -->
 					<TextBlock Grid.Row="1" Grid.Column="0"
 							   Text="UPS"
 							   FontSize="15" Foreground="White" FontWeight="Bold"
 							   VerticalAlignment="Center" Margin="12"/>
-
 					<Ellipse Grid.Row="1" Grid.Column="1"
 							 Width="18" Height="18"
 							 Fill="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
 							 Stroke="Black" StrokeThickness="1"
 							 VerticalAlignment="Center" Margin="12"/>
-
 					<TextBlock Grid.Row="1" Grid.Column="2"
 							   Text="{Binding UpsStatus, StringFormat='{}{0}'}"
 							   FontSize="15"
 							   Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
 							   VerticalAlignment="Center" Margin="12"/>
 				</Grid>
-
-
-
-			</StackPanel>
+			</Grid>
 		</Border>
-	
-
-	
 	</StackPanel>
-
-
 </UserControl>
