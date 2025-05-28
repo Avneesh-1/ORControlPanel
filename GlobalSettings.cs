@@ -378,6 +378,8 @@ namespace ORControlPanelNew
             public static event Action<bool> onLaminarLightUpdated;
             public static event Action<bool> onOTLight1Updated;
             public static event Action<bool> onOTLight2Updated;
+            public static event Action<bool> onTempUpdatedByController;
+            public static event Action<bool> onHumdUpdatedByController;
 
 
             public static void ProcessData(string inData)
@@ -391,7 +393,28 @@ namespace ORControlPanelNew
 
                     Log($"{DateTime.Now}: Processing data: {s}");
 
-                    if(s.StartsWith("LTAS"))
+                    if (s.StartsWith("TMPS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"TMPS: Invoking onTempUpdated  with recieved={received}");
+                            onTempUpdatedByController?.Invoke(received);
+                        }
+                    }
+
+                    if (s.StartsWith("HMDS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"HMDS: Invoking onHumdUpdated  with recieved={received}");
+                            onHumdUpdatedByController?.Invoke(received);
+                        }
+                    }
+                    if (s.StartsWith("LTAS"))
                     {
                         string[] parts = s.Split('$');
                         if (parts.Length > 1)
@@ -401,6 +424,19 @@ namespace ORControlPanelNew
                             onGeneralLight1Updated?.Invoke(received);
                         }
                     }
+
+                    if (s.StartsWith("LTAS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"LTAS: Invoking onGentalLight1Updated  with recieved={received}");
+                            onGeneralLight1Updated?.Invoke(received);
+                        }
+                    }
+
+
 
                     if (s.StartsWith("LTBS"))
                     {

@@ -1,14 +1,16 @@
+﻿using Avalonia.Threading;
+using ORControlPanelNew.Services;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Diagnostics;
-using System.Reactive;
-using ReactiveUI.Fody.Helpers;
-using ReactiveUI;
-using Avalonia.Threading;
 using System.Globalization;
-using System.Windows.Input;
-using ORControlPanelNew.Services;
 //using NAudio.Wave;
 using System.IO;
+using System.Reactive;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ORControlPanelNew.ViewModels.Temperature
 {
@@ -29,10 +31,13 @@ namespace ORControlPanelNew.ViewModels.Temperature
         [Reactive] public string FireStatus { get; set; } = "OFF";
         [Reactive] public string HepaStatus { get; set; } = "BAD";
         [Reactive] public string UpsStatus { get; set; } = "OFF";
-        [Reactive] public bool GeneralGasAlert { get; set; } = false;
+        
         [Reactive] public bool IsUpsOn { get; set; } = false;
         [Reactive] public string AirDiffPressure { get; set; } = "0.0";
         [Reactive] public double HepaPercentage { get; set; } = 48;
+
+        private CancellationTokenSource _TempCts;
+        private CancellationTokenSource _HumdCts;
         public ICommand IncTempCommand { get; }
         public ICommand DecTempCommand { get; }
         public ICommand IncHumdCommand { get; }
@@ -59,32 +64,39 @@ namespace ORControlPanelNew.ViewModels.Temperature
             //    });
             //};
 
-            DevicePort.DataProcessor.OnGasAlertUpdated += (gasName, isAlert) =>
-            {
-                if (gasName == "General Gas Pressure")
-                {
-                    Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        GeneralGasAlert = isAlert;
-                        _alertService.ShowAlert("General Gas Pressure Alert");
-                        //UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
-                    });
-                }
-            };
+            
+
+          
 
             DevicePort.DataProcessor.OnTemperatureUpdated += (temp) =>
             {
                 Log($"Received OnTemperatureUpdated: temp={temp}");
+                _TempCts?.Cancel();
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     Temperature = temp;
                 });
             };
 
+            DevicePort.DataProcessor.onTempUpdatedByController += (recievedByController) =>
+            {
+                Log($"Received onTempUpdatedByController: recievedByController={recievedByController}");
+
+                _TempCts?.Cancel();
+            };
+
+
+            DevicePort.DataProcessor.onHumdUpdatedByController += (recievedByController) =>
+            {
+                Log($"Received onHumdUpdatedByController: recievedByController={recievedByController}");
+
+                _HumdCts?.Cancel();
+            };
+
             DevicePort.DataProcessor.OnHumidityUpdated += (humidity) =>
             {
                 Log($"Received OnHumidityUpdated: humidity={humidity}");
+                _HumdCts?.Cancel();
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     Humidity = humidity;
@@ -191,128 +203,93 @@ namespace ORControlPanelNew.ViewModels.Temperature
         //        Log($"Error disposing TemperatureViewModel: {ex}");
         //    }
         //}
+        private void SendTempCommand(decimal temp)
+        {
+            _TempCts?.Cancel();
+            _TempCts = new CancellationTokenSource();
+            CancellationToken token = _TempCts.Token;
+
+            DevicePort.SerialPortInterface.Write("SETT" + ((int)temp).ToString());
+            DevicePort.UpdateValueToDb(temp.ToString(), "Temperature");
+            Log($"Sent to device: SETT{(int)temp}");
+
+            Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
+            {
+                if (!t.IsCanceled)
+                {
+                    Log("Temperature feedback timeout → assuming OFF");
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        DevicePort.UpdateValueToDb("0", "Temperature");
+                        Temperature = "0.0"; // fallback or notify user
+                    });
+                }
+            }, token);
+        }
+
+
+
+        private void SendHumdCommand(decimal humd)
+        {
+            _HumdCts?.Cancel();
+            _HumdCts = new CancellationTokenSource();
+            CancellationToken token = _HumdCts.Token;
+
+            DevicePort.SerialPortInterface.Write("SETH" + ((int)humd).ToString());
+            DevicePort.UpdateValueToDb(humd.ToString(), "HUMIDITY");
+            Log($"Sent to device: SETH{(int)humd}");
+
+            Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
+            {
+                if (!t.IsCanceled)
+                {
+                    Log("Humidity feedback timeout → assuming OFF");
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        DevicePort.UpdateValueToDb("0", "Humidity");
+                        Humidity = "0.0"; // fallback or notify user
+                    });
+                }
+            }, token);
+        }
 
         private void IncTemp()
         {
-            try
+            if (decimal.TryParse(Temperature, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal temp))
             {
-                if (!decimal.TryParse(Temperature, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal temp))
-                {
-                    Log("Invalid Temperature format: " + Temperature);
-                    return;
-                }
                 temp = Math.Min(temp + 1, 100);
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Temperature = temp.ToString("F1", CultureInfo.InvariantCulture);
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("SETT" + ((int)temp).ToString());
-                        DevicePort.UpdateValueToDb(temp.ToString(), "Temperature");
-                        Log($"Sent to device: SETT{(int)temp}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log($"Serial write error: {ex.Message}");
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Log($"Error in IncTemp: {ex.Message}");
+                Temperature = temp.ToString("F1", CultureInfo.InvariantCulture);
+                SendTempCommand(temp);
             }
         }
 
         private void DecTemp()
         {
-            try
+            if (decimal.TryParse(Temperature, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal temp))
             {
-                if (!decimal.TryParse(Temperature, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal temp))
-                {
-                    Log("Invalid Temperature format: " + Temperature);
-                    return;
-                }
-                temp = Math.Max(temp - 1, 0);
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Temperature = temp.ToString("F1", CultureInfo.InvariantCulture);
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("SETT" + ((int)temp).ToString());
-                        DevicePort.UpdateValueToDb(temp.ToString(), "Temperature");
-                        Log($"Sent to device: SETT{(int)temp}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log($"Serial write error: {ex.Message}");
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Log($"Error in DecTemp: {ex.Message}");
+                temp = Math.Min(temp - 1, 100);
+                Temperature = temp.ToString("F1", CultureInfo.InvariantCulture);
+                SendTempCommand(temp);
             }
         }
 
         private void IncHumd()
         {
-            try
+            if (decimal.TryParse(Humidity, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal humd))
             {
-                if (!decimal.TryParse(Humidity, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal humd))
-                {
-                    Log("Invalid Humidity format: " + Humidity);
-                    return;
-                }
                 humd = Math.Min(humd + 1, 100);
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Humidity = humd.ToString("F1", CultureInfo.InvariantCulture);
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("SETH" + ((int)humd).ToString());
-                        DevicePort.UpdateValueToDb(humd.ToString(), "Humidity");
-                        Log($"Sent to device: SETH{(int)humd}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log($"Serial write error: {ex.Message}");
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Log($"Error in IncHumd: {ex.Message}");
+                Humidity = humd.ToString("F1", CultureInfo.InvariantCulture);
+                SendHumdCommand(humd);
             }
         }
 
         private void DecHumd()
         {
-            try
+            if (decimal.TryParse(Humidity, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal humd))
             {
-                if (!decimal.TryParse(Humidity, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal humd))
-                {
-                    Log("Invalid Humidity format: " + Humidity);
-                    return;
-                }
-                humd = Math.Max(humd - 1, 0);
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Humidity = humd.ToString("F1", CultureInfo.InvariantCulture);
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("SETH" + ((int)humd).ToString());
-                        DevicePort.UpdateValueToDb(humd.ToString(), "Humidity");
-                        Log($"Sent to device: SETH{(int)humd}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log($"Serial write error: {ex.Message}");
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                Log($"Error in DecHumd: {ex.Message}");
+                humd = Math.Min(humd - 1, 100);
+                Humidity = humd.ToString("F1", CultureInfo.InvariantCulture);
+                SendHumdCommand(humd);
             }
         }
 

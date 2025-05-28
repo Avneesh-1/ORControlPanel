@@ -79,11 +79,7 @@
 												Background="{Binding IsAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
 												VerticalAlignment="Center"
 												HorizontalAlignment="Right">
-										<TextBlock Text="{Binding Pressure}"
-												   Foreground="White"
-												   FontSize="12"
-												   VerticalAlignment="Center"
-												   HorizontalAlignment="Center"/>
+										
 										</Border>
 									</Grid>
 								</Border>
@@ -109,16 +105,12 @@
 							   Text="General Gas Pressure"
 							   FontSize="15" Foreground="White" FontWeight="Bold"
 							   VerticalAlignment="Center" Margin="12"/>
-					<Border Grid.Row="0" Grid.Column="1"
-							Height="28"
-							MinWidth="60"
-							Padding="8,0"
-							Margin="10,0,0,0"
-							CornerRadius="8"
-							Background="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
-							VerticalAlignment="Center"
-							HorizontalAlignment="Right">
-					</Border>
+					<Ellipse Width="18" Height="18" Grid.Column="1"
+         Stroke="Black" StrokeThickness="1"
+         Fill="{Binding GeneralGasAlert,
+                Converter={StaticResource BoolToBrushConverter},
+                ConverterParameter='true:ErrorBrush|false:OkBrush'}" />
+					
 					<TextBlock Grid.Row="0" Grid.Column="2"
 							   Text="{Binding GeneralGasAlert, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Alert,Normal', StringFormat='{}{0}'}"
 							   FontSize="15"
