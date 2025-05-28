@@ -15,6 +15,7 @@ namespace ORControlPanelNew.ViewModels.Brightness
         private bool _suppressUpdates;
 
         public ICommand OpenDialogCommand { get; }
+        public ICommand CloseCommand { get; }
 
         private double _generalLight1Intensity;
         public double GeneralLight1Intensity
@@ -107,6 +108,14 @@ namespace ORControlPanelNew.ViewModels.Brightness
 
             // Initial load (for the very first open)
             LoadInitialValues();
+
+            CloseCommand = ReactiveCommand.Create(() =>
+            {
+                if (_brightnessDialog != null)
+                {
+                    _brightnessDialog.Close();
+                }
+            });
         }
 
         private void UpdateGeneral1(double value)

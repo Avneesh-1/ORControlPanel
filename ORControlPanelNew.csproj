@@ -60,4 +60,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+  <Compile Update="Views\Brightness\BrightnessDialog.axaml.cs">
+    <DependentUpon>BrightnessDialog.axaml</DependentUpon>
+  </Compile>
+  <AvaloniaXaml Update="Views\Brightness\BrightnessDialog.axaml">
+    <Generator>MSBuild:Compile</Generator>
+    <SubType>Designer</SubType>
+  </AvaloniaXaml>
+</ItemGroup>
+
 </Project>
