@@ -267,16 +267,21 @@ namespace ORControlPanelNew
             {
                 try
                 {
-                  
+                    if (_myCOMPort.IsOpen)
+                    {
+                        Log($"Serial port {portName} is already open.");
+                        return true;
+                    }
 
                     _myCOMPort.PortName = portName;
                     _myCOMPort.BaudRate = baudRate;
-                    _myCOMPort.Open();
-                    
+
                     _myCOMPort.DataReceived += (s, e) =>
                     {
                         try
                         {
+                            //string rawData = _myCOMPort.ReadExisting();
+                            //Log($"{rawData}||||||||||||||||||||||||");
                             string data = _myCOMPort.ReadLine();
                             Log($"Serial data received: {data}");
                             DataProcessor.ProcessData(data);
@@ -312,7 +317,7 @@ namespace ORControlPanelNew
                         _myCOMPort.Open();
                     }
 
-                    _myCOMPort.Write(data );
+                    _myCOMPort.Write(data);
                     Log($"Data written to port: {data} AT {_myCOMPort.PortName}");
                 }
                 catch (Exception ex)
@@ -368,6 +373,13 @@ namespace ORControlPanelNew
             public static event Action<bool> OnUpsStatusUpdated;
             public static event Action<string> onAirDiffPressureUpdated;
 
+            public static event Action<bool> onGeneralLight1Updated;
+            public static event Action<bool> onGeneralLight2Updated;
+            public static event Action<bool> onLaminarLightUpdated;
+            public static event Action<bool> onOTLight1Updated;
+            public static event Action<bool> onOTLight2Updated;
+
+
             public static void ProcessData(string inData)
             {
                 string[] allData = inData.Split('#');
@@ -378,6 +390,61 @@ namespace ORControlPanelNew
                         continue;
 
                     Log($"{DateTime.Now}: Processing data: {s}");
+
+                    if(s.StartsWith("LTAS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"LTAS: Invoking onGentalLight1Updated  with recieved={received}");
+                            onGeneralLight1Updated?.Invoke(received);
+                        }
+                    }
+
+                    if (s.StartsWith("LTBS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"LTAS: Invoking onGentalLight2Updated  with recieved={received}");
+                            onGeneralLight2Updated?.Invoke(received);
+                        }
+                    }
+
+                    if (s.StartsWith("LTES"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"LTAS: Invoking onOTLight1Updated  with recieved={received}");
+                            onOTLight1Updated?.Invoke(received);
+                        }
+                    }
+
+                    if (s.StartsWith("LTFS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"LTAS: Invoking onOTLight2Updated  with recieved={received}");
+                            onOTLight2Updated?.Invoke(received);
+                        }
+                    }
+
+                    if (s.StartsWith("LTIS"))
+                    {
+                        string[] parts = s.Split('$');
+                        if (parts.Length > 1)
+                        {
+                            bool received = parts[1] == "1";
+                            Log($"LTAS: Invoking onLaminarLightUpdated  with recieved={received}");
+                            onLaminarLightUpdated?.Invoke(received);
+                        }
+                    }
 
                     if (s.StartsWith("CALN"))
                     {

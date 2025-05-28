@@ -1,10 +1,13 @@
-using System.Windows.Input;
+﻿using Avalonia.Threading;
 using ReactiveUI;
 using System;
-using System.Diagnostics;
-using System.Reactive.Linq;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ORControlPanelNew.ViewModels.Lighting
 {
@@ -12,6 +15,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
     {
         private bool _isLightOn;
         private double _lightIntensity;
+        private CancellationTokenSource _OTLight2Cts;
 
         public bool IsLightOn
         {
@@ -59,33 +63,74 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 IsLightOn = false;
             }
 
-            ToggleLightCommand = ReactiveCommand.Create(() =>
+            ToggleLightCommand = ReactiveCommand.Create(ToggleOTLight2);
+            DevicePort.DataProcessor.onOTLight2Updated += onOTLight2Updated;
+
+
+
+
+
+
+        }
+
+        private void onOTLight2Updated(bool receivedByController)
+        {
+            try
             {
-                IsLightOn = !IsLightOn;
-                // Optionally update hardware and DB here
-                DevicePort.UpdateValueToDb(IsLightOn ? ((int)(LightIntensity == 0 ? 10 : LightIntensity)).ToString() : "0", "OTLight2");
-                DevicePort.SerialPortInterface.Write("LITF" + (IsLightOn ? ((int)(LightIntensity == 0 ? 10 : LightIntensity)).ToString() : "0"));
-            });
+                _OTLight2Cts?.Cancel();
 
-          
+                string dbValue = receivedByController ? "10" : "0";
+                DevicePort.UpdateValueToDb(dbValue, "OTLight2");
+                IsLightOn = receivedByController;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating database: {ex.Message}");
+            }
+        }
 
-            this.WhenAnyValue(x => x.LightIntensity)
-                .Where(_ => IsLightOn)
-                .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(value =>
+
+
+        private void ToggleOTLight2()
+        {
+            try
+            {
+                // Cancel any existing timeout
+                _OTLight2Cts?.Cancel();
+                _OTLight2Cts = new CancellationTokenSource();
+                var token = _OTLight2Cts.Token;
+
+                bool turningOn = !IsLightOn;
+                string command = turningOn ? "LITF$10" : "LITF$0";
+                string dbValue = turningOn ? "10" : "0";
+
+                try
                 {
-                    try
+                    DevicePort.SerialPortInterface.Write(command);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error writing to serial port: {ex.Message}");
+                }
+
+                // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
+                Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
+                {
+                    if (!t.IsCanceled)
                     {
-                        int intValue = (int)value;
-                        DevicePort.UpdateValueToDb(intValue.ToString(), "OTLight2");
-                        Debug.WriteLine($"Updated OTLight2 Intensity: {intValue}");
-                        DevicePort.SerialPortInterface.Write("LITF" + intValue);
+                        Debug.WriteLine("OT Light2 Light feedback timeout → assuming OFF");
+                        Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            DevicePort.UpdateValueToDb("0", "OTLight2");
+                            IsLightOn = false;
+                        });
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating OTLight2 Intensity: {ex.Message}, InnerException: {ex.InnerException?.Message}");
-                    }
-                });
+                }, token);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Unexpected error in OT2 ToggleLight: {ex.Message}");
+            }
         }
     }
 } 

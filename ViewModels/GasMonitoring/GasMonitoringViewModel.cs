@@ -43,6 +43,7 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
         public GasMonitoringViewModel(IAlertService alertService)
         {
+           
             _alertService = alertService ?? throw new ArgumentNullException(nameof(alertService));
 
             try

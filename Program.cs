@@ -40,7 +40,9 @@ namespace ORControlPanelNew
                 // Serial port initialization
                 try
                 {
-                    string portName = OperatingSystem.IsMacOS() ? "/dev/tty.usbserial" : "COM7";
+               string portName = OperatingSystem.IsMacOS() ? "/dev/tty.usbserial": 
+                        OperatingSystem.IsWindows() ? "COM5" : "/dev/ttyUSB0";
+
                     Console.WriteLine($"Attempting to initialize serial port: {portName}");
                     if (!DevicePort.SerialPortInterface.Initialize(portName))
                     {

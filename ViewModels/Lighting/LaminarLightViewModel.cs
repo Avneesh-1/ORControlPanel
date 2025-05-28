@@ -1,15 +1,20 @@
-using System.Windows.Input;
+﻿using Avalonia.Threading;
+using ORControlPanelNew.Views.Lighting;
 using ReactiveUI;
 using System;
-using ORControlPanelNew.Views.Lighting;
-using System.Diagnostics;
-using System.Reactive.Linq;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
 namespace ORControlPanelNew.ViewModels.Lighting
 {
     public class LaminarLightViewModel : ReactiveObject
     {
+        private CancellationTokenSource _laminarLightCts;
+
         private bool _isLightOn;
 
         public bool IsLightOn
@@ -56,56 +61,61 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 IsLightOn = false;
             }
             ToggleLightCommand = ReactiveCommand.Create(ToggleLaminarLight);
+            DevicePort.DataProcessor.onLaminarLightUpdated += OnLaminarLightUpdated;
 
-           
+        }
+
+        private void OnLaminarLightUpdated(bool receivedByController)
+        {
+            try
+            {
+                _laminarLightCts?.Cancel();
+
+                string dbValue = receivedByController ? "10" : "0";
+                DevicePort.UpdateValueToDb(dbValue, "Laminar Light");
+                IsLightOn = receivedByController;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating database: {ex.Message}");
+            }
         }
 
         private void ToggleLaminarLight()
         {
             try
             {
-                if (!IsLightOn)
+                // Cancel any existing timeout
+                _laminarLightCts?.Cancel();
+                _laminarLightCts = new CancellationTokenSource();
+                var token = _laminarLightCts.Token;
+
+                bool turningOn = !IsLightOn;
+                string command = turningOn ? "LITI$10" : "LITI$0";
+                string dbValue = turningOn ? "10" : "0";
+
+                try
                 {
-                    // Turn on the light (intensity logic removed)
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITI"+10); // Default to 10 when turning on
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port: {ex.Message}");
-                    }
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("10", "Laminar Light");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database: {ex.Message}");
-                    }
-                    IsLightOn = true;
+                    DevicePort.SerialPortInterface.Write(command);
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Turn off the light
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITI"+0);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port: {ex.Message}");
-                    }
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("0", "Laminar Light");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database: {ex.Message}");
-                    }
-                    IsLightOn = false;
+                    Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                 }
+
+                // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
+                Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
+                {
+                    if (!t.IsCanceled)
+                    {
+                        Debug.WriteLine("Laminar Light feedback timeout → assuming OFF");
+                        Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            DevicePort.UpdateValueToDb("0", "Laminar Light");
+                            IsLightOn = false;
+                        });
+                    }
+                }, token);
             }
             catch (Exception ex)
             {
