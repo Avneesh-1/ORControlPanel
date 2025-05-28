@@ -1,11 +1,14 @@
-using System.Windows.Input;
+using Avalonia.Threading;
+using ORControlPanelNew.Views.Lighting;
 using ReactiveUI;
 using System;
-using ORControlPanelNew.Views.Lighting;
-using System.Diagnostics;
-using System.Reactive.Linq;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ORControlPanelNew.ViewModels.Lighting
 {
@@ -19,6 +22,8 @@ namespace ORControlPanelNew.ViewModels.Lighting
             set => this.RaiseAndSetIfChanged(ref _isLightOn, value);
         }
 
+        private CancellationTokenSource _GeneralLight1Cts;
+
         public ICommand ToggleLightCommand { get; }
 
 
@@ -27,7 +32,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
             try
             {
                 // Fetch initial values from database
-                string paramList = "'General Lights 1'";
+                string paramList = "'General Lights 2'";
                 var dt = DevicePort.ReadValueFromDb(paramList);
                 if (dt != null && dt.Rows.Count > 0)
                 {
@@ -50,58 +55,66 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
 
             ToggleLightCommand = ReactiveCommand.Create(ToggleGeneralLight1);
+            DevicePort.DataProcessor.onGeneralLight1Updated += onGeneralLight1Updated;
         }
+
+
+        private void onGeneralLight1Updated(bool receivedByController)
+        {
+            try
+            {
+                _GeneralLight1Cts?.Cancel();
+
+                string dbValue = receivedByController ? "10" : "0";
+                DevicePort.UpdateValueToDb(dbValue, "General Lights 1");
+                IsLightOn = receivedByController;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating database: {ex.Message}");
+            }
+        }
+
 
         private void ToggleGeneralLight1()
         {
             try
             {
-                if (!IsLightOn)
+                // Cancel any existing timeout
+                _GeneralLight1Cts?.Cancel();
+                _GeneralLight1Cts = new CancellationTokenSource();
+                var token = _GeneralLight1Cts.Token;
+
+                bool turningOn = !IsLightOn;
+                string command = turningOn ? "LITA$10" : "LITA$0";
+                string dbValue = turningOn ? "10" : "0";
+
+                try
                 {
-                    // Turn on the light (intensity logic removed)
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITA" + 10); // Default to 10 when turning on
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port: {ex.Message}");
-                    }
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("10", "General Lights 1");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database: {ex.Message}");
-                    }
-                    IsLightOn = true;
+                    DevicePort.SerialPortInterface.Write(command);
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Turn off the light
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITA" + 0);
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port: {ex.Message}");
-                    }
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("0", "General Lights 1");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database: {ex.Message}");
-                    }
-                    IsLightOn = false;
+                    Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                 }
+
+                // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
+                Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
+                {
+                    if (!t.IsCanceled)
+                    {
+                        Debug.WriteLine("general Light1 Light feedback timeout → assuming OFF");
+                        Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            DevicePort.UpdateValueToDb("0", "General Lights 1");
+                            IsLightOn = false;
+                        });
+                    }
+                }, token);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Unexpected error in General lights 1 ToggleLight: {ex.Message}");
+                Debug.WriteLine($"Unexpected error in General Lights 1 ToggleLight: {ex.Message}");
             }
         }
     }

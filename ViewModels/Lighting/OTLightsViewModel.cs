@@ -1,18 +1,21 @@
-using System.Windows.Input;
+using Avalonia.Threading;
 using ReactiveUI;
 using System;
-using ORControlPanelNew.Views.Lighting;
-using System.Diagnostics;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace ORControlPanelNew.ViewModels.Lighting
 {
     public class OTLightsViewModel : ReactiveObject
     {
         private bool _isLight1On;
-        private bool _isLight2On;
-        private bool _isLightOn;
+        private double _lightIntensity;
+        private CancellationTokenSource _OTLight1Cts;
 
         public bool IsLight1On
         {
@@ -20,213 +23,114 @@ namespace ORControlPanelNew.ViewModels.Lighting
             set => this.RaiseAndSetIfChanged(ref _isLight1On, value);
         }
 
-        public bool IsLight2On
+        public double LightIntensity
         {
-            get => _isLight2On;
-            set => this.RaiseAndSetIfChanged(ref _isLight2On, value);
+            get => _lightIntensity;
+            set => this.RaiseAndSetIfChanged(ref _lightIntensity, value);
         }
-
-        public bool IsLightOn
-        {
-            get => _isLightOn;
-            set => this.RaiseAndSetIfChanged(ref _isLightOn, value);
-        }
-
-     
 
         public ICommand ToggleLight1Command { get; }
-        public ICommand ToggleLight2Command { get; }
         public ICommand OpenDialogCommand { get; }
 
         public OTLightsViewModel()
         {
             try
             {
-                // Fetch data for "OTLight1" and "OTLight2"
-                string paramList = "'OTLight1','OTLight2'";
-                DataTable dt = DevicePort.ReadValueFromDb(paramList);
-
-                // Process the DataTable to set initial values
-                foreach (DataRow row in dt.Rows)
+                string paramList = "'OTLight1'";
+                var dt = DevicePort.ReadValueFromDb(paramList);
+                if (dt != null && dt.Rows.Count > 0)
                 {
-                    string fieldName = row["FieldName"].ToString();
-                    string valueStr = row["Value"].ToString();
-
-                    if (fieldName == "OTLight1")
-                    {
-                        IsLight1On = valueStr == "1"; // Light is on if value is "1"
-                        Debug.WriteLine($"Fetched OTLight1 state from DB: IsLight1On: {IsLight1On}");
-                    }
-                    else if (fieldName == "OTLight2")
-                    {
-                        IsLight2On = valueStr == "1"; // Light is on if value is "1"
-                        Debug.WriteLine($"Fetched OTLight2 state from DB: IsLight2On: {IsLight2On}");
-                    }
+                    var row = dt.Rows[0];
+                    LightIntensity = Convert.ToDouble(row["Value"]);
+                    IsLight1On = LightIntensity > 0;
                 }
-
-                // If no data was found for a light, use default values
-                if (dt.Rows.Cast<DataRow>().All(row => row["FieldName"].ToString() != "OTLight1"))
+                else
                 {
-                    Debug.WriteLine("No data found for OTLight1 in DB, using default (off)");
+                    Debug.WriteLine("No data found for OTLight1 in DB, using defaults");
+                    LightIntensity = 0;
                     IsLight1On = false;
                 }
-                if (dt.Rows.Cast<DataRow>().All(row => row["FieldName"].ToString() != "OTLight2"))
-                {
-                    Debug.WriteLine("No data found for OTLight2 in DB, using default (off)");
-                    IsLight2On = false;
-                }
 
-                // Sync the hardware with the fetched values
-                try
+                if (IsLight1On && LightIntensity > 0)
                 {
-                    DevicePort.SerialPortInterface.Write("LITE" + (IsLight1On ? "1" : "0"));
-                    DevicePort.SerialPortInterface.Write("LITF" + (IsLight2On ? "1" : "0"));
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Error syncing OT Lights with hardware: {ex.Message}");
+                    DevicePort.SerialPortInterface.Write("LITE" + (int)LightIntensity);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error fetching initial OT Lights data from DB: {ex.Message}");
-                // Fallback to default values
+                Debug.WriteLine($"Error fetching initial OTLight1 data from DB: {ex.Message}");
+                LightIntensity = 0;
                 IsLight1On = false;
-                IsLight2On = false;
             }
 
             ToggleLight1Command = ReactiveCommand.Create(ToggleOTLight1);
+            DevicePort.DataProcessor.onOTLight2Updated += onOTLight1Updated;
 
-            ToggleLight2Command = ReactiveCommand.Create(ToggleOTLight2);
 
-           
+
+
+
+
         }
+
+        private void onOTLight1Updated(bool receivedByController)
+        {
+            try
+            {
+                _OTLight1Cts?.Cancel();
+
+                string dbValue = receivedByController ? "10" : "0";
+                DevicePort.UpdateValueToDb(dbValue, "OTLight1");
+                IsLight1On = receivedByController;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating database: {ex.Message}");
+            }
+        }
+
+
 
         private void ToggleOTLight1()
         {
             try
             {
-                if (!IsLight1On)
+                // Cancel any existing timeout
+                _OTLight1Cts?.Cancel();
+                _OTLight1Cts = new CancellationTokenSource();
+                var token = _OTLight1Cts.Token;
+
+                bool turningOn = !IsLight1On;
+                string command = turningOn ? "LITE$10" : "LITE$0";
+                string dbValue = turningOn ? "10" : "0";
+
+                try
                 {
-                    
-
-                    // Attempt to write to serial port
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITE1");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port for OTLight1: {ex.Message}");
-                    }
-
-                    // Attempt to update database
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("1", "OTLight1");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database for OTLight1: {ex.Message}");
-                    }
-
-                    
-                    IsLight1On = true;
+                    DevicePort.SerialPortInterface.Write(command);
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Turn off the light
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITE0");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port for OTLight1: {ex.Message}");
-                    }
-
-                    // Attempt to update database
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("0", "OTLight1");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database for OTLight1: {ex.Message}");
-                    }
-
-                    IsLight1On = false;
+                    Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                 }
+
+                // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
+                Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
+                {
+                    if (!t.IsCanceled)
+                    {
+                        Debug.WriteLine("OT Light2 Light feedback timeout → assuming OFF");
+                        Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            DevicePort.UpdateValueToDb("0", "OTLight1");
+                            IsLight1On = false;
+                        });
+                    }
+                }, token);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Unexpected error in ToggleOTLight1: {ex.Message}");
-            }
-        }
-
-
-
-
-        private void ToggleOTLight2()
-        {
-            try
-            {
-                if (!IsLight2On)
-                {
-                    
-
-                    // Attempt to write to serial port
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITF1");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port for OTLight2: {ex.Message}");
-                    }
-
-                    // Attempt to update database
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("1", "OTLight2");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database for OTLight2: {ex.Message}");
-                    }
-
-                   
-                    IsLight2On = true;
-                }
-                else
-                {
-                    // Turn off the light
-                    try
-                    {
-                        DevicePort.SerialPortInterface.Write("LITF0");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error writing to serial port for OTLight2: {ex.Message}");
-                    }
-
-                    // Attempt to update database
-                    try
-                    {
-                        DevicePort.UpdateValueToDb("0", "OTLight2");
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Error updating database for OTLight2: {ex.Message}");
-                    }
-
-                    IsLight2On = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Unexpected error in ToggleOTLight2: {ex.Message}");
+                Debug.WriteLine($"Unexpected error in OT1 ToggleLight: {ex.Message}");
             }
         }
     }
-} 
+}
