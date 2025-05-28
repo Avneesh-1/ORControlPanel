@@ -134,7 +134,7 @@
 
 		<!-- Header with logo and title -->
 		<StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top" Margin="24,12,0,0" Spacing="16">
-			<Image Source="avares://ORControlPanelNew/Assets/Images/LOGO_1.png"
+			<Image Source="avares://ORControlPanelNew/Assets/Images/UNISSI LOGO_001-BLACK.png"
 				   Width="60" Height="32"
 				   VerticalAlignment="Center"/>
 			<TextBlock Text="OPERATION  ROOM  CONTROL  PANEL"
@@ -165,7 +165,7 @@
 					<!-- Temperature -->
 				</Grid.RowDefinitions>
 
-					<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch" Margin="16,0,0,0"/>
+					<views:TimerPage Grid.Row="0" HorizontalAlignment="Stretch" Margin="16,0,20,0"/>
 					<temp:TemperatureCard Grid.Row="1" Margin="20,20,20,20" HorizontalAlignment="Stretch"  DataContext="{Binding TemperatureMonitoring}"
 										  />
 			</Grid>
@@ -179,7 +179,7 @@
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
-					<views:AnesthesiaTimerPage Grid.Row="0" HorizontalAlignment="Stretch"/>
+					<views:AnesthesiaTimerPage Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,0,20,0"/>
 					<intercom:IntercomPanel Grid.Row="1"  Margin="20,20,20,20"/>
 			</Grid>
 

@@ -15,6 +15,7 @@ namespace ORControlPanelNew.ViewModels.Brightness
         private bool _suppressUpdates;
 
         public ICommand OpenDialogCommand { get; }
+        public ICommand CloseCommand { get; }
 
         private double _generalLight1Intensity;
         public double GeneralLight1Intensity
@@ -35,6 +36,28 @@ namespace ORControlPanelNew.ViewModels.Brightness
         {
             get => _laminarLightIntensity;
             set => this.RaiseAndSetIfChanged(ref _laminarLightIntensity, value);
+        }
+
+        // Add ON/OFF state properties
+        private bool _isGeneralLight1On;
+        public bool IsGeneralLight1On
+        {
+            get => _isGeneralLight1On;
+            set => this.RaiseAndSetIfChanged(ref _isGeneralLight1On, value);
+        }
+
+        private bool _isGeneralLight2On;
+        public bool IsGeneralLight2On
+        {
+            get => _isGeneralLight2On;
+            set => this.RaiseAndSetIfChanged(ref _isGeneralLight2On, value);
+        }
+
+        private bool _isLaminarLightOn;
+        public bool IsLaminarLightOn
+        {
+            get => _isLaminarLightOn;
+            set => this.RaiseAndSetIfChanged(ref _isLaminarLightOn, value);
         }
 
         public BrightnessViewModel()
@@ -58,6 +81,16 @@ namespace ORControlPanelNew.ViewModels.Brightness
             // Command to open (or activate) a single dialog instance:
             OpenDialogCommand = ReactiveCommand.Create(() =>
             {
+                // Reload fresh DB values every time you open/activate:
+                LoadInitialValues();
+
+                // If all lights are OFF, do not show the dialog
+                if (!IsGeneralLight1On && !IsGeneralLight2On && !IsLaminarLightOn)
+                {
+                    // Optionally, show a message to the user here
+                    return;
+                }
+
                 if (_brightnessDialog == null || !_brightnessDialog.IsVisible)
                 {
                     _brightnessDialog = new BrightnessDialog
@@ -78,6 +111,14 @@ namespace ORControlPanelNew.ViewModels.Brightness
 
             // Initial load (for the very first open)
             LoadInitialValues();
+
+            CloseCommand = ReactiveCommand.Create(() =>
+            {
+                if (_brightnessDialog != null)
+                {
+                    _brightnessDialog.Close();
+                }
+            });
         }
 
         private void UpdateGeneral1(double value)
@@ -134,6 +175,11 @@ namespace ORControlPanelNew.ViewModels.Brightness
                 string paramList = "'General Lights 1','General Lights 2','Laminar Light'";
                 DataTable dt = DevicePort.ReadValueFromDb(paramList);
 
+                // Reset ON/OFF states
+                IsGeneralLight1On = false;
+                IsGeneralLight2On = false;
+                IsLaminarLightOn = false;
+
                 foreach (DataRow row in dt.Rows)
                 {
                     var name = row["FieldName"].ToString();
@@ -146,12 +192,15 @@ namespace ORControlPanelNew.ViewModels.Brightness
                     {
                         case "General Lights 1":
                             GeneralLight1Intensity = val;
+                            IsGeneralLight1On = val > 0;
                             break;
                         case "General Lights 2":
                             GeneralLight2Intensity = val;
+                            IsGeneralLight2On = val > 0;
                             break;
                         case "Laminar Light":
                             LaminarLightIntensity = val;
+                            IsLaminarLightOn = val > 0;
                             break;
                     }
                 }

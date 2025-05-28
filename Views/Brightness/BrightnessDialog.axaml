@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ORControlPanelNew.ViewModels.Brightness"
+        xmlns:converters="using:ORControlPanelNew.Converters"
         x:Class="ORControlPanelNew.Views.Brightness.BrightnessDialog"
         x:DataType="vm:BrightnessViewModel"
         Title="Brightness Control"
@@ -8,20 +9,101 @@
         Background="Transparent"
         TransparencyLevelHint="Blur,Transparent"
         WindowStartupLocation="CenterOwner">
+    
+    <Window.Resources>
+        <converters:SliderValueToHeightConverter x:Key="SliderValueToHeightConverter" Minimum="0" Maximum="100" TrackHeight="200"/>
+        <converters:SliderValueToWidthConverter x:Key="SliderValueToWidthConverter" Minimum="0" Maximum="100" TrackWidth="200"/>
+    </Window.Resources>
+    
     <Border Background="#80232323" CornerRadius="18" Padding="24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="48">
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-                <TextBlock Text="General Light 1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-                <Slider Orientation="Vertical" Minimum="0" Maximum="100" Height="200" Value="{Binding GeneralLight1Intensity}"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="48">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                            IsVisible="{Binding IsGeneralLight1On}">
+                    <TextBlock Text="General Light 1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <Grid>
+                        <ScrollBar Orientation="Vertical" 
+                                  Minimum="0" 
+                                  Maximum="100" 
+                                  Height="200" 
+                                  Width="32" 
+                                  Value="{Binding GeneralLight1Intensity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Border Background="#222" CornerRadius="6" Padding="6,2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,-28">
+                            <TextBlock Text="{Binding GeneralLight1Intensity, StringFormat='{}{0:N0}%'}" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+                
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                            IsVisible="{Binding IsGeneralLight2On}">
+                    <TextBlock Text="General Light 2" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <Grid>
+                        <ScrollBar Orientation="Vertical" 
+                                  Minimum="0" 
+                                  Maximum="100" 
+                                  Height="200" 
+                                  Width="32" 
+                                  Value="{Binding GeneralLight2Intensity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Border Background="#222" CornerRadius="6" Padding="6,2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,-28">
+                            <TextBlock Text="{Binding GeneralLight2Intensity, StringFormat='{}{0:N0}%'}" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+                
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                            IsVisible="{Binding IsLaminarLightOn}">
+                    <TextBlock Text="Laminar Light" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <Grid>
+                        <ScrollBar Orientation="Vertical" 
+                                  Minimum="0" 
+                                  Maximum="100" 
+                                  Height="200" 
+                                  Width="32" 
+                                  Value="{Binding LaminarLightIntensity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Border Background="#222" CornerRadius="6" Padding="6,2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,-28">
+                            <TextBlock Text="{Binding LaminarLightIntensity, StringFormat='{}{0:N0}%'}" FontSize="14" FontWeight="Bold" Foreground="White"/>
+                        </Border>
+                    </Grid>
+                </StackPanel>
             </StackPanel>
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-                <TextBlock Text="General Light 2" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-                <Slider Orientation="Vertical" Minimum="0" Maximum="100" Height="200" Value="{Binding GeneralLight2Intensity}"/>
-            </StackPanel>
-            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-                <TextBlock Text="Laminar Light" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-                <Slider Orientation="Vertical" Minimum="0" Maximum="100" Height="200" Value="{Binding LaminarLightIntensity}"/>
-            </StackPanel>
-        </StackPanel>
+
+            <Button Grid.Row="1"
+                    Content="Close" 
+                    Command="{Binding CloseCommand}"
+                    HorizontalAlignment="Center"
+                    Margin="0,16,0,0"
+                    Padding="32,8"
+                    Background="#7FFF00"
+                    Foreground="Black"
+                    FontWeight="Bold"
+                    CornerRadius="8"/>
+        </Grid>
     </Border>
-</Window> 
+
+    <Window.Styles>
+        <Style Selector="ScrollBar">
+            <Setter Property="Background" Value="#222C36"/>
+            <Setter Property="Foreground" Value="#7FFF00"/>
+            <Setter Property="SmallChange" Value="1"/>
+            <Setter Property="LargeChange" Value="10"/>
+        </Style>
+        <Style Selector="ScrollBar:vertical /template/ Border#PART_TrackBackground">
+            <Setter Property="Background" Value="#222C36"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Width" Value="16"/>
+        </Style>
+        <Style Selector="ScrollBar:vertical /template/ Thumb#PART_Thumb">
+            <Setter Property="Background" Value="#7FFF00"/>
+            <Setter Property="BorderBrush" Value="#FFF"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+    </Window.Styles>
+</Window>
