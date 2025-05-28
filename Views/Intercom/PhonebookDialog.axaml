@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ORControlPanelNew.ViewModels.Intercom"
+        xmlns:conv="using:ORControlPanelNew.Converters"
+        x:Class="ORControlPanelNew.Views.Intercom.PhonebookDialog"
+        x:DataType="vm:IntercomDialogViewModel"
+        Title="Phonebook"
+        Width="350" Height="500"
+        WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <conv:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
+    </Window.Resources>
+    <Window.DataContext>
+        <vm:IntercomDialogViewModel/>
+    </Window.DataContext>
+    <Border Background="#232323" CornerRadius="16" Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Spacing="8" HorizontalAlignment="Stretch">
+            <TextBlock Text="Phonebook" FontWeight="Bold" FontSize="18" Foreground="White"/>
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Stretch">
+                <TextBlock Text="Name" Width="60" Foreground="White"/>
+                <TextBox Text="{Binding NewContactName, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Stretch">
+                <TextBlock Text="Number" Width="60" Foreground="White"/>
+                <TextBox Text="{Binding NewContactNumber, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+            </StackPanel>
+            <Button Content="Save" Command="{Binding SaveContactCommand}" HorizontalAlignment="Stretch"/>
+            <TextBlock Text="No contacts saved."
+                       IsVisible="{Binding Contacts.Count, Converter={StaticResource ZeroToVisibilityConverter}}"
+                       Foreground="Gray" FontStyle="Italic" Margin="0,4,0,0" FontSize="12"/>
+            <ItemsControl ItemsSource="{Binding Contacts}" Margin="0,8,0,0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="LimeGreen" BorderThickness="1.5" CornerRadius="6" Margin="0,2,0,2" Padding="4">
+                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="LimeGreen" FontSize="12"/>
+                                <TextBlock Text=":" FontWeight="Bold" Foreground="LimeGreen" FontSize="12"/>
+                                <TextBlock Text="{Binding Number}" Foreground="LimeGreen" FontSize="12"/>
+                                <Button Content="Delete"
+                                        Click="OnDeleteContactClick"
+                                        CommandParameter="{Binding .}"
+                                        Background="Red"
+                                        Foreground="White"
+                                        Margin="8,0,0,0"
+                                        Padding="4,1"
+                                        FontWeight="Bold"
+                                        FontSize="11"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Border>
+</Window> 
