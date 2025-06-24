@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		 xmlns:vm="using:ORControlPanelNew.ViewModels.PatientData"
+		x:DataType="vm:PatientDataDialogViewModel"
+        mc:Ignorable="d"
+        x:Class="ORControlPanelNew.Views.PatientData.PatientDataDialog"
+        Title="Patient Data"
+        Width="400" Height="450"
+        WindowStartupLocation="CenterOwner"
+        Background="Black">
+    <Border Background="Black" CornerRadius="16" Padding="24" BoxShadow="0 4 24 0 #0003">
+        <StackPanel Spacing="18">
+            <TextBlock Text="Patient Data" FontWeight="Bold" FontSize="22" HorizontalAlignment="Center" Margin="0,0,0,10" Foreground="White"/>
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="👤 Patient Name" FontSize="16" Width="150" VerticalAlignment="Center" Foreground="White"/>
+				<TextBox Width="180" Text="{Binding PatientName, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="🎂 Age" FontSize="16" Width="150" VerticalAlignment="Center" Foreground="White"/>
+				<TextBox Width="60" Text="{Binding Age, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="📝 Procedure" FontSize="16" Width="150" VerticalAlignment="Center" Foreground="White"/>
+				<TextBox Width="180" Text="{Binding Procedure, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="👨‍⚕️ Surgeon Name" FontSize="16" Width="150" VerticalAlignment="Center" Foreground="White"/>
+				<TextBox Width="180" Text="{Binding SurgeonName, Mode=TwoWay}"/>
+            </StackPanel>
+			<TextBlock Text="{Binding ErrorMessage}" Foreground="Red" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,20,0,0">
+				<Button Content="Submit" Width="90" Background="#0078D7" Foreground="White" CornerRadius="8" FontWeight="Bold" Command="{Binding SubmitCommand}"/>
+				<Button Content="Close" Width="90" Background="#2D2D2D" Foreground="White" CornerRadius="8" FontWeight="Bold" Command="{Binding CloseCommand}"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window> 

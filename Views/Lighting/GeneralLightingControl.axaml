@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ORControlPanelNew.ViewModels.Lighting"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="ORControlPanelNew.Views.Lighting.GeneralLightingControl"
+             x:DataType="vm:GeneralLightingViewModel"
+             Background="Transparent">
+
+    <Button Command="{Binding ToggleLightCommand}"
+            Classes="footerButton"
+            ToolTip.Tip="General Lighting Control"
+            BorderThickness="0" Padding="0" Margin="0"
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+            Background="{Binding IsLightOn, Converter={StaticResource BoolToColorConverter}, ConverterParameter='#4fc3f7,#2D2D2D'}">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+            <Viewbox Width="25" Height="32" Margin="0,0,0,2">
+                <Image Source="avares://ORControlPanelNew/Assets/Icons/light-bulb.png" Width="24" Height="24" Stretch="Uniform"/>
+            </Viewbox>
+            <TextBlock Text="General Light 1"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Bottom"
+                     FontSize="12"/>
+        </StackPanel>
+    </Button>
+
+	<UserControl.Styles>
+		<Style Selector="Button.lighting">
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="Height" Value="100"/>
+			<Setter Property="Background" Value="#2D2D2D"/>
+			<Setter Property="CornerRadius" Value="8"/>
+			<Setter Property="Margin" Value="10"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Bottom"/>
+		</Style>
+		<Style Selector="Button.lighting:pointerover">
+			<Setter Property="Background" Value="#3D3D3D"/>
+		</Style>
+		<Style Selector="Button.lighting:pressed">
+			<Setter Property="Background" Value="#1D1D1D"/>
+		</Style>
+	</UserControl.Styles>
+</UserControl> 

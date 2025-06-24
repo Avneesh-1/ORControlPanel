@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="100"
+             x:Class="ORControlPanelNew.Views.PatientData.PatientDataControl"
+             Background="Transparent">
+    <Button x:Name="PatientDataButton" Classes="footerButton" ToolTip.Tip="Patient Data" BorderThickness="0" Padding="0" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="2">
+            <Viewbox Width="32" Height="25" Margin="0,0,0,2">
+                <Image Source="avares://ORControlPanelNew/Assets/Icons/data-security.png" Width="24" Height="24" Stretch="Uniform"/>
+            </Viewbox>
+            <TextBlock Text="Patient Data"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Bottom"
+                     FontSize="12"/>
+        </StackPanel>
+    </Button>
+    <UserControl.Styles>
+        <Style Selector="Button.lighting">
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="100"/>
+            <Setter Property="Background" Value="#2D2D2D"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+        </Style>
+        <Style Selector="Button.lighting:pointerover">
+            <Setter Property="Background" Value="#3D3D3D"/>
+        </Style>
+        <Style Selector="Button.lighting:pressed">
+            <Setter Property="Background" Value="#1D1D1D"/>
+        </Style>
+    </UserControl.Styles>
+</UserControl> 

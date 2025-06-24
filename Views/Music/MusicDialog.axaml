@@ -1,0 +1,57 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="ORControlPanelNew.Views.Music.MusicDialog"
+        MinWidth="400" MinHeight="400"
+        MaxWidth="800" MaxHeight="800"
+        Width="600" Height="600"
+        WindowStartupLocation="CenterOwner"
+        Background="#232323">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,0,0,24">
+                <TextBlock Text="🎵" FontSize="28"/>
+                <TextBlock Text="Music Facility" FontSize="22" FontWeight="Bold" Foreground="#00BFFF"/>
+            </StackPanel>
+
+            <!-- Main Content -->
+            <StackPanel Grid.Row="1" Spacing="24">
+                <!-- Playback Section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Playback" FontSize="16" FontWeight="Bold" Foreground="#00BFFF"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16">
+                        <Button x:Name="PlayPauseButton" Content="▶️ Play" MinWidth="150" Height="40" Background="#2D2D2D" Foreground="White" CornerRadius="8"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Track Selection Section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Track Selection" FontSize="16" FontWeight="Bold" Foreground="#00BFFF"/>
+                    <ComboBox x:Name="TrackComboBox" MinWidth="240" HorizontalAlignment="Center" Background="#2D2D2D" Foreground="White">
+                        <ComboBoxItem Content="Track 1" IsSelected="True"/>
+                        <ComboBoxItem Content="Track 2"/>
+                        <ComboBoxItem Content="Track 3"/>
+                    </ComboBox>
+                    <TextBlock Text="(Bluetooth/USB/SD support coming soon)" Foreground="#AAAAAA" FontSize="12" HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Volume Section -->
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Volume" FontSize="16" FontWeight="Bold" Foreground="#00BFFF"/>
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="🔉" FontSize="18" VerticalAlignment="Center"/>
+                        <Slider x:Name="VolumeSlider" Minimum="0" Maximum="100" Value="50" MinWidth="180"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window> 
