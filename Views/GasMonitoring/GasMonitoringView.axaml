@@ -25,7 +25,7 @@
 		<vm:GasMonitoringViewModel />
 	</Design.DataContext>
 	<StackPanel Spacing="10">
-		<Border Background="#181A1B"  CornerRadius="16"  Padding="24" BorderBrush="#444" BorderThickness="2"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="440" Height="570">
+		<Border Background="#181A1B"  CornerRadius="16"  Padding="24" BorderBrush="#444" BorderThickness="2"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="570">
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="*"/>
@@ -52,7 +52,7 @@
 								<Border Background="{StaticResource CardBlueGradient}"
 										CornerRadius="14"
 										MinHeight="80"
-										Margin="5"
+										Margin="5,5,5,40"
 										BorderThickness="1"
 										BorderBrush="#444"
 										HorizontalAlignment="Stretch"
@@ -90,40 +90,10 @@
 					</ItemsControl>
 				</StackPanel>
 
-				<!-- HEPA Filter Status Card -->
-				<Border Grid.Row="1" Background="{StaticResource CardBlueGradient}" CornerRadius="14" Margin="5,0,5,5" BorderThickness="1" BorderBrush="#444">
-					<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center" Margin="10,0" HorizontalAlignment="Stretch">
-						<TextBlock Grid.Column="0"
-								   Text="HEPA Filter"
-								   Foreground="White"
-								   FontSize="14"
-								   Padding="10,0"
-								   VerticalAlignment="Center"
-								   TextTrimming="CharacterEllipsis"
-								   TextWrapping="NoWrap"/>
-
-						<Border Grid.Column="1"
-								Height="28"
-								MinWidth="60"
-								Padding="8,0"
-								Margin="10,0,0,0"
-								CornerRadius="8"
-								Background="{Binding IsHepaGood, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:OkBrush|false:ErrorBrush'}"
-								VerticalAlignment="Center"
-								HorizontalAlignment="Right">
-							<TextBlock Text="{Binding IsHepaGood, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Good,Bad'}"
-									   Foreground="White"
-									   FontSize="12"
-									   FontWeight="Bold"
-									   HorizontalAlignment="Center"
-									   VerticalAlignment="Center"/>
-						</Border>
-					</Grid>
-				</Border>
-
-				<!-- Bottom: Info Grid -->
+				<!-- Bottom: Info Grid (with HEPA Filter as first row) -->
 				<Grid Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom">
 					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto"/>
 						<RowDefinition Height="Auto"/>
 					</Grid.RowDefinitions>
@@ -133,36 +103,47 @@
 						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
 
-					<!-- Row 1 -->
+					<!-- Row 0: General Gas Pressure -->
 					<TextBlock Grid.Row="0" Grid.Column="0"
 							   Text="General Gas Pressure"
 							   FontSize="15" Foreground="White" FontWeight="Bold"
 							   VerticalAlignment="Center" Margin="12"/>
-					<Ellipse Width="18" Height="18" Grid.Column="1"
-         Stroke="Black" StrokeThickness="1"
-         Fill="{Binding GeneralGasAlert,
-                Converter={StaticResource BoolToBrushConverter},
-                ConverterParameter='true:ErrorBrush|false:OkBrush'}" />
-					
+					<Ellipse Width="18" Height="18" Grid.Row="0" Grid.Column="1"
+							 Stroke="Black" StrokeThickness="1"
+							 Fill="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
+							 VerticalAlignment="Center" Margin="12"/>
 					<TextBlock Grid.Row="0" Grid.Column="2"
 							   Text="{Binding GeneralGasAlert, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Alert,Normal', StringFormat='{}{0}'}"
 							   FontSize="15"
 							   Foreground="{Binding GeneralGasAlert, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:ErrorBrush|false:OkBrush'}"
 							   VerticalAlignment="Center" Margin="12"/>
 
-					<!-- Row 2 -->
+					<!-- Row 1: HEPA Filter -->
 					<TextBlock Grid.Row="1" Grid.Column="0"
+							   Text="HEPA Filter"
+							   FontSize="15" Foreground="White" FontWeight="Bold"
+							   VerticalAlignment="Center" Margin="12"/>
+					<Ellipse Width="18" Height="18" Grid.Row="1" Grid.Column="1"
+							 Stroke="Black" StrokeThickness="1"
+							 Fill="{Binding IsHepaGood, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:OkBrush|false:ErrorBrush'}"
+							 VerticalAlignment="Center" Margin="12"/>
+					<TextBlock Grid.Row="1" Grid.Column="2"
+							   Text="{Binding IsHepaGood, Converter={StaticResource BoolToTextConverter}, ConverterParameter='Normal,Bad'}"
+							   FontSize="15"
+							   Foreground="{Binding IsHepaGood, Converter={StaticResource BoolToBrushConverter}, ConverterParameter='true:OkBrush|false:ErrorBrush'}"
+							   VerticalAlignment="Center" Margin="12"/>
+
+					<!-- Row 2: UPS -->
+					<TextBlock Grid.Row="2" Grid.Column="0"
 							   Text="UPS"
 							   FontSize="15" Foreground="White" FontWeight="Bold"
 							   VerticalAlignment="Center" Margin="12"/>
-
-					<Ellipse Grid.Row="1" Grid.Column="1"
+					<Ellipse Grid.Row="2" Grid.Column="1"
 							 Width="18" Height="18"
 							 Fill="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
 							 Stroke="Black" StrokeThickness="1"
 							 VerticalAlignment="Center" Margin="12"/>
-
-					<TextBlock Grid.Row="1" Grid.Column="2"
+					<TextBlock Grid.Row="2" Grid.Column="2"
 							   Text="{Binding UpsStatus, StringFormat='{}{0}'}"
 							   FontSize="15"
 							   Foreground="{Binding UpsStatus, Converter={StaticResource StringToBrushConverter}, ConverterParameter='ON:OnBrush|OFF:OffBrush'}"
