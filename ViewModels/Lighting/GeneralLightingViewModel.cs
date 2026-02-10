@@ -1,6 +1,7 @@
 using Avalonia.Threading;
 using ORControlPanelNew.Views.Lighting;
 using ReactiveUI;
+using System.Text.Json;
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -55,6 +56,8 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
 
             ToggleLightCommand = ReactiveCommand.Create(ToggleGeneralLight1);
+            // Unsubscribe first to prevent duplicate handlers if ViewModel is recreated
+            DevicePort.DataProcessor.onGeneralLight1Updated -= onGeneralLight1Updated;
             DevicePort.DataProcessor.onGeneralLight1Updated += onGeneralLight1Updated;
         }
 
@@ -67,7 +70,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
                 string dbValue = receivedByController ? "10" : "0";
                 DevicePort.UpdateValueToDb(dbValue, "General Lights 1");
-                IsLightOn = receivedByController;
+                Dispatcher.UIThread.InvokeAsync(() => IsLightOn = receivedByController);
             }
             catch (Exception ex)
             {
@@ -86,18 +89,28 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 var token = _GeneralLight1Cts.Token;
 
                 bool turningOn = !IsLightOn;
-                string command = turningOn ? "LITA$10" : "LITA$0";
+                // string command = turningOn ? "LITA$10" : "LITA$0";
+                
+                var cmd = new
+                {
+                    cmd = "SET_GEN1",
+                    state = turningOn ? "ON" : "OFF",
+                    val = turningOn ? 10 : 0 // Using 10 as default ON value based on request
+                };
+
                 string dbValue = turningOn ? "10" : "0";
 
                 try
                 {
-                    DevicePort.SerialPortInterface.Write(command);
+                    string jsonCmd = JsonSerializer.Serialize(cmd);
+                    DevicePort.SerialPortInterface.Write(jsonCmd + "\n");
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                 }
 
+                /* 
                 // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
                 Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
                 {
@@ -111,6 +124,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                         });
                     }
                 }, token);
+                */
             }
             catch (Exception ex)
             {

@@ -10,46 +10,96 @@
     <Window.Resources>
         <conv:ZeroToVisibilityConverter x:Key="ZeroToVisibilityConverter"/>
     </Window.Resources>
-    <Window.DataContext>
-        <vm:IntercomDialogViewModel/>
-    </Window.DataContext>
-    <Border Background="#232323" CornerRadius="16" Padding="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <StackPanel Spacing="8" HorizontalAlignment="Stretch">
-            <TextBlock Text="Phonebook" FontWeight="Bold" FontSize="18" Foreground="White"/>
-            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Stretch">
-                <TextBlock Text="Name" Width="60" Foreground="White"/>
-                <TextBox Text="{Binding NewContactName, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+
+    <Border Background="#181A1B" BorderBrush="#444" BorderThickness="2" CornerRadius="16" Padding="20">
+        <Grid RowDefinitions="Auto,Auto,Auto,*">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Margin="0,0,0,20">
+                <Image Source="avares://ORControlPanelNew/Assets/Icons/contacts.png" Width="24" Height="24"/>
+                <TextBlock Text="PHONEBOOK" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Stretch">
-                <TextBlock Text="Number" Width="60" Foreground="White"/>
-                <TextBox Text="{Binding NewContactNumber, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
-            </StackPanel>
-            <Button Content="Save" Command="{Binding SaveContactCommand}" HorizontalAlignment="Stretch"/>
-            <TextBlock Text="No contacts saved."
-                       IsVisible="{Binding Contacts.Count, Converter={StaticResource ZeroToVisibilityConverter}}"
-                       Foreground="Gray" FontStyle="Italic" Margin="0,4,0,0" FontSize="12"/>
-            <ItemsControl ItemsSource="{Binding Contacts}" Margin="0,8,0,0">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="LimeGreen" BorderThickness="1.5" CornerRadius="6" Margin="0,2,0,2" Padding="4">
-                            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="LimeGreen" FontSize="12"/>
-                                <TextBlock Text=":" FontWeight="Bold" Foreground="LimeGreen" FontSize="12"/>
-                                <TextBlock Text="{Binding Number}" Foreground="LimeGreen" FontSize="12"/>
-                                <Button Content="Delete"
-                                        Click="OnDeleteContactClick"
-                                        CommandParameter="{Binding .}"
-                                        Background="Red"
-                                        Foreground="White"
-                                        Margin="8,0,0,0"
-                                        Padding="4,1"
-                                        FontWeight="Bold"
-                                        FontSize="11"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </StackPanel>
+
+            <!-- Add Contact Section -->
+            <Border Grid.Row="1" Background="#232323" CornerRadius="12" Padding="16" Margin="0,0,0,16" BorderBrush="#333" BorderThickness="1">
+                <Grid ColumnDefinitions="*,*,Auto" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Foreground="#888" FontSize="12" Margin="4,0,0,2"/>
+                    <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding NewContactName, Mode=TwoWay}" 
+                             Background="#1A1A1A" BorderBrush="#444" Foreground="White"
+                             Margin="4,0,4,0" Height="36" VerticalContentAlignment="Center" CornerRadius="6"
+                             CaretBrush="White">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="#1A1A1A"/>
+                                <Setter Property="BorderBrush" Value="#7CB342"/>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Number" Foreground="#888" FontSize="12" Margin="4,0,0,2"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewContactNumber, Mode=TwoWay}" 
+                             Background="#1A1A1A" BorderBrush="#444" Foreground="White"
+                             Margin="4,0,4,0" Height="36" VerticalContentAlignment="Center" CornerRadius="6"
+                             CaretBrush="White">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="#1A1A1A"/>
+                                <Setter Property="BorderBrush" Value="#7CB342"/>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+
+                    <Button Grid.Row="1" Grid.Column="2" Content="ADD" Command="{Binding SaveContactCommand}" 
+                            Background="#7CB342" Foreground="Black" FontWeight="Bold" Width="60" Height="36"
+                            CornerRadius="8" VerticalAlignment="Bottom" Margin="4,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <Separator Grid.Row="2" Background="#333" Margin="0,0,0,16"/>
+
+            <!-- Contacts List -->
+            <ScrollViewer Grid.Row="3">
+                <StackPanel>
+                    <TextBlock Text="No contacts found." 
+                               IsVisible="{Binding Contacts.Count, Converter={StaticResource ZeroToVisibilityConverter}}"
+                               Foreground="#666" HorizontalAlignment="Center" FontStyle="Italic" Margin="0,40,0,0"/>
+
+                    <ItemsControl ItemsSource="{Binding Contacts}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="#232323" CornerRadius="12" Padding="12" Margin="0,0,0,8" 
+                                        BorderBrush="#333" BorderThickness="1">
+                                    <Grid ColumnDefinitions="*,120" MinHeight="60">
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="4" Margin="4,0">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="#7CB342" FontSize="18"/>
+                                            <TextBlock Text="{Binding Number}" Foreground="White" FontSize="16" Opacity="0.8"/>
+                                        </StackPanel>
+
+                                        <!-- Action Buttons Column -->
+                                        <Grid Grid.Column="1" ColumnDefinitions="*,*" VerticalAlignment="Center">
+                                            <!-- Call Button -->
+                                            <Button Grid.Column="0" Command="{Binding ((vm:IntercomDialogViewModel)DataContext).CallContactCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding .}"
+                                                    Background="#2E7D32" Width="48" Height="48" CornerRadius="24" Padding="10"
+                                                    HorizontalAlignment="Center">
+                                                <Image Source="avares://ORControlPanelNew/Assets/Icons/telephone.png" Width="24" Height="24"/>
+                                            </Button>
+
+                                            <!-- Delete Button -->
+                                            <Button Grid.Column="1" Command="{Binding ((vm:IntercomDialogViewModel)DataContext).DeleteContactCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding .}"
+                                                    Background="#C62828" Width="48" Height="48" CornerRadius="24" Padding="10"
+                                                    HorizontalAlignment="Center">
+                                                <Image Source="avares://ORControlPanelNew/Assets/Icons/delete.png" Width="24" Height="24"/>
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
     </Border>
-</Window> 
+</Window>
+ 

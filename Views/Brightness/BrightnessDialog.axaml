@@ -26,10 +26,10 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="48">
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
                             IsVisible="{Binding IsGeneralLight1On}">
-                    <TextBlock Text="General Light 1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="General Light 1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
                     <Grid>
                         <ScrollBar Orientation="Vertical" 
-                                  Minimum="0" 
+                                  Minimum="1" 
                                   Maximum="100" 
                                   Height="200" 
                                   Width="32" 
@@ -42,10 +42,10 @@
                 
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
                             IsVisible="{Binding IsGeneralLight2On}">
-                    <TextBlock Text="General Light 2" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="General Light 2" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
                     <Grid>
                         <ScrollBar Orientation="Vertical" 
-                                  Minimum="0" 
+                                  Minimum="1" 
                                   Maximum="100" 
                                   Height="200" 
                                   Width="32" 
@@ -58,10 +58,10 @@
                 
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
                             IsVisible="{Binding IsLaminarLightOn}">
-                    <TextBlock Text="Laminar Light" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Laminar Light" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
                     <Grid>
                         <ScrollBar Orientation="Vertical" 
-                                  Minimum="0" 
+                                  Minimum="1" 
                                   Maximum="100" 
                                   Height="200" 
                                   Width="32" 

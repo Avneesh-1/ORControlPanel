@@ -103,19 +103,11 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
 
                 DevicePort.DataProcessor.OnGasAlertUpdated += (gasName, isAlert) =>
                 {
-                    if (gasName == "General Gas Pressure")
-                    {
-                        Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
-                        Dispatcher.UIThread.InvokeAsync(() =>
-                        {
-                            GeneralGasAlert = isAlert;
-                            _alertService.ShowAlert("General Gas Pressure Alert");
-                            //UpdateAudioPlayback(); // Trigger audio for GeneralGasAlert
-                        });
-                    }
                     Log($"Received OnGasAlertUpdated: gasName={gasName}, isAlert={isAlert}");
                     Dispatcher.UIThread.InvokeAsync(() => UpdateGasAlert(gasName, isAlert));
                 };
+
+
 
 
 
@@ -193,10 +185,14 @@ namespace ORControlPanelNew.ViewModels.GasMonitoring
                 gas.IsAlert = isAlert;
                 if (isAlert)
                 {
-                    _alertService.ShowAlert($"Alert: Abnormal Gas : {gas.Name} !");
+                    // _alertService.ShowAlert($"Alert: Abnormal Gas : {gas.Name} !");
                 }
                 //UpdateAudioPlayback();
                 Log($"After alert update: {gas.Name} IsAlert={gas.IsAlert}");
+
+                // Aggregate Alert: If ANY gas is in alert, GeneralGasAlert is TRUE
+                GeneralGasAlert = Gases.Any(g => g.IsAlert);
+
                 this.RaisePropertyChanged(nameof(Gases));
             }
             else

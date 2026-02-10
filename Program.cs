@@ -18,6 +18,16 @@ namespace ORControlPanelNew
         {
             try
             {
+                AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
+                {
+                    try 
+                    {
+                        File.AppendAllText("crash_log.txt", 
+                            $"[{DateTime.Now}] Unhandled Exception: {error.ExceptionObject}\n");
+                    }
+                    catch { /* Worst case ignore */ }
+                };
+
                 Console.WriteLine("Starting application...");
                 
                 // Database initialization
@@ -41,7 +51,7 @@ namespace ORControlPanelNew
                 try
                 {
                string portName = OperatingSystem.IsMacOS() ? "/dev/tty.usbserial": 
-                        OperatingSystem.IsWindows() ? "COM5" : "/dev/ttyUSB0";
+                        OperatingSystem.IsWindows() ? "COM3" : "/dev/ttyUSB0";
 
                     Console.WriteLine($"Attempting to initialize serial port: {portName}");
                     if (!DevicePort.SerialPortInterface.Initialize(portName))

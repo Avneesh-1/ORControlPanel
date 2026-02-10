@@ -50,7 +50,7 @@
 						<!-- Value area -->
 						<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 							<Border Grid.Column="1" Background="#FFD700" CornerRadius="8" Margin="8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="300" Height="100">
-								<TextBlock Text="{Binding Temperature, StringFormat='{}{0} °C'}" FontSize="56" FontWeight="Bold" Foreground="#1A1A1A" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+								<TextBlock Text="{Binding DisplayTemperature, StringFormat='{}{0} °C'}" FontSize="56" FontWeight="Bold" Foreground="{Binding TemperatureColor}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 							</Border>
 							<Button Command="{Binding DecTempCommand}" Grid.Column="0" Width="110" Height="60" Margin="8,0,0,0" Background="White" Foreground="Black" BorderBrush="#222" BorderThickness="2" CornerRadius="32" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="-" FontSize="38" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -74,7 +74,7 @@
 						</Border>
 						<Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 							<Border Grid.Column="1" Background="#FFD700" CornerRadius="8" Margin="8,4,8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="300" Height="100">
-								<TextBlock Text="{Binding Humidity, StringFormat='{}{0} RH%'}" FontSize="48" FontWeight="Bold" Foreground="#1A1A1A" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+								<TextBlock Text="{Binding DisplayHumidity, StringFormat='{}{0} RH%'}" FontSize="48" FontWeight="Bold" Foreground="{Binding HumidityColor}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 							</Border>
 							<Button Command="{Binding DecHumdCommand}" Grid.Column="0" Width="110" Height="60" Margin="8,0,0,0" Background="White" Foreground="Black" BorderBrush="#222" BorderThickness="2" CornerRadius="32" VerticalAlignment="Center" HorizontalAlignment="Center">
 								<TextBlock Text="-" FontSize="38" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center"/>

@@ -1,11 +1,14 @@
 using System;
+using System.Text.Json;
 using System.Data;
 using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using ORControlPanelNew.Views.Brightness;
 using ReactiveUI;
+using ORControlPanelNew;
 
 namespace ORControlPanelNew.ViewModels.Brightness
 {
@@ -21,21 +24,21 @@ namespace ORControlPanelNew.ViewModels.Brightness
         public double GeneralLight1Intensity
         {
             get => _generalLight1Intensity;
-            set => this.RaiseAndSetIfChanged(ref _generalLight1Intensity, value);
+            set => this.RaiseAndSetIfChanged(ref _generalLight1Intensity, Math.Max(1, value));
         }
 
         private double _generalLight2Intensity;
         public double GeneralLight2Intensity
         {
             get => _generalLight2Intensity;
-            set => this.RaiseAndSetIfChanged(ref _generalLight2Intensity, value);
+            set => this.RaiseAndSetIfChanged(ref _generalLight2Intensity, Math.Max(1, value));
         }
 
         private double _laminarLightIntensity;
         public double LaminarLightIntensity
         {
             get => _laminarLightIntensity;
-            set => this.RaiseAndSetIfChanged(ref _laminarLightIntensity, value);
+            set => this.RaiseAndSetIfChanged(ref _laminarLightIntensity, Math.Max(1, value));
         }
 
         // Add ON/OFF state properties
@@ -84,13 +87,8 @@ namespace ORControlPanelNew.ViewModels.Brightness
                 // Reload fresh DB values every time you open/activate:
                 LoadInitialValues();
 
-                // If all lights are OFF, do not show the dialog
-                if (!IsGeneralLight1On && !IsGeneralLight2On && !IsLaminarLightOn)
-                {
-                    // Optionally, show a message to the user here
-                    return;
-                }
-
+                // BUG FIX: Removed check that prevented dialog from opening if all lights OFF.
+                
                 if (_brightnessDialog == null || !_brightnessDialog.IsVisible)
                 {
                     _brightnessDialog = new BrightnessDialog
@@ -116,16 +114,53 @@ namespace ORControlPanelNew.ViewModels.Brightness
                     _brightnessDialog.Close();
                 }
             });
+
+            // Subscribe to live hardware updates to keep sliders in sync
+            DevicePort.DataProcessor.onGeneralLight1Updated += (isOn) => {
+                Dispatcher.UIThread.InvokeAsync(() => {
+                    _suppressUpdates = true;
+                    IsGeneralLight1On = isOn;
+                    GeneralLight1Intensity = SystemInfo.GeneralLight1Intensity;
+                    _suppressUpdates = false;
+                });
+            };
+            DevicePort.DataProcessor.onGeneralLight2Updated += (isOn) => {
+                Dispatcher.UIThread.InvokeAsync(() => {
+                    _suppressUpdates = true;
+                    IsGeneralLight2On = isOn;
+                    GeneralLight2Intensity = SystemInfo.GeneralLight2Intensity;
+                    _suppressUpdates = false;
+                });
+            };
+            DevicePort.DataProcessor.onLaminarLightUpdated += (isOn) => {
+                Dispatcher.UIThread.InvokeAsync(() => {
+                    _suppressUpdates = true;
+                    IsLaminarLightOn = isOn;
+                    LaminarLightIntensity = SystemInfo.LaminarLightIntensity;
+                    _suppressUpdates = false;
+                });
+            };
         }
 
         private void UpdateGeneral1(double value)
         {
             try
             {
+                if (!SystemInfo.GeneralLight1On)
+                {
+                    Debug.WriteLine("Brightness change ignored (General Light 1 is OFF)");
+                    // Ensure local state matches global? 
+                    // If user moved slider even though off, we ignore it.
+                    return; 
+                }
+
                 int v = (int)value;
-                DevicePort.UpdateValueToDb(v.ToString(), "General Lights 1");
+                // DevicePort.UpdateValueToDb(v.ToString(), "General Lights 1"); // Disabled
                 Debug.WriteLine($"Updated GeneralLight1Intensity: {v}");
-                DevicePort.SerialPortInterface.Write("LITA" + v);
+                
+                var cmd = new { cmd = "SET_GEN1", state = "ON", val = v };
+                string jsonCmd = JsonSerializer.Serialize(cmd);
+                DevicePort.SerialPortInterface.Write(jsonCmd + "\n");
             }
             catch (Exception ex)
             {
@@ -137,10 +172,18 @@ namespace ORControlPanelNew.ViewModels.Brightness
         {
             try
             {
+                if (!SystemInfo.GeneralLight2On)
+                {
+                    Debug.WriteLine("Brightness change ignored (General Light 2 is OFF)");
+                    return; 
+                }
+
                 int v = (int)value;
-                DevicePort.UpdateValueToDb(v.ToString(), "General Lights 2");
                 Debug.WriteLine($"Updated GeneralLight2Intensity: {v}");
-                DevicePort.SerialPortInterface.Write("LITB" + v);
+                
+                var cmd = new { cmd = "SET_GEN2", state = "ON", val = v };
+                string jsonCmd = JsonSerializer.Serialize(cmd);
+                DevicePort.SerialPortInterface.Write(jsonCmd + "\n");
             }
             catch (Exception ex)
             {
@@ -152,10 +195,18 @@ namespace ORControlPanelNew.ViewModels.Brightness
         {
             try
             {
+                if (!SystemInfo.LaminarLightOn)
+                {
+                    Debug.WriteLine("Brightness change ignored (Laminar Light is OFF)");
+                    return; 
+                }
+
                 int v = (int)value;
-                DevicePort.UpdateValueToDb(v.ToString(), "Laminar Light");
                 Debug.WriteLine($"Updated LaminarLightIntensity: {v}");
-                DevicePort.SerialPortInterface.Write("LITI" + v);
+                
+                var cmd = new { cmd = "SET_LAM", state = "ON", val = v };
+                string jsonCmd = JsonSerializer.Serialize(cmd);
+                DevicePort.SerialPortInterface.Write(jsonCmd + "\n");
             }
             catch (Exception ex)
             {
@@ -165,50 +216,25 @@ namespace ORControlPanelNew.ViewModels.Brightness
 
         public void LoadInitialValues()
         {
+            _suppressUpdates = true;
             try
             {
-                _suppressUpdates = true;
+                // DB is disabled for settings, so we rely on Global State (SystemInfo) which tracks the live state
+                
+                // General Light 1
+                // General Light 1
+                IsGeneralLight1On = SystemInfo.GeneralLight1On;
+                GeneralLight1Intensity = SystemInfo.GeneralLight1Intensity;
+                
+                // General Light 2
+                IsGeneralLight2On = SystemInfo.GeneralLight2On;
+                GeneralLight2Intensity = SystemInfo.GeneralLight2Intensity;
+                
+                // Laminar Light
+                IsLaminarLightOn = SystemInfo.LaminarLightOn;
+                LaminarLightIntensity = SystemInfo.LaminarLightIntensity;
 
-                string paramList = "'General Lights 1','General Lights 2','Laminar Light'";
-                DataTable dt = DevicePort.ReadValueFromDb(paramList);
-
-                // Reset ON/OFF states
-                IsGeneralLight1On = false;
-                IsGeneralLight2On = false;
-                IsLaminarLightOn = false;
-
-                foreach (DataRow row in dt.Rows)
-                {
-                    var name = row["FieldName"].ToString();
-                    var str = row["Value"].ToString();
-
-                    Debug.WriteLine($"Loading value for {name}: {str}");
-
-                    if (!double.TryParse(str, out var val))
-                    {
-                        Debug.WriteLine($"Failed to parse value for {name}: {str}");
-                        continue;
-                    }
-
-                    switch (name)
-                    {
-                        case "General Lights 1":
-                            GeneralLight1Intensity = val;
-                            IsGeneralLight1On = val > 0;
-                            Debug.WriteLine($"General Light 1: Intensity={val}, IsOn={IsGeneralLight1On}");
-                            break;
-                        case "General Lights 2":
-                            GeneralLight2Intensity = val;
-                            IsGeneralLight2On = val > 0;
-                            Debug.WriteLine($"General Light 2: Intensity={val}, IsOn={IsGeneralLight2On}");
-                            break;
-                        case "Laminar Light":
-                            LaminarLightIntensity = val;
-                            IsLaminarLightOn = val > 0;
-                            Debug.WriteLine($"Laminar Light: Intensity={val}, IsOn={IsLaminarLightOn}");
-                            break;
-                    }
-                }
+                Debug.WriteLine($"BrightnessVM Loaded: Gen1={IsGeneralLight1On}({GeneralLight1Intensity}), Gen2={IsGeneralLight2On}({GeneralLight2Intensity})");
             }
             catch (Exception ex)
             {

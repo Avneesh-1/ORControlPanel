@@ -1,5 +1,6 @@
 using Avalonia.Threading;
 using ReactiveUI;
+using System.Text.Json;
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -53,7 +54,8 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
                 if (IsLightOn && LightIntensity > 0)
                 {
-                    DevicePort.SerialPortInterface.Write("LITF" + (int)LightIntensity);
+                     var cmd = new { cmd = "SET_OT2", state = "ON" };
+                     DevicePort.SerialPortInterface.Write(JsonSerializer.Serialize(cmd));
                 }
             }
             catch (Exception ex)
@@ -64,6 +66,8 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
 
             ToggleLightCommand = ReactiveCommand.Create(ToggleOTLight2);
+            // Unsubscribe first to prevent duplicate handlers if ViewModel is recreated
+            DevicePort.DataProcessor.onOTLight2Updated -= onOTLight2Updated;
             DevicePort.DataProcessor.onOTLight2Updated += onOTLight2Updated;
 
 
@@ -81,7 +85,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
                 string dbValue = receivedByController ? "10" : "0";
                 DevicePort.UpdateValueToDb(dbValue, "OTLight2");
-                IsLightOn = receivedByController;
+                Dispatcher.UIThread.InvokeAsync(() => IsLightOn = receivedByController);
             }
             catch (Exception ex)
             {
@@ -101,18 +105,27 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 var token = _OTLight2Cts.Token;
 
                 bool turningOn = !IsLightOn;
-                string command = turningOn ? "LITF$10" : "LITF$0";
+                // string command = turningOn ? "LITF$10" : "LITF$0";
+                
+                var cmd = new 
+                { 
+                    cmd = "SET_OT2", 
+                    state = turningOn ? "ON" : "OFF" 
+                };
+                
                 string dbValue = turningOn ? "10" : "0";
 
                 try
                 {
-                    DevicePort.SerialPortInterface.Write(command);
+                    string jsonCmd = JsonSerializer.Serialize(cmd);
+                    DevicePort.SerialPortInterface.Write(jsonCmd);
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                 }
 
+                /*
                 // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
                 Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
                 {
@@ -126,6 +139,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                         });
                     }
                 }, token);
+                */
             }
             catch (Exception ex)
             {

@@ -12,22 +12,12 @@ namespace ORControlPanelNew.Views.Intercom
             OpenPhonebookButton.Click += (s, e) =>
             {
                 var dialog = new PhonebookDialog();
+                dialog.DataContext = this.DataContext;
                 if (this.VisualRoot is Window parent)
                     dialog.ShowDialog(parent);
                 else
                     dialog.Show();
             };
         }
-
-        private void OnDeleteContactClick(object? sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.CommandParameter is object contact)
-            {
-                if (DataContext is IntercomDialogViewModel vm && vm.DeleteContactCommand.CanExecute(contact))
-                {
-                    vm.DeleteContactCommand.Execute(contact);
-                }
-            }
-        }
     }
-} 
+}

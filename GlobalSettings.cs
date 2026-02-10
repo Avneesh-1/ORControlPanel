@@ -6,13 +6,18 @@ using System.IO.Ports;
 using System.Linq;
 using Microsoft.Data.Sqlite;
 using ORControlPanelNew.Models.GasMonitoring;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ORControlPanelNew
 {
     internal static class DevicePort
     {
         public static string? CurrentPort { get; set; }
-
+        private static readonly object _dbLock = new object();
 
         private static string GetConnectionString()
         {
@@ -61,54 +66,69 @@ namespace ORControlPanelNew
                 }
 
                 Log("Attempting to connect to database...");
-                using (var connection = new SqliteConnection(cs))
+                lock (_dbLock)
                 {
-                    try
+                    using (var connection = new SqliteConnection(cs))
                     {
-                    connection.Open();
-                        Log("Successfully opened database connection.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log($"Failed to open database connection: {ex.Message}");
-                        throw new Exception($"Failed to open database connection: {ex.Message}", ex);
-                    }
+                        try
+                        {
+                        connection.Open();
+                            Log("Successfully opened database connection.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Log($"Failed to open database connection: {ex.Message}");
+                            throw new Exception($"Failed to open database connection: {ex.Message}", ex);
+                        }
+    
+                        Log("Creating tbl_OT table if it doesn't exist...");
+                        using (var command = new SqliteCommand(
+                            @"CREATE TABLE IF NOT EXISTS tbl_OT (
+                                     FieldName TEXT PRIMARY KEY,
+                                     Value TEXT
+                                 )", connection))
+                        {
+                            command.ExecuteNonQuery();
+                            Log("tbl_OT table created or already exists.");
+                        }
+    
+                        Log("Creating patientData table if it doesn't exist...");
+                        using (var command = new SqliteCommand(
+                            @"CREATE TABLE IF NOT EXISTS patientData (
+                                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                PatientID TEXT NOT NULL,
+                                Name TEXT NOT NULL,
+                                Gender TEXT,
+                                Age INTEGER,
+                                MobileNo TEXT,
+                                BloodGroup TEXT,
+                                OpDoctor TEXT NOT NULL,
+                                AstDoctor TEXT,
+                                StartTime TEXT,
+                                EndTime TEXT,
+                                ot TEXT,
+                                created_on TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+                            )", connection))
+                        {
+                            command.ExecuteNonQuery();
+                            Log("patientData table created or already exists.");
+                        }
 
-                    Log("Creating tbl_OT table if it doesn't exist...");
-                    using (var command = new SqliteCommand(
-                        @"CREATE TABLE IF NOT EXISTS tbl_OT (
-                                 FieldName TEXT PRIMARY KEY,
-                                 Value TEXT
-                             )", connection))
-                    {
-                        command.ExecuteNonQuery();
-                        Log("tbl_OT table created or already exists.");
+                        Log("Creating phonebook table if it doesn't exist...");
+                        using (var command = new SqliteCommand(
+                            @"CREATE TABLE IF NOT EXISTS phonebook (
+                                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                Name TEXT NOT NULL,
+                                Number TEXT NOT NULL
+                            )", connection))
+                        {
+                            command.ExecuteNonQuery();
+                            Log("phonebook table created or already exists.");
+                        }
+    
+                        Log("Database initialized successfully.");
+                        return true;
                     }
-
-                    Log("Creating patientData table if it doesn't exist...");
-                    using (var command = new SqliteCommand(
-                        @"CREATE TABLE IF NOT EXISTS patientData (
-                            Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            PatientID TEXT NOT NULL,
-                            Name TEXT NOT NULL,
-                            Gender TEXT,
-                            Age INTEGER,
-                            MobileNo TEXT,
-                            BloodGroup TEXT,
-                            OpDoctor TEXT NOT NULL,
-                            AstDoctor TEXT,
-                            StartTime TEXT,
-                            EndTime TEXT,
-                            ot TEXT,
-                            created_on TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
-                        )", connection))
-                    {
-                        command.ExecuteNonQuery();
-                        Log("patientData table created or already exists.");
-                    }
-
-                    Log("Database initialized successfully.");
-                    return true;
                 }
             }
             catch (Exception ex)
@@ -120,6 +140,89 @@ namespace ORControlPanelNew
         }
 
 
+        public static List<ContactData> GetContacts()
+        {
+            var contacts = new List<ContactData>();
+            try
+            {
+                string cs = GetConnectionString();
+                using (var connection = new SqliteConnection(cs))
+                {
+                    connection.Open();
+                    using (var command = new SqliteCommand("SELECT Id, Name, Number FROM phonebook", connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                contacts.Add(new ContactData
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Number = reader.GetString(2)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to get contacts: {ex.Message}");
+            }
+            return contacts;
+        }
+
+        public static void AddContact(string name, string number)
+        {
+            try
+            {
+                string cs = GetConnectionString();
+                using (var connection = new SqliteConnection(cs))
+                {
+                    connection.Open();
+                    using (var command = new SqliteCommand("INSERT INTO phonebook (Name, Number) VALUES (@Name, @Number)", connection))
+                    {
+                        command.Parameters.AddWithValue("@Name", name);
+                        command.Parameters.AddWithValue("@Number", number);
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to add contact: {ex.Message}");
+            }
+        }
+
+        public static void DeleteFromPhonebook(int id)
+        {
+            try
+            {
+                string cs = GetConnectionString();
+                using (var connection = new SqliteConnection(cs))
+                {
+                    connection.Open();
+                    using (var command = new SqliteCommand("DELETE FROM phonebook WHERE Id = @Id", connection))
+                    {
+                        command.Parameters.AddWithValue("@Id", id);
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to delete contact: {ex.Message}");
+            }
+        }
+
+        public class ContactData
+        {
+            public int Id { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string Number { get; set; } = string.Empty;
+        }
+
         public static void InsertPatientData(string patientId, string name, string gender, int? age, string mobileNo, string bloodGroup, string opDoctor, string astDoctor, DateTime? startTime, string ot)
         {
             try
@@ -130,24 +233,27 @@ namespace ORControlPanelNew
                 using (var connection = new SqliteConnection(cs))
                 {
                     connection.Open();
-                    using (var command = new SqliteCommand(
-                        "INSERT INTO patientData (PatientID, Name, Gender, Age, MobileNo, BloodGroup, OpDoctor, AstDoctor, StartTime, EndTime, ot) " +
-                        "VALUES (@PatientID, @Name, @Gender, @Age, @MobileNo, @BloodGroup, @OpDoctor, @AstDoctor, @StartTime, @EndTime, @ot)",
-                        connection))
+                    lock (_dbLock)
                     {
-                        command.Parameters.AddWithValue("@PatientID", patientId ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@Name", name ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@Gender", gender ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@Age", age.HasValue ? age.Value : (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@MobileNo", mobileNo ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@BloodGroup", bloodGroup ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@OpDoctor", opDoctor ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@AstDoctor", astDoctor ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@StartTime", startTime.HasValue ? startTime.Value.ToString("o") : (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@EndTime", (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@ot", ot ?? (object)DBNull.Value);
-                        int rowsAffected = command.ExecuteNonQuery();
-                        Log($"Inserted {rowsAffected} row(s) into patientData: PatientID={patientId}");
+                        using (var command = new SqliteCommand(
+                            "INSERT INTO patientData (PatientID, Name, Gender, Age, MobileNo, BloodGroup, OpDoctor, AstDoctor, StartTime, EndTime, ot) " +
+                            "VALUES (@PatientID, @Name, @Gender, @Age, @MobileNo, @BloodGroup, @OpDoctor, @AstDoctor, @StartTime, @EndTime, @ot)",
+                            connection))
+                        {
+                            command.Parameters.AddWithValue("@PatientID", patientId ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@Name", name ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@Gender", gender ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@Age", age.HasValue ? age.Value : (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@MobileNo", mobileNo ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@BloodGroup", bloodGroup ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@OpDoctor", opDoctor ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@AstDoctor", astDoctor ?? (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@StartTime", startTime.HasValue ? startTime.Value.ToString("o") : (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@EndTime", (object)DBNull.Value);
+                            command.Parameters.AddWithValue("@ot", ot ?? (object)DBNull.Value);
+                            int rowsAffected = command.ExecuteNonQuery();
+                            Log($"Inserted {rowsAffected} row(s) into patientData: PatientID={patientId}");
+                        }
                     }
                 }
             }
@@ -156,85 +262,18 @@ namespace ORControlPanelNew
                 Log($"Failed to insert patient data: {ex.Message}, InnerException: {ex.InnerException?.Message}");
                 throw new Exception($"Failed to insert patient data: {ex.Message}", ex);
             }
-                }
+        }
 
         public static void UpdateValueToDb(string value, string fieldName)
         {
-            try
-            {
-                string cs = GetConnectionString();
-                Log($"Connection string: {cs}");
-                if (string.IsNullOrEmpty(cs))
-                {
-                    Log("Error: Database connection string not found in settings.txt");
-                    return;
-                }
-
-                using (var connection = new SqliteConnection(cs))
-                {
-                    connection.Open();
-                    using (var command = new SqliteCommand("UPDATE tbl_OT SET Value = @Value WHERE FieldName = @FieldName", connection))
-                    {
-                        command.Parameters.AddWithValue("@Value", value);
-                        command.Parameters.AddWithValue("@FieldName", fieldName);
-                        int rowsAffected = command.ExecuteNonQuery();
-                        Log($"UPDATE affected {rowsAffected} rows for FieldName={fieldName}, Value={value}");
-                        if (rowsAffected == 0)
-                        {
-                            Log($"No rows found for FieldName={fieldName}. Inserting new row.");
-                            using (var insertCommand = new SqliteCommand(
-                                "INSERT INTO tbl_OT (FieldName, Value) VALUES (@FieldName, @Value)", connection))
-                            {
-                                insertCommand.Parameters.AddWithValue("@FieldName", fieldName);
-                                insertCommand.Parameters.AddWithValue("@Value", value);
-                                insertCommand.ExecuteNonQuery();
-                                Log($"Inserted new row: FieldName={fieldName}, Value={value}");
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log($"Database update failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
-                throw new Exception($"Database update failed: {ex.Message}", ex);
-            }
+             // Log($"Database disabled. Skipping UpdateValueToDb: {fieldName}={value}");
+             return;
         }
 
         public static DataTable ReadValueFromDb(string paramList)
         {
-            try
-            {
-                string cs = GetConnectionString();
-                Log($"Connection string: {cs}");
-
-                var fieldNames = paramList.Split(',').Select(x => x.Trim(' ', '\'')).ToArray();
-                var paramPlaceholders = string.Join(",", fieldNames.Select((_, i) => $"@p{i}"));
-
-                using (var connection = new SqliteConnection(cs))
-                {
-                    connection.Open();
-                    using (var command = new SqliteCommand($"SELECT * FROM tbl_OT WHERE FieldName IN ({paramPlaceholders})", connection))
-                    {
-                        for (int i = 0; i < fieldNames.Length; i++)
-                        {
-                            command.Parameters.AddWithValue($"@p{i}", fieldNames[i]);
-                        }
-
-                        using (var reader = command.ExecuteReader())
-                        {
-                            var dt = new DataTable();
-                            dt.Load(reader);
-                            return dt;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log($"Database read failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
-                throw new Exception($"Database read failed: {ex.Message}", ex);
-            }
+             // Log($"Database disabled for Settings. Skipping ReadValueFromDb: {paramList}");
+             return null;
         }
 
         public static void OpenKeyboard()
@@ -253,7 +292,7 @@ namespace ORControlPanelNew
             }
         }
 
-        private static void Log(string message)
+        internal static void Log(string message)
         {
             Debug.WriteLine(message);
         }
@@ -262,8 +301,10 @@ namespace ORControlPanelNew
         {
             private static SerialPort _myCOMPort = new SerialPort();
             public static event Action<string> OnDataReceived;
+            private static CancellationTokenSource _pollingCts;
+            private static readonly object _writeLock = new object();
 
-            public static bool Initialize(string portName, int baudRate = 9600)
+            public static bool Initialize(string portName, int baudRate = 115200)
             {
                 try
                 {
@@ -282,10 +323,17 @@ namespace ORControlPanelNew
                         {
                             //string rawData = _myCOMPort.ReadExisting();
                             //Log($"{rawData}||||||||||||||||||||||||");
-                            string data = _myCOMPort.ReadLine();
-                            Log($"Serial data received: {data}");
-                            DataProcessor.ProcessData(data);
-                            OnDataReceived?.Invoke(data);
+                            try 
+                            {
+                                string data = _myCOMPort.ReadLine();
+                                Log($"Serial data received: {data}");
+                                DataProcessor.ProcessData(data);
+                                OnDataReceived?.Invoke(data);
+                            }
+                            catch (Exception readlineEx)
+                            {
+                                // Log($"ReadLine error (can happen during close/disconnect): {readlineEx.Message}");
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -295,12 +343,14 @@ namespace ORControlPanelNew
 
                     _myCOMPort.Open();
                     Log($"Serial port {portName} opened.");
+                    
+                    StartPolling();
 
                     return true;
                 }
                 catch (Exception ex)
                 {
-                    Log($"Serial port initialization failed: {ex.Message}, InnerException: {ex.InnerException?.Message}");
+                    Log($"Serial port initialization failed: {ex.Message}");
                     return false;
                 }
             }
@@ -309,7 +359,13 @@ namespace ORControlPanelNew
             {
                 try
                 {
-                    
+                    if (string.IsNullOrEmpty(data)) return;
+
+                    // Ensure command ends with newline as per hardware requirement
+                    if (!data.EndsWith("\n"))
+                    {
+                        data += "\n";
+                    }
 
                     if (!_myCOMPort.IsOpen)
                     {
@@ -317,8 +373,11 @@ namespace ORControlPanelNew
                         _myCOMPort.Open();
                     }
 
-                    _myCOMPort.Write(data);
-                    Log($"Data written to port: {data} AT {_myCOMPort.PortName}");
+                    lock (_writeLock)
+                    {
+                        _myCOMPort.Write(data);
+                    }
+                    Log($"Data written to port: {data.TrimEnd()} AT {_myCOMPort.PortName}");
                 }
                 catch (Exception ex)
                 {
@@ -330,6 +389,7 @@ namespace ORControlPanelNew
             {
                 try
                 {
+                    StopPolling();
                     if (_myCOMPort != null && _myCOMPort.IsOpen)
                     {
                         _myCOMPort.Close();
@@ -341,24 +401,71 @@ namespace ORControlPanelNew
                     Log($"Serial port close failed: {ex.Message}");
                 }
             }
-        }
 
-        internal class SystemInfo
-        {
-            public static string Oxygen { get; set; } = "0";
-            public static string Nitrogen { get; set; } = "0";
-            public static string CO2 { get; set; } = "0";
-            public static string Air7 { get; set; } = "0";
-            public static string Air4 { get; set; } = "0";
-            public static string Vacuum { get; set; } = "0";
-            public static string AirDiffPress { get; set; } = "0";
-            public static string Temperature { get; set; } = "0";
-            public static string TemperatureSetValue { get; set; } = "0";
-            public static string Humidity { get; set; } = "0";
-            public static string Voltage { get; set; } = "0";
-            public static string Current { get; set; } = "0";
-        }
+            private static void StartPolling()
+            {
+                StopPolling(); // Stop any existing polling
+                _pollingCts = new CancellationTokenSource();
+                Task.Run(async () => await PollingLoop(_pollingCts.Token));
+            }
 
+            private static void StopPolling()
+            {
+                if (_pollingCts != null)
+                {
+                    _pollingCts.Cancel();
+                    _pollingCts.Dispose();
+                    _pollingCts = null;
+                }
+            }
+
+            private static async Task PollingLoop(CancellationToken token)
+            {
+                /* 
+                string[] commands = new[] { "GET_DHT", "GET_HEPA", "GET_DIFF", "GET_GAS", "GET_UPS" };
+                int index = 0;
+                
+                // Allow some start up time
+                await Task.Delay(1000, token);
+
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        if (_myCOMPort != null && _myCOMPort.IsOpen)
+                        {
+                            var cmd = new { cmd = commands[index] };
+                            string jsonCmd = JsonSerializer.Serialize(cmd);
+                            Write(jsonCmd + "\n"); 
+
+                            index = (index + 1) % commands.Length;
+                        }
+                        else
+                        {
+                            // If port closed, wait a bit longer before checking again
+                            await Task.Delay(1000, token);
+                            continue;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log($"Polling error: {ex.Message}");
+                    }
+
+                    try 
+                    {
+                        await Task.Delay(800, token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        break;
+                    }
+                }
+                */
+                await Task.CompletedTask;
+            }
+        }
+        
         internal class DataProcessor
         {
             public static event Action<string, string> OnGasPressureUpdated; // (GasName, Pressure)
@@ -381,412 +488,310 @@ namespace ORControlPanelNew
             public static event Action<bool> onTempUpdatedByController;
             public static event Action<bool> onHumdUpdatedByController;
 
+            // Intercom Events
+            public static event Action OnRinging;
+            public static event Action OnHookUp;
+            public static event Action OnHookDown;
+            public static event Action<string> OnVolumeChanged;
+            public static event Action OnOutgoingCall;
+
 
             public static void ProcessData(string inData)
             {
-                string[] allData = inData.Split('#');
-                Debug.WriteLine(allData,"DATA TRRRRR");
-                foreach (string s in allData)
+                if (string.IsNullOrWhiteSpace(inData)) return;
+
+                try 
                 {
-                    if (string.IsNullOrWhiteSpace(s))
-                        continue;
+                    // Trying to parse as generic JSON object first to check for "sensor", "cmd", or "error" keys
+                    var jsonDoc = JsonDocument.Parse(inData);
+                    var root = jsonDoc.RootElement;
 
-                    Log($"{DateTime.Now}: Processing data: {s}");
-
-                    if (s.StartsWith("TMPS"))
+                    if (root.TryGetProperty("error", out var errorProp))
                     {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool received = parts[1] == "1";
-                            Log($"TMPS: Invoking onTempUpdated  with recieved={received}");
-                            onTempUpdatedByController?.Invoke(received);
-                        }
+                        Log($"Device reported error: {errorProp.GetString()}");
+                        return;
                     }
 
-                    if (s.StartsWith("HMDS"))
+                    // Check for sensor responses
+                    if (root.TryGetProperty("sensor", out var sensorProp))
                     {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
+                        // ... existing sensor logic ...
+                        string sensor = sensorProp.GetString();
+                        switch (sensor)
                         {
-                            bool received = parts[1] == "1";
-                            Log($"HMDS: Invoking onHumdUpdated  with recieved={received}");
-                            onHumdUpdatedByController?.Invoke(received);
-                        }
-                    }
-                    if (s.StartsWith("LTAS"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool received = parts[1] == "1";
-                            Log($"LTAS: Invoking onGentalLight1Updated  with recieved={received}");
-                            onGeneralLight1Updated?.Invoke(received);
-                        }
-                    }
-
-                    if (s.StartsWith("LTAS"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool received = parts[1] == "1";
-                            Log($"LTAS: Invoking onGentalLight1Updated  with recieved={received}");
-                            onGeneralLight1Updated?.Invoke(received);
-                        }
-                    }
-
-
-
-                    if (s.StartsWith("LTBS"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool received = parts[1] == "1";
-                            Log($"LTAS: Invoking onGentalLight2Updated  with recieved={received}");
-                            onGeneralLight2Updated?.Invoke(received);
-                        }
-                    }
-
-                    if (s.StartsWith("LTES"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool received = parts[1] == "1";
-                            Log($"LTAS: Invoking onOTLight1Updated  with recieved={received}");
-                            onOTLight1Updated?.Invoke(received);
-                        }
-                    }
-
-                    if (s.StartsWith("LTFS"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool received = parts[1] == "1";
-                            Log($"LTAS: Invoking onOTLight2Updated  with recieved={received}");
-                            onOTLight2Updated?.Invoke(received);
-                        }
-                    }
-
-                    if (s.StartsWith("LTIS"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool received = parts[1] == "1";
-                            Log($"LTAS: Invoking onLaminarLightUpdated  with recieved={received}");
-                            onLaminarLightUpdated?.Invoke(received);
-                        }
-                    }
-
-                    if (s.StartsWith("CALN"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool isActive = parts[1] == "1";
-                            Log($"CALN: Invoking OnCallReceivedUpdated with isActive={isActive}");
-                            OnCallReceivedUpdated?.Invoke(isActive);
-                        }
-                    }
-
-                    if (s.StartsWith("GASR"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool isAlert = parts[1] == "1";
-                            if (isAlert)
+                            case "dht11":
                             {
-                                Log($"GASR: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
-                                OnGasAlertUpdated?.Invoke("General Gas Pressure",true);
+                                if (root.TryGetProperty("temp", out var tempEl) && root.TryGetProperty("humi", out var humiEl))
+                                {
+                                    // Robust parsing (String or Number)
+                                    double tempVal = 0;
+                                    double humiVal = 0;
+
+                                    if (tempEl.ValueKind == JsonValueKind.Number) tempVal = tempEl.GetDouble();
+                                    else if (tempEl.ValueKind == JsonValueKind.String) double.TryParse(tempEl.GetString(), out tempVal);
+
+                                    if (humiEl.ValueKind == JsonValueKind.Number) humiVal = humiEl.GetDouble();
+                                    else if (humiEl.ValueKind == JsonValueKind.String) double.TryParse(humiEl.GetString(), out humiVal);
+
+                                    // DIVIDE BY 10 RE-ENABLED AS PER USER REQUEST
+                                    tempVal /= 10.0;
+                                    humiVal /= 10.0;
+
+                                    string temp = tempVal.ToString("F1");
+                                    string humi = humiVal.ToString("F1");
+                                    
+                                    SystemInfo.Temperature = temp;
+                                    SystemInfo.Humidity = humi;
+                                    
+                                    Log($"DHT: Temp={temp}, Humi={humi}");
+                                    OnTemperatureUpdated?.Invoke(temp);
+                                    OnHumidityUpdated?.Invoke(humi);
+                                }
+                                break;
+                            }
+                            case "hepa":
+                            {
+                                // hepa_hpa
+                                break;
+                            }
+                            case "diff":
+                            {
+                                if (root.TryGetProperty("diff_hpa", out var diffEl))
+                                {
+                                    // Robust parsing
+                                    string diff = diffEl.ValueKind == JsonValueKind.String ? diffEl.GetString() : diffEl.ToString();
+                                    
+                                    SystemInfo.AirDiffPress = diff;
+                                    Log($"DIFF: {diff} hPa");
+                                    onAirDiffPressureUpdated?.Invoke(diff);
+                                }
+                                break;
+                            }
+                            case "gas_array":
+                            {
+                                ProcessGasArray(root);
+                                break;
                             }
                         }
                     }
-
-                    if (s.StartsWith("GASW"))
+                    // Check for device responses (e.g. UPS)
+                    else if (root.TryGetProperty("device", out var deviceProp))
                     {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
+                         if (deviceProp.GetString() == "UPS")
+                         {
+                             if (root.TryGetProperty("state", out var stateProp))
+                             {
+                                 bool isOn = stateProp.GetString() == "ON";
+                                 Log($"UPS State: {isOn}");
+                                 OnUpsStatusUpdated?.Invoke(isOn);
+                             }
+                         }
+                    }
+                    // Check for commands (ACKs or Events)
+                    else if (root.TryGetProperty("cmd", out var cmdProp))
+                    {
+                        string cmd = cmdProp.GetString();
+                        
+                        if (cmd == "SET_AHU")
                         {
-                            bool isAlert = parts[1] == "0";
-                            if (isAlert)
-                            {
-                                Log($"GASW: Invoking OnGeneralGasAlertUpdated with isAlert={isAlert}");
-                                OnGasAlertUpdated?.Invoke("General Gas Pressure",false);
-                            }
+                            // Acknowledge logic if needed
                         }
-                    }
-
-                    // Gas Alert Handling
-                    if (s.StartsWith("ALGA"))
-                    {
-                        Log($"ALGA: Invoking OnGasAlertUpdated for O₂ with isAlert=true");
-                        OnGasAlertUpdated?.Invoke("O₂", true);
-                    }
-                    if (s.StartsWith("BLGA"))
-                    {
-                        Log($"BLGA: Invoking OnGasAlertUpdated for O₂ with isAlert=false");
-                        OnGasAlertUpdated?.Invoke("O₂", false);
-                    }
-
-                    if (s.StartsWith("ALGB"))
-                    {
-                        Log($"ALGB: Invoking OnGasAlertUpdated for N₂O with isAlert=true");
-                        OnGasAlertUpdated?.Invoke("N₂O", true);
-                    }
-                    if (s.StartsWith("BLGB"))
-                    {
-                        Log($"BLGB: Invoking OnGasAlertUpdated for N₂O with isAlert=false");
-                        OnGasAlertUpdated?.Invoke("N₂O", false);
-                    }
-
-                    if (s.StartsWith("ALGC"))
-                    {
-                        Log($"ALGC: Invoking OnGasAlertUpdated for CO₂ with isAlert=true");
-                        OnGasAlertUpdated?.Invoke("CO₂", true);
-                    }
-                    if (s.StartsWith("BLGC"))
-                    {
-                        Log($"BLGC: Invoking OnGasAlertUpdated for CO₂ with isAlert=false");
-                        OnGasAlertUpdated?.Invoke("CO₂", false);
-                    }
-
-                    if (s.StartsWith("ALGD"))
-                    {
-                        Log($"ALGD: Invoking OnGasAlertUpdated for AIR 4 with isAlert=true");
-                        OnGasAlertUpdated?.Invoke("AIR 4", true);
-                    }
-                    if (s.StartsWith("BLGD"))
-                    {
-                        Log($"BLGD: Invoking OnGasAlertUpdated for AIR 4 with isAlert=false");
-                        OnGasAlertUpdated?.Invoke("AIR 4", false);
-                    }
-
-                    if (s.StartsWith("ALGE"))
-                    {
-                        Log($"ALGE: Invoking OnGasAlertUpdated for AIR 7 with isAlert=true");
-                        OnGasAlertUpdated?.Invoke("AIR 7", true);
-                    }
-                    if (s.StartsWith("BLGE"))
-                    {
-                        Log($"BLGE: Invoking OnGasAlertUpdated for AIR 7 with isAlert=false");
-                        OnGasAlertUpdated?.Invoke("AIR 7", false);
-                    }
-
-                    if (s.StartsWith("ALGF"))
-                    {
-                        Log($"ALGF: Invoking OnGasAlertUpdated for VAC with isAlert=true");
-                        OnGasAlertUpdated?.Invoke("VAC", true);
-                    }
-                    if (s.StartsWith("BLGF"))
-                    {
-                        Log($"BLGF: Invoking OnGasAlertUpdated for VAC with isAlert=false");
-                        OnGasAlertUpdated?.Invoke("VAC", false);
-                    }
-
-                    // Gas Pressure Updates
-                    if (s.StartsWith("RDGA"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
+                        else if (cmd.StartsWith("SET_GEN") || cmd.StartsWith("SET_OT") || cmd == "SET_LAM")
                         {
-                            string pressureStr = parts[1];
-                            SystemInfo.Oxygen = pressureStr;
-                            Log($"RDGA: Invoking OnGasPressureUpdated for O₂ with pressure={pressureStr}");
-                            OnGasPressureUpdated?.Invoke("O₂", pressureStr);
+                            ProcessLightAck(cmd, root);
                         }
-                        else
+                        // Intercom Commands/Events
+                        else if (cmd == "RINGING")
                         {
-                            Log($"RDGA: Failed to parse pressure from {s}");
+                            Log("Intercom: RINGING");
+                            OnRinging?.Invoke();
                         }
-                    }
-                    if (s.StartsWith("RDGB"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
+                        else if (cmd == "HKU")
                         {
-                            string pressureStr = parts[1];
-                            SystemInfo.Nitrogen = pressureStr;
-                            Log($"RDGB: Invoking OnGasPressureUpdated for N₂O with pressure={pressureStr}");
-                            OnGasPressureUpdated?.Invoke("N₂O", pressureStr);
+                            Log("Intercom: Hook Up");
+                            OnHookUp?.Invoke();
                         }
-                        else
+                        else if (cmd == "HKD")
                         {
-                            Log($"RDGB: Failed to parse pressure from {s}");
+                            Log("Intercom: Hook Down");
+                            OnHookDown?.Invoke();
                         }
-                    }
-                    if (s.StartsWith("RDGC"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
+                        else if (cmd == "VOLUME")
                         {
-                            string pressureStr = parts[1];
-                            SystemInfo.CO2 = pressureStr;
-                            Log($"RDGC: Invoking OnGasPressureUpdated for CO₂ with pressure={pressureStr}");
-                            OnGasPressureUpdated?.Invoke("CO₂", pressureStr);
+                             if (root.TryGetProperty("val", out var valProp))
+                             {
+                                 string val = valProp.ValueKind == JsonValueKind.String ? valProp.GetString() : valProp.ToString();
+                                 Log($"Intercom: Volume {val}");
+                                 OnVolumeChanged?.Invoke(val);
+                             }
                         }
-                        else
+                         else if (cmd == "CALL")
                         {
-                            Log($"RDGC: Failed to parse pressure from {s}");
-                        }
-                    }
-                    if (s.StartsWith("RDGD"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            string pressureStr = parts[1];
-                            SystemInfo.Air4 = pressureStr;
-                            Log($"RDGD: Invoking OnGasPressureUpdated for AIR 4 with pressure={pressureStr}");
-                            OnGasPressureUpdated?.Invoke("AIR 4", pressureStr);
-                        }
-                        else
-                        {
-                            Log($"RDGD: Failed to parse pressure from {s}");
-                        }
-                    }
-                    if (s.StartsWith("RDGE"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            string pressureStr = parts[1];
-                            SystemInfo.Air7 = pressureStr;
-                            Log($"RDGE: Invoking OnGasPressureUpdated for AIR 7 with pressure={pressureStr}");
-                            OnGasPressureUpdated?.Invoke("AIR 7", pressureStr);
-                        }
-                        else
-                        {
-                            Log($"RDGE: Failed to parse pressure from {s}");
-                        }
-                    }
-                    if (s.StartsWith("RDGF"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            string pressureStr = parts[1];
-                            SystemInfo.Vacuum = pressureStr;
-                            Log($"RDGF: Invoking OnGasPressureUpdated for VAC with pressure={pressureStr}");
-                            OnGasPressureUpdated?.Invoke("VAC", pressureStr);
-                        }
-                        else
-                        {
-                            Log($"RDGF: Failed to parse pressure from {s}");
-                        }
-                    }
-
-                    if (s.StartsWith("ARDP"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            string diffPressure = parts[1];
-                            SystemInfo.AirDiffPress = parts[1];
-                            Log($"ARDP: Updated DiffPress to {parts[1]}");
-                            onAirDiffPressureUpdated?.Invoke( diffPressure);
-                        }
-                    }
-
-                    if (s.StartsWith("TEMP"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            string temp = parts[1];
-                            SystemInfo.Temperature = temp;
-                            Log($"TEMP: Invoking OnTemperatureUpdated with temp={temp}");
-                            OnTemperatureUpdated?.Invoke(temp);
-                        }
-                    }
-
-                    if (s.StartsWith("HUMD"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            string humidity = parts[1];
-                            SystemInfo.Humidity = humidity;
-                            Log($"HUMD: Invoking OnHumidityUpdated with humidity={humidity}");
-                            OnHumidityUpdated?.Invoke(humidity);
-                        }
-                    }
-
-                    if (s.StartsWith("ITID"))
-                    {
-                        string[] ts = s.Substring(4).Split('$');
-                        string voltage = "0";
-                        string current = "0";
-                        bool isError = false;
-                        foreach (var s1 in ts)
-                        {
-                            if (s1.StartsWith("V"))
-                            {
-                                voltage = s1.Substring(1);
-                                SystemInfo.Voltage = voltage;
-                            }
-                            if (s1.StartsWith("C"))
-                            {
-                                current = s1.Substring(1);
-                                SystemInfo.Current = current;
-                            }
-                            if (s1.StartsWith("ST"))
-                            {
-                                isError = s1.Substring(2).Contains("1");
-                            }
-                        }
-                        Log($"ITID: Invoking OnTransformerUpdated with voltage={voltage}, current={current}, isError={isError}");
-                        OnTransformerUpdated?.Invoke(voltage, current, isError);
-                    }
-
-                    if (s.StartsWith("FRAM"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1 && float.TryParse(parts[1], out float val))
-                        {
-                            bool isActive = val >= 10;
-                            Log($"FRAM: Invoking OnFireStatusUpdated with isActive={isActive}");
-                            OnFireStatusUpdated?.Invoke(isActive);
-                        }
-                        else
-                        {
-                            Log($"FRAM: Invoking OnFireStatusUpdated with default isActive=false");
-                            OnFireStatusUpdated?.Invoke(false);
-                        }
-                    }
-
-                    if (s.StartsWith("HFST"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1 && float.TryParse(parts[1], out float val))
-                        {
-                            bool isBad = val >= 10;
-                            Log($"HFST: Invoking OnHepaStatusUpdated with isBad={isBad}");
-                            OnHepaStatusUpdated?.Invoke(isBad);
-                        }
-                        else
-                        {
-                            Log($"HFST: Invoking OnHepaStatusUpdated with default isBad=false");
-                            OnHepaStatusUpdated?.Invoke(false);
-                        }
-                    }
-
-                    if (s.StartsWith("UPSS"))
-                    {
-                        string[] parts = s.Split('$');
-                        if (parts.Length > 1)
-                        {
-                            bool isOn = parts[1] == "1";
-                            Log($"UPSS: Invoking OnUpsStatusUpdated with isOn={isOn}");
-                            OnUpsStatusUpdated?.Invoke(isOn);
+                            Log("Intercom: Outgoing Call");
+                            OnOutgoingCall?.Invoke();
                         }
                     }
                 }
+                catch (JsonException ex)
+                {
+                   Log($"JSON Parse Error: {ex.Message}. Data: {inData}");
+                }
+                catch (Exception ex)
+                {
+                   Log($"ProcessData Error: {ex.Message}");
+                }
+            }
+
+            private static void ProcessGasArray(JsonElement root)
+            {
+                // "o2": "HIGH", "n2": "LOW", "co2": "MED", "air4": "LOW", "air7": "HIGH", "vac": "MED"
+                // Mapping to existing events. 
+                // Existing logic expected pressure strings for 'RDGA' etc, and boolean alerts for 'ALGA' etc.
+                // The new protocol sends HIGH/MED/LOW.
+                // We will update SystemInfo with these strings.
+                
+                UpdateGas("o2", "O₂", root);
+                UpdateGas("n2", "N₂O", root); // Assuming 'n2' maps to N2O as per old code's RDGB
+                UpdateGas("co2", "CO₂", root);
+                UpdateGas("air4", "AIR 4", root);
+                UpdateGas("air7", "AIR 7", root);
+                UpdateGas("vac", "VAC", root);
+            }
+
+            private static void UpdateGas(string jsonKey, string displayName, JsonElement root)
+            {
+                if (root.TryGetProperty(jsonKey, out var valProp))
+                {
+                    string status = valProp.GetString(); // HIGH, MED, LOW
+                    // Map to SystemInfo. The old code stored numeric strings or "0".
+                    // We will store the status string for now.
+                    
+                    bool isAlert = status == "HIGH" || status == "LOW"; // Assuming MED is normal?
+                    // Actually, the requirement says "Retrieves the status...".
+                    // The old code had separate pressure updates (RDGA) and Alert updates (ALGA/BLGA).
+                    // We can emit both.
+                    
+                    OnGasPressureUpdated?.Invoke(displayName, status);
+                    
+                    // Logic for alert: If HIGH or LOW, maybe trigger alert? 
+                    // Let's assume HIGH/LOW is bad and MED is good for now, 
+                    // OR just pass the status. The old code had 'isAlert' bool.
+                    // Let's trigger alert if not MED?
+                    // The user prompt doesn't strictly specify what constitutes a "Medical Gas Alert" in the new protocol,
+                    // but usually HIGH/LOW are abnormal.
+                    
+                    if (status != "MED")
+                    {
+                         OnGasAlertUpdated?.Invoke(displayName, true);
+                    }
+                    else
+                    {
+                         OnGasAlertUpdated?.Invoke(displayName, false);
+                    }
+
+                    // Update static properties
+                    switch(displayName)
+                    {
+                        case "O₂": SystemInfo.Oxygen = status; break;
+                        case "N₂O": SystemInfo.Nitrogen = status; break;
+                        case "CO₂": SystemInfo.CO2 = status; break;
+                        case "AIR 4": SystemInfo.Air4 = status; break;
+                        case "AIR 7": SystemInfo.Air7 = status; break;
+                        case "VAC": SystemInfo.Vacuum = status; break;
+                    }
+                }
+            }
+
+            private static void ProcessLightAck(string cmd, JsonElement root)
+            {
+                 bool stateFound = root.TryGetProperty("state", out var stateProp);
+                 bool valFound = root.TryGetProperty("val", out var valProp);
+
+                 // 1. Get current state as baseline
+                 bool isOn = false;
+                 int intensity = 0;
+                 if (cmd == "SET_GEN1") { isOn = SystemInfo.GeneralLight1On; intensity = SystemInfo.GeneralLight1Intensity; }
+                 else if (cmd == "SET_GEN2") { isOn = SystemInfo.GeneralLight2On; intensity = SystemInfo.GeneralLight2Intensity; }
+                 else if (cmd == "SET_LAM") { isOn = SystemInfo.LaminarLightOn; intensity = SystemInfo.LaminarLightIntensity; }
+                 else if (cmd == "SET_OT1") { isOn = SystemInfo.OTLight1On; }
+                 else if (cmd == "SET_OT2") { isOn = SystemInfo.OTLight2On; }
+
+                 // 2. Parse intensity if provided
+                 if (valFound)
+                 {
+                     if (valProp.ValueKind == JsonValueKind.Number) intensity = valProp.GetInt32();
+                     else int.TryParse(valProp.GetString(), out intensity);
+                 }
+
+                 // 3. Apply Priority Logic:
+                 // Changed per user request: "status": "ACK" + "val" is the source of truth.
+                 // "state" is NOT sent or should be ignored.
+                 // 0 = OFF, >0 = ON.
+
+                 if (valFound)
+                 {
+                     isOn = intensity > 0;
+                 }
+                 else if (stateFound) // Fallback just in case old firmware is used
+                 {
+                     isOn = stateProp.GetString() == "ON";
+                 }
+
+                 if (cmd == "SET_GEN1")
+                 {
+                     SystemInfo.GeneralLight1On = isOn;
+                     SystemInfo.GeneralLight1Intensity = intensity;
+                     onGeneralLight1Updated?.Invoke(isOn); 
+                 }
+                 else if (cmd == "SET_GEN2")
+                 {
+                     SystemInfo.GeneralLight2On = isOn;
+                     SystemInfo.GeneralLight2Intensity = intensity;
+                     onGeneralLight2Updated?.Invoke(isOn);
+                 }
+                 else if (cmd == "SET_LAM")
+                 {
+                     SystemInfo.LaminarLightOn = isOn;
+                     SystemInfo.LaminarLightIntensity = intensity;
+                     onLaminarLightUpdated?.Invoke(isOn);
+                 }
+                 else if (cmd == "SET_OT1")
+                 {
+                     SystemInfo.OTLight1On = isOn;
+                     onOTLight1Updated?.Invoke(isOn);
+                 }
+                 else if (cmd == "SET_OT2")
+                 {
+                     SystemInfo.OTLight2On = isOn;
+                     onOTLight2Updated?.Invoke(isOn);
+                 }
             }
         }
+    }
+
+    internal class SystemInfo
+    {
+        public static string Oxygen { get; set; } = "0";
+        public static string Nitrogen { get; set; } = "0";
+        public static string CO2 { get; set; } = "0";
+        public static string Air7 { get; set; } = "0";
+        public static string Air4 { get; set; } = "0";
+        public static string Vacuum { get; set; } = "0";
+        public static string AirDiffPress { get; set; } = "0";
+        public static string Temperature { get; set; } = "0";
+        public static string TemperatureSetValue { get; set; } = "0";
+        public static string Humidity { get; set; } = "0";
+        public static string Voltage { get; set; } = "0";
+        public static string Current { get; set; } = "0";
+
+        // Light States (Transient)
+        public static bool GeneralLight1On { get; set; }
+        public static int GeneralLight1Intensity { get; set; }
+        public static bool GeneralLight2On { get; set; }
+        public static int GeneralLight2Intensity { get; set; }
+        public static bool LaminarLightOn { get; set; }
+        public static int LaminarLightIntensity { get; set; }
+        public static bool OTLight1On { get; set; }
+        public static bool OTLight2On { get; set; }
     }
 }

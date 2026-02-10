@@ -18,7 +18,7 @@
         x:DataType="vm:MainWindowViewModel"
         Title="OR Control Panel"
         Background="#232323"
-        WindowState="Maximized">
+        WindowState="FullScreen">
 
 	<Window.Styles>
 		<Style Selector="Button.actionButton">

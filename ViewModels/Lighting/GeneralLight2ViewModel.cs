@@ -1,6 +1,7 @@
 using Avalonia.Threading;
 using ORControlPanelNew.Views.Lighting;
 using ReactiveUI;
+using System.Text.Json;
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -55,6 +56,8 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
 
             ToggleLight2Command = ReactiveCommand.Create(ToggleGeneralLight2);
+            // Unsubscribe first to prevent duplicate handlers if ViewModel is recreated
+            DevicePort.DataProcessor.onGeneralLight2Updated -= onGeneralLight2Updated;
             DevicePort.DataProcessor.onGeneralLight2Updated += onGeneralLight2Updated;
         }
 
@@ -67,7 +70,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
                 string dbValue = receivedByController ? "10" : "0";
                 DevicePort.UpdateValueToDb(dbValue, "General Lights 2");
-                IsLight2On = receivedByController;
+                Dispatcher.UIThread.InvokeAsync(() => IsLight2On = receivedByController);
             }
             catch (Exception ex)
             {
@@ -86,18 +89,28 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 var token = _GeneralLight2Cts.Token;
 
                 bool turningOn = !IsLight2On;
-                string command = turningOn ? "LITB$10" : "LITB$0";
+                // string command = turningOn ? "LITB$10" : "LITB$0";
+                
+                var cmd = new
+                {
+                    cmd = "SET_GEN2",
+                    state = turningOn ? "ON" : "OFF",
+                    val = turningOn ? 10 : 0 
+                };
+
                 string dbValue = turningOn ? "10" : "0";
 
                 try
                 {
-                    DevicePort.SerialPortInterface.Write(command);
+                    string jsonCmd = JsonSerializer.Serialize(cmd);
+                    DevicePort.SerialPortInterface.Write(jsonCmd);
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                 }
 
+                /*
                 // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
                 Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
                 {
@@ -111,6 +124,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                         });
                     }
                 }, token);
+                */
             }
             catch (Exception ex)
             {

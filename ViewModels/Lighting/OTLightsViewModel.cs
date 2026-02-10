@@ -1,5 +1,6 @@
 using Avalonia.Threading;
 using ReactiveUI;
+using System.Text.Json;
 using System;
 using System.Data;
 using System.Diagnostics;
@@ -53,7 +54,11 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
                 if (IsLight1On && LightIntensity > 0)
                 {
-                    DevicePort.SerialPortInterface.Write("LITE" + (int)LightIntensity);
+                    // DevicePort.SerialPortInterface.Write("LITE" + (int)LightIntensity); 
+                    // New protocol doesn't use intensity for OT lights in initialization? 
+                    // Or maybe just send ON? The spec says "No dimming value required".
+                     var cmd = new { cmd = "SET_OT1", state = "ON" };
+                     DevicePort.SerialPortInterface.Write(JsonSerializer.Serialize(cmd));
                 }
             }
             catch (Exception ex)
@@ -64,7 +69,9 @@ namespace ORControlPanelNew.ViewModels.Lighting
             }
 
             ToggleLight1Command = ReactiveCommand.Create(ToggleOTLight1);
-            DevicePort.DataProcessor.onOTLight2Updated += onOTLight1Updated;
+            // Unsubscribe first to prevent duplicate handlers if ViewModel is recreated
+            DevicePort.DataProcessor.onOTLight1Updated -= onOTLight1Updated;
+            DevicePort.DataProcessor.onOTLight1Updated += onOTLight1Updated;
 
 
 
@@ -81,7 +88,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
 
                 string dbValue = receivedByController ? "10" : "0";
                 DevicePort.UpdateValueToDb(dbValue, "OTLight1");
-                IsLight1On = receivedByController;
+                Dispatcher.UIThread.InvokeAsync(() => IsLight1On = receivedByController);
             }
             catch (Exception ex)
             {
@@ -101,18 +108,27 @@ namespace ORControlPanelNew.ViewModels.Lighting
                 var token = _OTLight1Cts.Token;
 
                 bool turningOn = !IsLight1On;
-                string command = turningOn ? "LITE$10" : "LITE$0";
+                // string command = turningOn ? "LITE$10" : "LITE$0";
+                
+                var cmd = new 
+                { 
+                    cmd = "SET_OT1", 
+                    state = turningOn ? "ON" : "OFF" 
+                };
+
                 string dbValue = turningOn ? "10" : "0";
 
                 try
                 {
-                    DevicePort.SerialPortInterface.Write(command);
+                    string jsonCmd = JsonSerializer.Serialize(cmd);
+                    DevicePort.SerialPortInterface.Write(jsonCmd);
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error writing to serial port: {ex.Message}");
                 }
 
+                /*
                 // Start a 3-second timeout. If no hardware feedback is received, assume OFF.
                 Task.Delay(TimeSpan.FromSeconds(3), token).ContinueWith(t =>
                 {
@@ -126,6 +142,7 @@ namespace ORControlPanelNew.ViewModels.Lighting
                         });
                     }
                 }, token);
+                */
             }
             catch (Exception ex)
             {

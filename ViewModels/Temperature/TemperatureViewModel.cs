@@ -2,10 +2,10 @@
 using ORControlPanelNew.Services;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System.Text.Json;
 using System;
 using System.Diagnostics;
 using System.Globalization;
-//using NAudio.Wave;
 using System.IO;
 using System.Reactive;
 using System.Threading;
@@ -16,26 +16,37 @@ namespace ORControlPanelNew.ViewModels.Temperature
 {
     public class TemperatureViewModel : ReactiveObject
     {
-        //private readonly WaveOutEvent _waveOut;
-        //private readonly WaveFileReader _waveReader;
-        //private bool _isDisposed = false;
-        //private bool _isAudioPlaying = false;
-        //private bool _wasAlertTriggered = false;
-
         private readonly IAlertService _alertService;
-        [Reactive] public string Temperature { get; set; } = "0.0";
-        [Reactive] public string Humidity { get; set; } = "0.0";
+
+        // Hidden actual values from hardware
+        [Reactive] public string ActualTemperature { get; set; } = "25.0";
+        [Reactive] public string ActualHumidity { get; set; } = "50.0";
+
+        // Display values (Red during manual override)
+        [Reactive] public string DisplayTemperature { get; set; } = "25.0";
+        [Reactive] public string DisplayHumidity { get; set; } = "50.0";
+        [Reactive] public string TemperatureColor { get; set; } = "#1A1A1A"; 
+        [Reactive] public string HumidityColor { get; set; } = "#1A1A1A";
+
+        // Other status properties
         [Reactive] public string Voltage { get; set; } = "0.0";
         [Reactive] public string Current { get; set; } = "0.0";
         [Reactive] public string TransformerStatus { get; set; } = "OK";
         [Reactive] public string FireStatus { get; set; } = "OFF";
         [Reactive] public string UpsStatus { get; set; } = "OFF";
-        
         [Reactive] public bool IsUpsOn { get; set; } = false;
         [Reactive] public string AirDiffPressure { get; set; } = "0.0";
 
-        private CancellationTokenSource _TempCts;
-        private CancellationTokenSource _HumdCts;
+        private decimal? _targetTemp = null;
+        private decimal? _targetHumd = null;
+        private bool _isTempSynced = true;
+        private bool _isHumdSynced = true;
+        private DateTime _lastTempInteraction = DateTime.MinValue;
+        private DateTime _lastHumdInteraction = DateTime.MinValue;
+        private const int OVERRIDE_DURATION_MS = 2000;
+
+        private CancellationTokenSource? _TempCts;
+        private CancellationTokenSource? _HumdCts;
         public ICommand IncTempCommand { get; }
         public ICommand DecTempCommand { get; }
         public ICommand IncHumdCommand { get; }
@@ -44,27 +55,6 @@ namespace ORControlPanelNew.ViewModels.Temperature
         public TemperatureViewModel(IAlertService alertService)
         {
             _alertService = alertService ?? throw new ArgumentNullException(nameof(alertService));
-            //var soundPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Sounds", "digital-alarm-buzzer-992.wav");
-            //if (!File.Exists(soundPath))
-            //{
-            //    Log($"Audio file not found: {soundPath}");
-            //    throw new FileNotFoundException("Alert sound file not found.", soundPath);
-            //}
-            //_waveReader = new WaveFileReader(soundPath);
-            //_waveOut = new WaveOutEvent();
-            //_waveOut.Init(_waveReader);
-            //_waveOut.PlaybackStopped += (s, e) =>
-            //{
-            //    Dispatcher.UIThread.InvokeAsync(() =>
-            //    {
-            //        _isAudioPlaying = false;
-            //        Log("Audio playback stopped.");
-            //    });
-            //};
-
-            
-
-          
 
             DevicePort.DataProcessor.OnTemperatureUpdated += (temp) =>
             {
@@ -72,22 +62,42 @@ namespace ORControlPanelNew.ViewModels.Temperature
                 _TempCts?.Cancel();
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    Temperature = temp;
+                    ActualTemperature = temp;
+                    // Only update display if we are outside the 2-second manual override window
+                    if (DateTime.Now - _lastTempInteraction > TimeSpan.FromMilliseconds(OVERRIDE_DURATION_MS))
+                    {
+                        DisplayTemperature = temp;
+                        TemperatureColor = "#1A1A1A";
+
+                        // Sync Logic:
+                        // 1. If Synced: Target tracks Actual.
+                        // 2. If Not Synced: Check if Actual has reached Target. If so, Re-Sync.
+                        if (decimal.TryParse(temp, CultureInfo.InvariantCulture, out decimal sensorVal))
+                        {
+                            // Initialize on first reading if null
+                            if (_targetTemp == null || _isTempSynced)
+                            {
+                                _targetTemp = sensorVal;
+                            }
+                            else if (sensorVal == _targetTemp)
+                            {
+                                _isTempSynced = true;
+                                // Log("Temperature Re-Synced to Hardware");
+                            }
+                        }
+                    }
                 });
             };
 
             DevicePort.DataProcessor.onTempUpdatedByController += (recievedByController) =>
             {
                 Log($"Received onTempUpdatedByController: recievedByController={recievedByController}");
-
                 _TempCts?.Cancel();
             };
-
 
             DevicePort.DataProcessor.onHumdUpdatedByController += (recievedByController) =>
             {
                 Log($"Received onHumdUpdatedByController: recievedByController={recievedByController}");
-
                 _HumdCts?.Cancel();
             };
 
@@ -97,7 +107,27 @@ namespace ORControlPanelNew.ViewModels.Temperature
                 _HumdCts?.Cancel();
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    Humidity = humidity;
+                    ActualHumidity = humidity;
+                    // Only update display if we are outside the 2-second manual override window
+                    if (DateTime.Now - _lastHumdInteraction > TimeSpan.FromMilliseconds(OVERRIDE_DURATION_MS))
+                    {
+                        DisplayHumidity = humidity;
+                        HumidityColor = "#1A1A1A";
+                        
+                        // Sync Logic
+                        if (decimal.TryParse(humidity, CultureInfo.InvariantCulture, out decimal sensorVal))
+                        {
+                            // Initialize on first reading if null
+                            if (_targetHumd == null || _isHumdSynced)
+                            {
+                                _targetHumd = sensorVal;
+                            }
+                            else if (sensorVal == _targetHumd)
+                            {
+                                _isHumdSynced = true;
+                            }
+                        }
+                    }
                 });
             };
 
@@ -127,7 +157,6 @@ namespace ORControlPanelNew.ViewModels.Temperature
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     FireStatus = isActive ? "ON" : "OFF";
-                    //UpdateAudioPlayback();
                 });
             };
 
@@ -138,7 +167,6 @@ namespace ORControlPanelNew.ViewModels.Temperature
                 {
                     UpsStatus = isOn ? "ON" : "OFF";
                     IsUpsOn = isOn;
-                    //UpdateAudioPlayback();
                 });
             };
 
@@ -148,57 +176,22 @@ namespace ORControlPanelNew.ViewModels.Temperature
             DecHumdCommand = ReactiveCommand.Create(DecHumd);
         }
 
-        //private void UpdateAudioPlayback()
-        //{
-        //    bool shouldPlay = UpsStatus == "OFF" || HepaStatus == "BAD" || GeneralGasAlert;
-        //    Dispatcher.UIThread.InvokeAsync(() =>
-        //    {
-        //        if (shouldPlay && !_isAudioPlaying && !_wasAlertTriggered)
-        //        {
-        //            _waveReader.Position = 0;
-        //            _waveOut.Play();
-        //            _isAudioPlaying = true;
-        //            _wasAlertTriggered = true;
-        //            Log("Started audio playback for alert condition.");
-        //        }
-        //        else if (!shouldPlay && _isAudioPlaying)
-        //        {
-        //            _waveOut.Stop();
-        //            _isAudioPlaying = false;
-        //            _wasAlertTriggered = false;
-        //            Log("Stopped audio playback; no alert conditions active.");
-        //        }
-        //        else if (!shouldPlay)
-        //        {
-        //            _wasAlertTriggered = false;
-        //        }
-        //    });
-        //}
-
-        //public void Dispose()
-        //{
-        //    if (_isDisposed)
-        //        return;
-        //    _isDisposed = true;
-        //    try
-        //    {
-        //        _waveOut?.Stop();
-        //        _waveOut?.Dispose();
-        //        _waveReader?.Dispose();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Log($"Error disposing audio resources: {ex.Message}");
-        //    }
-        //}
-
         private void SendTempCommand(decimal temp)
         {
             try
             {
-                string command = $"TEMP${temp}";
-                Log($"Sending temperature command: {command}");
-                DevicePort.SerialPortInterface.Write(command);
+                // decimal currentHumd = 0;
+                // decimal.TryParse(ActualHumidity, out currentHumd);
+
+                var cmd = new 
+                { 
+                    cmd = "SET_AHU", 
+                    temp_set = temp, 
+                    humi_set = _targetHumd ?? 0 // Safe fallback, though updates shouldn't happen if null
+                };
+                string jsonCmd = JsonSerializer.Serialize(cmd);
+                Log($"Sending temperature command: {jsonCmd}");
+                DevicePort.SerialPortInterface.Write(jsonCmd);
             }
             catch (Exception ex)
             {
@@ -210,9 +203,18 @@ namespace ORControlPanelNew.ViewModels.Temperature
         {
             try
             {
-                string command = $"HUMD${humd}";
-                Log($"Sending humidity command: {command}");
-                DevicePort.SerialPortInterface.Write(command);
+                // decimal currentTemp = 0;
+                // decimal.TryParse(ActualTemperature, out currentTemp);
+
+                var cmd = new 
+                { 
+                    cmd = "SET_AHU", 
+                    temp_set = _targetTemp ?? 0, // Safe fallback
+                    humi_set = humd 
+                };
+                string jsonCmd = JsonSerializer.Serialize(cmd);
+                Log($"Sending humidity command: {jsonCmd}");
+                DevicePort.SerialPortInterface.Write(jsonCmd);
             }
             catch (Exception ex)
             {
@@ -222,38 +224,98 @@ namespace ORControlPanelNew.ViewModels.Temperature
 
         private void IncTemp()
         {
-            if (decimal.TryParse(Temperature, out decimal currentTemp))
+            if (_targetTemp == null) return; // Wait for hardware init
+
+            _lastTempInteraction = DateTime.Now;
+            _isTempSynced = false; // Break sync on interaction
+            _targetTemp += 1;
+            DisplayTemperature = _targetTemp.Value.ToString("0.0");
+            TemperatureColor = "Red";
+            SendTempCommand(_targetTemp.Value);
+
+            Task.Delay(OVERRIDE_DURATION_MS).ContinueWith(_ => 
             {
-                decimal newTemp = currentTemp + 1;
-                SendTempCommand(newTemp);
-            }
+                if (DateTime.Now - _lastTempInteraction >= TimeSpan.FromMilliseconds(OVERRIDE_DURATION_MS))
+                {
+                    Dispatcher.UIThread.Post(() => 
+                    {
+                        DisplayTemperature = ActualTemperature; // Revert to hardware value
+                        TemperatureColor = "#1A1A1A";
+                    });
+                }
+            });
         }
 
         private void DecTemp()
         {
-            if (decimal.TryParse(Temperature, out decimal currentTemp))
+            if (_targetTemp == null) return; // Wait for hardware init
+
+            _lastTempInteraction = DateTime.Now;
+            _isTempSynced = false; // Break sync on interaction
+            _targetTemp -= 1;
+            DisplayTemperature = _targetTemp.Value.ToString("0.0");
+            TemperatureColor = "Red";
+            SendTempCommand(_targetTemp.Value);
+
+            Task.Delay(OVERRIDE_DURATION_MS).ContinueWith(_ => 
             {
-                decimal newTemp = currentTemp - 1;
-                SendTempCommand(newTemp);
-            }
+                if (DateTime.Now - _lastTempInteraction >= TimeSpan.FromMilliseconds(OVERRIDE_DURATION_MS))
+                {
+                    Dispatcher.UIThread.Post(() => 
+                    {
+                        DisplayTemperature = ActualTemperature; // Revert to hardware value
+                        TemperatureColor = "#1A1A1A";
+                    });
+                }
+            });
         }
 
         private void IncHumd()
         {
-            if (decimal.TryParse(Humidity, out decimal currentHumd))
+            if (_targetHumd == null) return; // Wait for hardware init
+
+            _lastHumdInteraction = DateTime.Now;
+            _isHumdSynced = false; // Break sync on interaction
+            _targetHumd += 1;
+            DisplayHumidity = _targetHumd.Value.ToString("0.0");
+            HumidityColor = "Red";
+            SendHumdCommand(_targetHumd.Value);
+
+            Task.Delay(OVERRIDE_DURATION_MS).ContinueWith(_ => 
             {
-                decimal newHumd = currentHumd + 1;
-                SendHumdCommand(newHumd);
-            }
+                if (DateTime.Now - _lastHumdInteraction >= TimeSpan.FromMilliseconds(OVERRIDE_DURATION_MS))
+                {
+                    Dispatcher.UIThread.Post(() => 
+                    {
+                        DisplayHumidity = ActualHumidity; // Revert to hardware value
+                        HumidityColor = "#1A1A1A";
+                    });
+                }
+            });
         }
 
         private void DecHumd()
         {
-            if (decimal.TryParse(Humidity, out decimal currentHumd))
+            if (_targetHumd == null) return; // Wait for hardware init
+
+            _lastHumdInteraction = DateTime.Now;
+            _isHumdSynced = false; // Break sync on interaction
+            _targetHumd -= 1;
+            DisplayHumidity = _targetHumd.Value.ToString("0.0");
+            HumidityColor = "Red";
+            SendHumdCommand(_targetHumd.Value);
+
+            Task.Delay(OVERRIDE_DURATION_MS).ContinueWith(_ => 
             {
-                decimal newHumd = currentHumd - 1;
-                SendHumdCommand(newHumd);
-            }
+                if (DateTime.Now - _lastHumdInteraction >= TimeSpan.FromMilliseconds(OVERRIDE_DURATION_MS))
+                {
+                    Dispatcher.UIThread.Post(() => 
+                    {
+                        DisplayHumidity = ActualHumidity; // Revert to hardware value
+                        HumidityColor = "#1A1A1A";
+                    });
+                }
+            });
         }
 
         private static void Log(string message)

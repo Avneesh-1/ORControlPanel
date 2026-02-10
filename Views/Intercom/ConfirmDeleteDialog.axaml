@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ORControlPanelNew.Views.Intercom.ConfirmDeleteDialog"
+        Title="Confirm Delete"
+        Width="350" Height="180"
+        WindowStartupLocation="CenterOwner"
+        Background="#181A1B"
+        CanResize="False">
+    <Border BorderBrush="#333" BorderThickness="1" CornerRadius="12" Margin="10">
+        <StackPanel Spacing="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                <Image Source="avares://ORControlPanelNew/Assets/Icons/delete.png" Width="30" Height="30"/>
+                <TextBlock Text="Delete Contact?" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+            </StackPanel>
+            
+            <TextBlock x:Name="MessageText" Text="Are you sure you want to delete this contact?" 
+                       Foreground="#BBB" FontSize="14" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="300"/>
+
+            <StackPanel Orientation="Horizontal" Spacing="20" HorizontalAlignment="Center">
+                <Button Content="CANCEL" Click="OnCancelClick"
+                        Background="#444" Foreground="White" Width="100" Height="40" CornerRadius="8" FontWeight="Bold"/>
+                <Button Content="DELETE" Click="OnDeleteClick"
+                        Background="#C62828" Foreground="White" Width="100" Height="40" CornerRadius="8" FontWeight="Bold"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

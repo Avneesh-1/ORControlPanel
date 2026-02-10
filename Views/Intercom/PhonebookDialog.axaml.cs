@@ -9,17 +9,24 @@ namespace ORControlPanelNew.Views.Intercom
         public PhonebookDialog()
         {
             InitializeComponent();
-        }
 
-        private void OnDeleteContactClick(object? sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.CommandParameter is object contact)
+            this.Opened += (s, e) => 
             {
-                if (DataContext is IntercomDialogViewModel vm && vm.DeleteContactCommand.CanExecute(contact))
+                if (DataContext is IntercomDialogViewModel vm)
                 {
-                    vm.DeleteContactCommand.Execute(contact);
+                    vm.OnRequestDeleteConfirmation += async (contact) => 
+                    {
+                        var confirmDialog = new ConfirmDeleteDialog(contact.Name);
+                        await confirmDialog.ShowDialog(this);
+                        return confirmDialog.Confirmed;
+                    };
+
+                    vm.RequestClosePhonebook += () => 
+                    {
+                        this.Close();
+                    };
                 }
-            }
+            };
         }
     }
-} 
+}
